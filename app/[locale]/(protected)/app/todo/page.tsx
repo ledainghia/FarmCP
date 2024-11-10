@@ -27,6 +27,7 @@ import { cn } from '@/lib/utils';
 import TasksPage from './taskPage';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TaskTemplate from './tasks-template/page';
+import CalenderPage from './calenderTasks/page';
 
 const Page = () => {
   const t = useTranslations('TodoApp');
@@ -35,31 +36,38 @@ const Page = () => {
     <>
       <Card>
         <CardContent className='pt-3'>
-          <Tabs defaultValue='home' className='w-full'>
+          <Tabs defaultValue='tasksTemplate' className='w-full'>
             <TabsList>
               <TabsTrigger
                 value='tasksTemplate'
                 className='relative before:absolute before:top-full before:left-0 before:h-px before:w-full data-[state=active]:before:bg-primary'
               >
-                <Icon icon='heroicons:home' className='h-4 w-4 me-1' />
+                <Icon icon='carbon:task-star' className='h-4 w-4 me-1' />
                 Công việc mẫu
               </TabsTrigger>
               <TabsTrigger
                 value='tasks'
                 className='relative before:absolute before:top-full before:left-0 before:h-px before:w-full data-[state=active]:before:bg-primary'
               >
-                <Icon icon='heroicons:user' className='h-4 w-4 me-1' />
+                <Icon
+                  icon='fluent:task-list-ltr-20-filled'
+                  className='h-4 w-4 me-1'
+                />
                 Công việc
               </TabsTrigger>
               <TabsTrigger
                 value='daylyTasks'
                 className='relative before:absolute before:top-full before:left-0 before:h-px before:w-full data-[state=active]:before:bg-primary'
               >
-                <Icon
-                  icon='heroicons:chat-bubble-left-right'
-                  className='h-4 w-4 me-1'
-                />
+                <Icon icon='hugeicons:task-daily-02' className='h-4 w-4 me-1' />
                 Công việc thường ngày
+              </TabsTrigger>
+              <TabsTrigger
+                value='calendarTasks'
+                className='relative before:absolute before:top-full before:left-0 before:h-px before:w-full data-[state=active]:before:bg-primary'
+              >
+                <Icon icon='uil:calender' className='h-4 w-4 me-1' />
+                Lịch công việc
               </TabsTrigger>
             </TabsList>
             <TabsContent value='tasksTemplate'>
@@ -72,11 +80,8 @@ const Page = () => {
               Aliqua id fugiat nostrud irure ex duis ea quis id quis ad et. Sunt
               qui
             </TabsContent>
-            <TabsContent value='settings'>
-              Aliqua id fugiat nostrud irure ex duis ea quis id quis ad et. Sunt
-              qui esse pariatur duis deserunt mollit dolore cillum minim tempor
-              enim. Elit aute irure tempor cupidatat incididunt sint deserunt ut
-              voluptate aute id deserunt nisi.
+            <TabsContent value='calendarTasks'>
+              <CalenderPage></CalenderPage>
             </TabsContent>
           </Tabs>
         </CardContent>
