@@ -16,6 +16,14 @@ import { Icon } from '@/components/ui/icon';
 import { BarChart, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -35,6 +43,19 @@ const Page = () => {
   return (
     <>
       <Card>
+        <CardHeader>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbPage>Quản lí</BreadcrumbPage>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Công việc nông trại</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </CardHeader>
         <CardContent className='pt-3'>
           <Tabs defaultValue='tasksTemplate' className='w-full'>
             <TabsList>

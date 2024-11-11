@@ -10,16 +10,16 @@ export const todos = [
         value: 'nguyenvana',
       },
     ],
-    title: 'Check garden watering',
-    status: 'Initialized', // Status field in English
-    isSystemTask: true, // Indicating if it's a system task
-    priority: 'High', // Priority level in English
+    title: 'Chăm sóc đàn bò',
+    status: 'Initialized',
+    isSystemTask: true,
+    priority: 'High',
     isfav: true,
     isTrash: false,
     category: [
       {
-        value: 'water',
-        label: 'Watering',
+        value: 'animal-care',
+        label: 'Chăm sóc vật nuôi',
       },
     ],
   },
@@ -32,7 +32,7 @@ export const todos = [
         value: 'tranvanb',
       },
     ],
-    title: 'Fertilize fruit trees',
+    title: 'Cho gà ăn',
     status: 'In Progress',
     isSystemTask: false,
     priority: 'Medium',
@@ -40,8 +40,8 @@ export const todos = [
     isTrash: false,
     category: [
       {
-        value: 'fertilize',
-        label: 'Fertilizing',
+        value: 'feeding',
+        label: 'Cho ăn',
       },
     ],
   },
@@ -54,7 +54,7 @@ export const todos = [
         value: 'lethic',
       },
     ],
-    title: 'Harvest tomatoes',
+    title: 'Vệ sinh chuồng lợn',
     status: 'Done by Staff',
     isSystemTask: false,
     priority: 'High',
@@ -62,8 +62,8 @@ export const todos = [
     isTrash: false,
     category: [
       {
-        value: 'harvest',
-        label: 'Harvesting',
+        value: 'cleaning',
+        label: 'Vệ sinh chuồng trại',
       },
     ],
   },
@@ -76,7 +76,7 @@ export const todos = [
         value: 'phamvand',
       },
     ],
-    title: 'Pest inspection',
+    title: 'Kiểm tra sức khỏe đàn bò',
     status: 'Verified Done by Admin',
     isSystemTask: true,
     priority: 'Low',
@@ -84,8 +84,8 @@ export const todos = [
     isTrash: false,
     category: [
       {
-        value: 'pest',
-        label: 'Pest Inspection',
+        value: 'health-check',
+        label: 'Kiểm tra sức khỏe',
       },
     ],
   },
@@ -98,7 +98,7 @@ export const todos = [
         value: 'nguyenthie',
       },
     ],
-    title: 'Check soil moisture',
+    title: 'Tiêm phòng cho đàn heo',
     status: 'Verification Failed by Admin',
     isSystemTask: false,
     priority: 'Medium',
@@ -106,8 +106,8 @@ export const todos = [
     isTrash: false,
     category: [
       {
-        value: 'soil',
-        label: 'Soil Moisture Check',
+        value: 'vaccination',
+        label: 'Phòng bệnh & Tiêm phòng',
       },
     ],
   },
@@ -120,7 +120,7 @@ export const todos = [
         value: 'nguyenvanf',
       },
     ],
-    title: 'Replace shading net for leafy greens',
+    title: 'Quản lý giống bò sữa',
     status: 'Initialized',
     isSystemTask: false,
     priority: 'Medium',
@@ -128,8 +128,8 @@ export const todos = [
     isTrash: false,
     category: [
       {
-        value: 'shade',
-        label: 'Shading',
+        value: 'breeding-management',
+        label: 'Quản lý giống',
       },
     ],
   },
@@ -142,7 +142,7 @@ export const todos = [
         value: 'tranthig',
       },
     ],
-    title: 'Prune guava tree',
+    title: 'Sản xuất thức ăn chăn nuôi',
     status: 'Done by Staff',
     isSystemTask: false,
     priority: 'Low',
@@ -150,8 +150,8 @@ export const todos = [
     isTrash: false,
     category: [
       {
-        value: 'prune',
-        label: 'Pruning',
+        value: 'feed-production',
+        label: 'Sản xuất thức ăn chăn nuôi',
       },
     ],
   },
@@ -164,7 +164,7 @@ export const todos = [
         value: 'levanh',
       },
     ],
-    title: 'Check automatic irrigation equipment',
+    title: 'Theo dõi sinh sản đàn dê',
     status: 'In Progress',
     isSystemTask: true,
     priority: 'High',
@@ -172,8 +172,8 @@ export const todos = [
     isTrash: false,
     category: [
       {
-        value: 'equipment',
-        label: 'Equipment Check',
+        value: 'reproduction-monitoring',
+        label: 'Theo dõi sinh sản',
       },
     ],
   },
@@ -186,7 +186,7 @@ export const todos = [
         value: 'phanthii',
       },
     ],
-    title: 'Plan additional crop planting',
+    title: 'Bảo trì thiết bị chăn nuôi',
     status: 'Initialized',
     isSystemTask: false,
     priority: 'High',
@@ -194,8 +194,8 @@ export const todos = [
     isTrash: false,
     category: [
       {
-        value: 'plan',
-        label: 'Planning',
+        value: 'equipment-maintenance',
+        label: 'Bảo trì thiết bị',
       },
     ],
   },
@@ -208,7 +208,7 @@ export const todos = [
         value: 'nguyenvanj',
       },
     ],
-    title: 'Clean poultry coop',
+    title: 'Quản lý kho thức ăn và thuốc',
     status: 'In Progress',
     isSystemTask: true,
     priority: 'Medium',
@@ -216,8 +216,448 @@ export const todos = [
     isTrash: false,
     category: [
       {
-        value: 'clean',
-        label: 'Cleaning',
+        value: 'inventory-management',
+        label: 'Quản lý kho thức ăn & thuốc',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-11.png',
+        label: 'Nguyễn Văn K',
+        value: 'nguyenvank',
+      },
+    ],
+    title: 'Chuẩn bị thức ăn cho đàn vịt',
+    status: 'Initialized',
+    isSystemTask: true,
+    priority: 'Medium',
+    isfav: true,
+    isTrash: false,
+    category: [
+      {
+        value: 'feeding',
+        label: 'Cho ăn',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-12.png',
+        label: 'Trần Thị L',
+        value: 'tranthil',
+      },
+    ],
+    title: 'Vệ sinh chuồng bò',
+    status: 'In Progress',
+    isSystemTask: false,
+    priority: 'Low',
+    isfav: false,
+    isTrash: false,
+    category: [
+      {
+        value: 'cleaning',
+        label: 'Vệ sinh chuồng trại',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-13.png',
+        label: 'Lê Văn M',
+        value: 'levanm',
+      },
+    ],
+    title: 'Tiêm phòng cho lợn nái',
+    status: 'Done by Staff',
+    isSystemTask: false,
+    priority: 'High',
+    isfav: true,
+    isTrash: false,
+    category: [
+      {
+        value: 'vaccination',
+        label: 'Phòng bệnh & Tiêm phòng',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-14.png',
+        label: 'Phạm Văn N',
+        value: 'phamvann',
+      },
+    ],
+    title: 'Kiểm tra sức khỏe cho dê',
+    status: 'Verified Done by Admin',
+    isSystemTask: true,
+    priority: 'Low',
+    isfav: false,
+    isTrash: false,
+    category: [
+      {
+        value: 'health-check',
+        label: 'Kiểm tra sức khỏe',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-15.png',
+        label: 'Nguyễn Thị O',
+        value: 'nguyenthio',
+      },
+    ],
+    title: 'Sản xuất thức ăn chăn nuôi tổng hợp',
+    status: 'Verification Failed by Admin',
+    isSystemTask: false,
+    priority: 'Medium',
+    isfav: true,
+    isTrash: false,
+    category: [
+      {
+        value: 'feed-production',
+        label: 'Sản xuất thức ăn chăn nuôi',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-16.png',
+        label: 'Nguyễn Văn P',
+        value: 'nguyenvanp',
+      },
+    ],
+    title: 'Theo dõi sinh sản đàn bò',
+    status: 'Initialized',
+    isSystemTask: false,
+    priority: 'Medium',
+    isfav: false,
+    isTrash: false,
+    category: [
+      {
+        value: 'reproduction-monitoring',
+        label: 'Theo dõi sinh sản',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-17.png',
+        label: 'Trần Thị Q',
+        value: 'tranthiq',
+      },
+    ],
+    title: 'Bảo trì máy bơm nước tự động',
+    status: 'Done by Staff',
+    isSystemTask: false,
+    priority: 'Low',
+    isfav: false,
+    isTrash: false,
+    category: [
+      {
+        value: 'equipment-maintenance',
+        label: 'Bảo trì thiết bị',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-18.png',
+        label: 'Lê Văn R',
+        value: 'levanr',
+      },
+    ],
+    title: 'Kiểm kê kho thức ăn',
+    status: 'In Progress',
+    isSystemTask: true,
+    priority: 'High',
+    isfav: true,
+    isTrash: false,
+    category: [
+      {
+        value: 'inventory-management',
+        label: 'Quản lý kho thức ăn & thuốc',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-19.png',
+        label: 'Phan Thị S',
+        value: 'phanthis',
+      },
+    ],
+    title: 'Kiểm tra sức khỏe cho đàn gia cầm',
+    status: 'Initialized',
+    isSystemTask: false,
+    priority: 'High',
+    isfav: false,
+    isTrash: false,
+    category: [
+      {
+        value: 'health-check',
+        label: 'Kiểm tra sức khỏe',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-20.png',
+        label: 'Nguyễn Văn T',
+        value: 'nguyenvant',
+      },
+    ],
+    title: 'Quản lý giống gà đẻ trứng',
+    status: 'In Progress',
+    isSystemTask: true,
+    priority: 'Medium',
+    isfav: false,
+    isTrash: false,
+    category: [
+      {
+        value: 'breeding-management',
+        label: 'Quản lý giống',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-21.png',
+        label: 'Trần Thị U',
+        value: 'tranthiu',
+      },
+    ],
+    title: 'Vệ sinh chuồng trại hàng tuần',
+    status: 'Done by Staff',
+    isSystemTask: false,
+    priority: 'Low',
+    isfav: true,
+    isTrash: false,
+    category: [
+      {
+        value: 'cleaning',
+        label: 'Vệ sinh chuồng trại',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-22.png',
+        label: 'Lê Văn V',
+        value: 'levanv',
+      },
+    ],
+    title: 'Phân loại thức ăn dự trữ',
+    status: 'Verification Failed by Admin',
+    isSystemTask: false,
+    priority: 'Medium',
+    isfav: false,
+    isTrash: false,
+    category: [
+      {
+        value: 'inventory-management',
+        label: 'Quản lý kho thức ăn & thuốc',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-23.png',
+        label: 'Nguyễn Thị W',
+        value: 'nguyenthiw',
+      },
+    ],
+    title: 'Kiểm tra hệ thống cung cấp nước',
+    status: 'Initialized',
+    isSystemTask: true,
+    priority: 'High',
+    isfav: true,
+    isTrash: false,
+    category: [
+      {
+        value: 'equipment-maintenance',
+        label: 'Bảo trì thiết bị',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-24.png',
+        label: 'Trần Văn X',
+        value: 'tranvanx',
+      },
+    ],
+    title: 'Chuẩn bị tiêm phòng cho gia cầm',
+    status: 'In Progress',
+    isSystemTask: false,
+    priority: 'Low',
+    isfav: false,
+    isTrash: false,
+    category: [
+      {
+        value: 'vaccination',
+        label: 'Phòng bệnh & Tiêm phòng',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-25.png',
+        label: 'Lê Thị Y',
+        value: 'lethiy',
+      },
+    ],
+    title: 'Kiểm tra dinh dưỡng của thức ăn',
+    status: 'Done by Staff',
+    isSystemTask: false,
+    priority: 'Medium',
+    isfav: true,
+    isTrash: false,
+    category: [
+      {
+        value: 'feed-production',
+        label: 'Sản xuất thức ăn chăn nuôi',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-26.png',
+        label: 'Nguyễn Văn Z',
+        value: 'nguyenvanz',
+      },
+    ],
+    title: 'Theo dõi sinh sản đàn vịt',
+    status: 'Initialized',
+    isSystemTask: true,
+    priority: 'High',
+    isfav: false,
+    isTrash: false,
+    category: [
+      {
+        value: 'reproduction-monitoring',
+        label: 'Theo dõi sinh sản',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-27.png',
+        label: 'Trần Thị AA',
+        value: 'tranthiaa',
+      },
+    ],
+    title: 'Tiêm phòng cho gia súc',
+    status: 'Verification Failed by Admin',
+    isSystemTask: false,
+    priority: 'Low',
+    isfav: false,
+    isTrash: false,
+    category: [
+      {
+        value: 'vaccination',
+        label: 'Phòng bệnh & Tiêm phòng',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-28.png',
+        label: 'Lê Văn BB',
+        value: 'levanbb',
+      },
+    ],
+    title: 'Kiểm tra sức khỏe cho cừu',
+    status: 'In Progress',
+    isSystemTask: true,
+    priority: 'Medium',
+    isfav: true,
+    isTrash: false,
+    category: [
+      {
+        value: 'health-check',
+        label: 'Kiểm tra sức khỏe',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-29.png',
+        label: 'Nguyễn Thị CC',
+        value: 'nguyenthicc',
+      },
+    ],
+    title: 'Quản lý giống bò thịt',
+    status: 'Done by Staff',
+    isSystemTask: false,
+    priority: 'High',
+    isfav: false,
+    isTrash: false,
+    category: [
+      {
+        value: 'breeding-management',
+        label: 'Quản lý giống',
+      },
+    ],
+  },
+  {
+    id: faker.string.uuid(),
+    image: [
+      {
+        image: '/images/avatar/avatar-30.png',
+        label: 'Trần Văn DD',
+        value: 'tranvandd',
+      },
+    ],
+    title: 'Vệ sinh thiết bị chăn nuôi',
+    status: 'Initialized',
+    isSystemTask: false,
+    priority: 'High',
+    isfav: true,
+    isTrash: false,
+    category: [
+      {
+        value: 'equipment-maintenance',
+        label: 'Bảo trì thiết bị',
       },
     ],
   },

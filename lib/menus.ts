@@ -109,7 +109,7 @@ export function getMenuList(pathname: string, t: any): Group[] {
         {
           id: 'todo',
           href: '/app/todo',
-          label: 'vụ nuôi',
+          label: 'Con vật',
           active: pathname.includes('/app/1'),
           icon: 'fluent:animal-paw-print-20-regular',
           submenus: [],
@@ -122,6 +122,23 @@ export function getMenuList(pathname: string, t: any): Group[] {
           icon: 'mdi:farm-home-outline',
           submenus: [],
         },
+
+        {
+          id: 'todo',
+          href: '/app/vacines',
+          label: 'Vác-xin',
+          active: pathname.includes('/app/vacines'),
+          icon: 'material-symbols-light:vaccines-outline',
+          submenus: [],
+        },
+        {
+          id: 'todo',
+          href: '/app/barn',
+          label: 'chuồng trại',
+          active: pathname.includes('/app/barn'),
+          icon: 'ph:barn',
+          submenus: [],
+        },
         {
           id: 'todo',
           href: '/app/todo',
@@ -130,12 +147,13 @@ export function getMenuList(pathname: string, t: any): Group[] {
           icon: 'ix:device-driver',
           submenus: [],
         },
+
         {
           id: 'todo',
           href: '/app/todo',
-          label: 'truồng trại',
-          active: pathname.includes('/app/4'),
-          icon: 'ph:barn',
+          label: 'Thiết bị điều khiển',
+          active: pathname.includes('/app/5'),
+          icon: 'ant-design:control-outlined',
           submenus: [],
         },
         {
@@ -149,19 +167,33 @@ export function getMenuList(pathname: string, t: any): Group[] {
         {
           id: 'todo',
           href: '/app/todo',
-          label: 'Thiết bị điều khiển',
-          active: pathname.includes('/app/5'),
-          icon: 'ant-design:control-outlined',
-          submenus: [],
-        },
-        {
-          id: 'todo',
-          href: '/app/todo',
           label: 'Người dùng',
           active: pathname.includes('/app/5'),
           icon: 'solar:user-linear',
           submenus: [],
         },
+      ],
+    },
+
+    {
+      groupLabel: 'Báo cáo',
+      id: 'report',
+      menus: [
+        {
+          id: 'totalReport',
+          href: '/app/report/total',
+          label: 'Báo cáo tổng hợp',
+          active: pathname.includes('/app/report/total'),
+          icon: 'fluent-mdl2:report-document',
+          submenus: [],
+        },
+      ],
+    },
+
+    {
+      groupLabel: t('pages'),
+      id: 'auth',
+      menus: [
         {
           id: 'chat',
           href: '/app/chat',
@@ -211,105 +243,6 @@ export function getMenuList(pathname: string, t: any): Group[] {
           icon: 'heroicons-outline:document',
           submenus: [],
         },
-      ],
-    },
-    {
-      groupLabel: '',
-      id: 'ecommerce',
-      menus: [
-        {
-          id: 'ecommerce',
-          href: '/ecommerce/frontend',
-          label: t('ecommerce'),
-          active: pathname.includes('/ecommerce'),
-          icon: 'heroicons-outline:shopping-bag',
-          submenus: [
-            {
-              href: '/ecommerce/frontend',
-              label: t('userApp'),
-              active: pathname.includes('/ecommerce/frontend'),
-              icon: 'heroicons-outline:user',
-              children: [
-                {
-                  href: '/ecommerce/frontend',
-                  label: t('products'),
-                  active: pathname === '/ecommerce/frontend',
-                },
-                {
-                  href: '/ecommerce/frontend/c06d48bf-7f35-4789-b71e-d80fee5b430t',
-                  label: t('productDetails'),
-                  active:
-                    pathname ===
-                    '/ecommerce/frontend/c06d48bf-7f35-4789-b71e-d80fee5b430t',
-                },
-                {
-                  href: '/ecommerce/frontend/checkout/cart',
-                  label: t('cart'),
-                  active: pathname === '/ecommerce/frontend/checkout/cart',
-                },
-                {
-                  href: '/ecommerce/frontend/wishlist',
-                  label: t('wishlist'),
-                  active: pathname === '/ecommerce/frontend/wishlist',
-                },
-              ],
-            },
-            {
-              href: '/ecommerce/backend',
-              label: t('adminApp'),
-              active: pathname.includes('/ecommerce/backend'),
-              icon: 'heroicons-outline:user-circle',
-              children: [
-                {
-                  href: '/ecommerce/backend/add-product',
-                  label: t('addProduct'),
-                  active: pathname === '/ecommerce/backend/add-product',
-                },
-                {
-                  href: '/ecommerce/backend/customer-list',
-                  label: t('customerList'),
-                  active: pathname === '/ecommerce/backend/customer-list',
-                },
-                {
-                  href: '/ecommerce/backend/edit-product',
-                  label: t('editProduct'),
-                  active: pathname === '/ecommerce/backend/edit-product',
-                },
-                {
-                  href: '/ecommerce/backend/invoice',
-                  label: t('invoice'),
-                  active: pathname === '/ecommerce/backend/invoice',
-                },
-                {
-                  href: '/ecommerce/backend/order-details',
-                  label: t('orderDetails'),
-                  active: pathname === '/ecommerce/backend/order-details',
-                },
-                {
-                  href: '/ecommerce/backend/order-list',
-                  label: t('orderList'),
-                  active: pathname === '/ecommerce/backend/order-list',
-                },
-                {
-                  href: '/ecommerce/backend/purchase-list',
-                  label: t('purchaseList'),
-                  active: pathname === '/ecommerce/backend/purchase-list',
-                },
-                {
-                  href: '/ecommerce/backend/sellers',
-                  label: t('sellers'),
-                  active: pathname === '/ecommerce/backend/sellers',
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      groupLabel: t('pages'),
-      id: 'auth',
-      menus: [
         {
           id: 'auth',
           href: '/auth/login',
