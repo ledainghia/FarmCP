@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import React from 'react';
+import React, { useState } from 'react';
 
 import TableCustom from '@/components/table/table';
 import { ColumnDef } from '@tanstack/react-table';
@@ -38,6 +38,7 @@ export type DataProps = {
 };
 
 export default function Page() {
+  const [search, setSearch] = useState('');
   const columns: ColumnDef<DataProps>[] = [
     {
       id: 'select',
@@ -137,6 +138,7 @@ export default function Page() {
   // Tạo dữ liệu giả cho các chuồng
   const data = [
     {
+      id: 1,
       name: 'Chuồng A',
       detail: 'Chuồng cho bò',
       action: 'Xem chi tiết',
@@ -165,10 +167,648 @@ export default function Page() {
         </>
       ),
     },
-    { name: 'Chuồng B', detail: 'Chuồng cho gà', action: 'Xem chi tiết' },
-    { name: 'Chuồng C', detail: 'Chuồng cho lợn', action: 'Xem chi tiết' },
-    { name: 'Chuồng D', detail: 'Chuồng cho cừu', action: 'Xem chi tiết' },
-    { name: 'Chuồng E', detail: 'Chuồng cho ngựa', action: 'Xem chi tiết' },
+    {
+      id: 2,
+      name: 'Chuồng B',
+      detail: 'Chuồng cho gà',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 3,
+      name: 'Chuồng C',
+      detail: 'Chuồng cho lợn',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 4,
+      name: 'Chuồng D',
+      detail: 'Chuồng cho cừu',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
+    {
+      id: 5,
+      name: 'Chuồng E',
+      detail: 'Chuồng cho ngựa',
+      action: 'Xem chi tiết',
+    },
   ];
   return (
     <>
@@ -186,7 +826,7 @@ export default function Page() {
             </BreadcrumbList>
           </Breadcrumb>
         </CardHeader>
-        <CardContent className='p-0'>
+        <CardContent>
           <TableCustom
             data={data}
             columns={columns}

@@ -24,6 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import TablePagination from '@/app/[locale]/(protected)/table/react-table/example2/table-pagination';
 
 export type TableProps = {
   data: any[];
@@ -66,12 +67,12 @@ const TableCustom = ({ data, columns, title }: TableProps) => {
 
   return (
     <div className='w-full'>
-      <div className='flex items-center py-4 px-5'>
+      <div className='flex items-center py-4 '>
         <div className='flex-1 text-xl font-medium text-default-900'>
           {title}
         </div>
         <div className='flex-none'>
-          <Input
+          {/* <Input
             placeholder='Filter Status...'
             value={
               (table.getColumn('status')?.getFilterValue() as string) ?? ''
@@ -80,7 +81,7 @@ const TableCustom = ({ data, columns, title }: TableProps) => {
               table.getColumn('status')?.setFilterValue(event.target.value)
             }
             className='max-w-sm'
-          />
+          /> */}
         </div>
       </div>
 
@@ -137,6 +138,7 @@ const TableCustom = ({ data, columns, title }: TableProps) => {
         </TableBody>
       </Table>
       {/* Pagination could be added here if you uncomment and configure TablePagination */}
+      <TablePagination table={table}></TablePagination>
     </div>
   );
 };
