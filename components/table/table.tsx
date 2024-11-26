@@ -1,21 +1,17 @@
 'use client';
 
-import * as React from 'react';
 import {
-  ColumnFiltersState,
   SortingState,
   VisibilityState,
   flexRender,
   getCoreRowModel,
   getExpandedRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 
-import { Input } from '@/components/ui/input';
-
+import TablePagination from '@/app/[locale]/(protected)/table/react-table/example2/table-pagination';
 import {
   Table,
   TableBody,
@@ -24,54 +20,86 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import TablePagination from '@/app/[locale]/(protected)/table/react-table/example2/table-pagination';
+import { cn } from '@/lib/utils';
+import Image from 'next/image';
+import { Fragment, useState } from 'react';
+import { useMediaQuery } from '@/hooks/use-media-query';
+import { Icon } from '../ui/icon';
 
 export type TableProps = {
   data: any[];
   columns: any[];
+  isLoading?: boolean;
   title: string;
+  header?: React.ReactNode;
+  overflow?: boolean;
+  pageSize?: number;
+  pageIndex?: number;
+  totalItems?: number;
+  totalPages?: number;
+  currentPage?: number;
+  setCurrentPage?: (currentPage: number) => void;
+  hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
+  setPageSize?: (pageSize: number) => void;
+  setPageIndex?: (pageIndex: number) => void;
 };
 
-const TableCustom = ({ data, columns, title }: TableProps) => {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [expanded, setExpanded] = React.useState({});
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+const TableCustom = ({
+  hasNextPage,
+  hasPreviousPage,
+  pageIndex,
+  pageSize,
+  setPageIndex,
+  setPageSize,
+  totalItems,
+  totalPages,
+  data,
+  columns,
+  isLoading,
+  title,
+  header,
+  overflow,
+}: TableProps) => {
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const [expanded, setExpanded] = useState({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
     data,
     columns,
     state: {
       sorting,
-      columnFilters,
       columnVisibility,
       expanded,
       rowSelection,
     },
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     onExpandedChange: setExpanded,
     getRowCanExpand: () => true,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     getExpandedRowModel: getExpandedRowModel(),
   });
+  const isDesktop = useMediaQuery('(min-width: 1280px)');
 
   return (
     <div className='w-full'>
       <div className='flex items-center py-4 '>
-        <div className='flex-1 text-xl font-medium text-default-900'>
+        <div
+          className={cn(
+            'flex-1  font-normal text-default-900',
+            !isDesktop ? 'text-sm' : 'text-base'
+          )}
+        >
           {title}
         </div>
-        <div className='flex-none'>
+        <div>
           {/* <Input
             placeholder='Filter Status...'
             value={
@@ -82,6 +110,7 @@ const TableCustom = ({ data, columns, title }: TableProps) => {
             }
             className='max-w-sm'
           /> */}
+          {header}
         </div>
       </div>
 
@@ -90,22 +119,39 @@ const TableCustom = ({ data, columns, title }: TableProps) => {
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
+                <TableHead
+                  key={header.id}
+                  onClick={header.column.getToggleSortingHandler()}
+                >
+                  {!header.isPlaceholder && (
+                    <div className='flex items-center gap-1'>
+                      {/* Label */}
+                      {flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
+                      {/* Icon */}
+                      {{
+                        asc: (
+                          <Icon icon='fa-solid:sort-up' className='text-sm' />
+                        ),
+                        desc: (
+                          <Icon icon='fa-solid:sort-down' className='text-sm' />
+                        ),
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
+                  )}
                 </TableHead>
               ))}
             </TableRow>
           ))}
         </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
+        <TableBody className={cn(overflow && 'overflow-scroll')}>
+          {!isLoading &&
+          table.getRowModel() &&
+          table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <React.Fragment key={row.id}>
+              <Fragment key={row.id}>
                 <TableRow
                   data-state={row.getIsSelected() ? 'selected' : undefined}
                   className='cursor-pointer'
@@ -126,7 +172,7 @@ const TableCustom = ({ data, columns, title }: TableProps) => {
                     </TableCell>
                   </TableRow>
                 )}
-              </React.Fragment>
+              </Fragment>
             ))
           ) : (
             <TableRow>
@@ -135,10 +181,35 @@ const TableCustom = ({ data, columns, title }: TableProps) => {
               </TableCell>
             </TableRow>
           )}
+          {isLoading && (
+            <TableRow>
+              <TableCell colSpan={columns.length} className='h-32 text-center'>
+                <Image src='/LoadingAnimation.webm' alt='loading'></Image>
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
       {/* Pagination could be added here if you uncomment and configure TablePagination */}
-      <TablePagination table={table}></TablePagination>
+      {pageIndex &&
+        pageSize &&
+        totalItems &&
+        totalPages &&
+        hasNextPage !== undefined &&
+        hasPreviousPage !== undefined &&
+        setPageSize &&
+        setPageIndex && (
+          <TablePagination
+            hasNextPage={hasNextPage}
+            hasPreviousPage={hasPreviousPage}
+            pageIndex={pageIndex}
+            pageSize={pageSize}
+            setPageIndex={setPageIndex}
+            setPageSize={setPageSize}
+            totalItems={totalItems}
+            totalPages={totalPages}
+          ></TablePagination>
+        )}
     </div>
   );
 };

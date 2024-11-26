@@ -57,15 +57,8 @@ const Page = () => {
           </Breadcrumb>
         </CardHeader>
         <CardContent className='pt-3'>
-          <Tabs defaultValue='tasksTemplate' className='w-full'>
+          <Tabs defaultValue='tasks' className='w-full'>
             <TabsList>
-              <TabsTrigger
-                value='tasksTemplate'
-                className='relative before:absolute before:top-full before:left-0 before:h-px before:w-full data-[state=active]:before:bg-primary'
-              >
-                <Icon icon='carbon:task-star' className='h-4 w-4 me-1' />
-                Công việc mẫu
-              </TabsTrigger>
               <TabsTrigger
                 value='tasks'
                 className='relative before:absolute before:top-full before:left-0 before:h-px before:w-full data-[state=active]:before:bg-primary'
@@ -77,18 +70,18 @@ const Page = () => {
                 Công việc
               </TabsTrigger>
               <TabsTrigger
+                value='tasksTemplate'
+                className='relative before:absolute before:top-full before:left-0 before:h-px before:w-full data-[state=active]:before:bg-primary'
+              >
+                <Icon icon='carbon:task-star' className='h-4 w-4 me-1' />
+                Công việc mẫu
+              </TabsTrigger>
+              <TabsTrigger
                 value='daylyTasks'
                 className='relative before:absolute before:top-full before:left-0 before:h-px before:w-full data-[state=active]:before:bg-primary'
               >
                 <Icon icon='hugeicons:task-daily-02' className='h-4 w-4 me-1' />
                 Công việc thường ngày
-              </TabsTrigger>
-              <TabsTrigger
-                value='calendarTasks'
-                className='relative before:absolute before:top-full before:left-0 before:h-px before:w-full data-[state=active]:before:bg-primary'
-              >
-                <Icon icon='uil:calender' className='h-4 w-4 me-1' />
-                Lịch công việc
               </TabsTrigger>
             </TabsList>
             <TabsContent value='tasksTemplate'>

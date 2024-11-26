@@ -9,7 +9,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import BarnTable from './components/barnTable';
+
+import UsersTable from './components/usersTables';
 
 export default function Page() {
   return (
@@ -23,13 +24,13 @@ export default function Page() {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Chuồng trại</BreadcrumbPage>
+                <BreadcrumbPage>Danh sách nhân viên</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
         </CardHeader>
         <CardContent>
-          <BarnTable />
+          <UsersTable />
         </CardContent>
       </Card>
     </>

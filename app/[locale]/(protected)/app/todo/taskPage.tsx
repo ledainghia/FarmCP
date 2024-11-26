@@ -24,6 +24,7 @@ import {
 import { useState } from 'react';
 import { generateTaskData } from '@/utils/fakeData';
 import { cn } from '@/lib/utils';
+import { generateDateRange } from '@/utils/generateDateRange';
 
 const actions = [
   {
@@ -108,7 +109,8 @@ const TasksPage = () => {
                       <BarChart className=' h-6 w-6 text-info' />
                     </div>
                     <div className='block text-sm text-default-600 font-medium  mb-1.5'>
-                      Tổng số công việc
+                      Tổng số công việc <br />
+                      <span className='text-xs'>( {generateDateRange()} )</span>
                     </div>
                     <div className='text-2xl text-default-900  font-medium'>
                       {data.totalTasks}
@@ -123,7 +125,7 @@ const TasksPage = () => {
                         {data.changeTotalTasks > 0
                           ? `↑ ${data.changeTotalTasks}`
                           : `↓ ${-1 * data.changeTotalTasks}`}{' '}
-                        tasks from 2 {statisticsTime} ago
+                        so với cùng kì năm trước
                       </span>
                     </div>
                   </CardContent>
@@ -138,6 +140,8 @@ const TasksPage = () => {
                     </div>
                     <div className='block text-sm text-default-600 font-medium  mb-1.5'>
                       Công việc đã hủy
+                      <br />
+                      <span className='text-xs'>( {generateDateRange()} )</span>
                     </div>
                     <div className='text-2xl text-default-900  font-medium'>
                       {data.tasksCancelled}
@@ -152,7 +156,7 @@ const TasksPage = () => {
                         {data.tasksCancelled > 0
                           ? `↑ ${data.tasksCancelled}`
                           : `↓ ${-1 * data.tasksCancelled}`}{' '}
-                        tasks from 2 {statisticsTime} ago
+                        so với cùng kì năm trước
                       </span>
                     </div>
                   </CardContent>
@@ -182,7 +186,8 @@ const TasksPage = () => {
                       />
                     </div>
                     <div className='block text-sm text-default-600 font-medium  mb-1.5'>
-                      Công việc đã hoàn thành
+                      Công việc đã hoàn thành <br />
+                      <span className='text-xs'>( {generateDateRange()} )</span>
                     </div>
                     <div className='text-2xl text-default-900  font-medium'>
                       {data.tasksCompleted}
@@ -197,7 +202,7 @@ const TasksPage = () => {
                         {data.tasksCompleted > 0
                           ? `↑ ${data.tasksCompleted}`
                           : `↓ ${-1 * data.tasksCompleted}`}{' '}
-                        tasks from 2 {statisticsTime} ago
+                        so với cùng kì năm trước
                       </span>
                     </div>
                   </CardContent>
@@ -223,22 +228,22 @@ const TasksPage = () => {
                       active: true,
                     },
                     {
-                      title: 'Starred',
+                      title: 'Khởi tạo',
                       icon: 'heroicons:star',
                       active: false,
                     },
                     {
-                      title: 'In Progress',
+                      title: 'Đang thực hiện',
                       icon: 'carbon:in-progress',
                       active: false,
                     },
                     {
-                      title: 'Completed',
+                      title: 'Hoàn thành',
                       icon: 'heroicons:document-check',
                       active: false,
                     },
                     {
-                      title: 'Cancel',
+                      title: 'Đã hủy',
                       icon: 'heroicons:trash',
                       active: false,
                     },
@@ -251,15 +256,15 @@ const TasksPage = () => {
                   dotStyle
                   links={[
                     {
-                      title: 'Low',
+                      title: 'Thấp',
                       active: true,
                     },
                     {
-                      title: 'Medium',
+                      title: 'Trung bình',
                       active: false,
                     },
                     {
-                      title: 'High',
+                      title: 'Cao',
                       active: false,
                     },
                   ]}
@@ -271,23 +276,23 @@ const TasksPage = () => {
                   dotStyle
                   links={[
                     {
-                      title: 'Initialized',
+                      title: 'Khởi tạo',
                       active: true,
                     },
                     {
-                      title: 'In Progress',
+                      title: 'Đang thực hiện',
                       active: false,
                     },
                     {
-                      title: 'Done by Staff',
+                      title: 'Nhân viên đã hoàn thành',
                       active: false,
                     },
                     {
-                      title: 'Verified Done by Admin',
+                      title: 'Admin đã xác nhận',
                       active: false,
                     },
                     {
-                      title: 'Verification Failed by Admin',
+                      title: 'Admin đã từ chối xác nhận',
                       active: false,
                     },
                   ]}

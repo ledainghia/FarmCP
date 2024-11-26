@@ -9,7 +9,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import BarnTable from './components/barnTable';
+
+import SensorsTable from './components/sensorsTables';
 
 export default function Page() {
   return (
@@ -29,7 +30,7 @@ export default function Page() {
           </Breadcrumb>
         </CardHeader>
         <CardContent>
-          <BarnTable />
+          <SensorsTable />
         </CardContent>
       </Card>
     </>
