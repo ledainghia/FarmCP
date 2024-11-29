@@ -1,30 +1,30 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Nav from '@/components/nav';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Icon } from '@/components/ui/icon';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { vi } from 'date-fns/locale';
+
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
+import { generateTaskData } from '@/utils/fakeData';
+import { addDays, addMonths, format } from 'date-fns';
+import { BarChart, CalendarIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { DateRange } from 'react-day-picker';
 import CreateTodo from './create-todo';
 import { todos } from './data';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import TodoHeader from './todo-header';
-import Todo from './todo';
 import TodoSidebarWrapper from './sidebar-wrapper';
-import Nav from '@/components/nav';
-import { useTranslations } from 'next-intl';
-import ProgressBlock from '@/components/blocks/progress-block';
-import DashboardDropdown from '@/components/dashboard-dropdown';
-import DealsDistributionChart from '@/components/project/deals-distribution-chart';
-import { Icon } from '@/components/ui/icon';
-import { BarChart, MoreVertical } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useState } from 'react';
-import { generateTaskData } from '@/utils/fakeData';
-import { cn } from '@/lib/utils';
-import { generateDateRange } from '@/utils/generateDateRange';
+import Todo from './todo';
+import TodoHeader from './todo-header';
 
 const actions = [
   {
@@ -51,6 +51,10 @@ const actions = [
 
 const TasksPage = () => {
   const t = useTranslations('TodoApp');
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: addMonths(new Date(), -1), // Lấy thời điểm hiện tại trừ đi 1 tháng
+    to: new Date(), // Lấy thời điểm hiện tại
+  });
   const [statisticsTime, setStatisticsTime] = useState('previous life cycle');
   const [data, setData] = useState(generateTaskData());
 
@@ -63,41 +67,51 @@ const TasksPage = () => {
       <div className='col-span-12 lg:col-span-7 space-y-5 mb-5'>
         <Card>
           <CardContent className='p-5'>
-            <div className='flex justify-center align-middle'>
-              <div className='block text-sm text-default-600 font-medium  mb-1.5 flex-1 '>
-                * Data updated according to {statisticsTime}
+            <div className='flex justify-center items-center mb-3'>
+              <div className='block text-sm text-default-600 font-medium   flex-1 '>
+                * Thống kê số lượng công việc theo thời gian từ{' '}
+                {date?.from ? (
+                  date.to ? (
+                    <>
+                      {format(date.from, 'dd/MM/yyyy', { locale: vi })} đến{' '}
+                      {format(date.to, 'dd/MM/yyyy', { locale: vi })}
+                    </>
+                  ) : (
+                    format(date.from, 'dd/MM/yyyy')
+                  )
+                ) : (
+                  <span>Chọn khoảng ngày thống kê</span>
+                )}
               </div>
-              <div className=' mb-4'>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+              <div className=' '>
+                <Popover>
+                  <PopoverTrigger asChild>
                     <Button
+                      id='date'
+                      variant={'outline'}
                       size='icon'
-                      className='w-8 h-8 rounded-sm bg-default-100 group'
+                      className={cn()}
                     >
-                      <MoreVertical className='w-5 h-5 text-default group-hover:text-default-foreground' />
+                      <CalendarIcon className='w-4 h-4' />
                     </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align='end'
-                    className='p-0 rounded-md overflow-hidden'
-                  >
-                    {actions.map((action, index) => (
-                      <DropdownMenuItem
-                        key={`action-${index}`}
-                        onClick={() => handleSelect(action.value)}
-                        className='flex items-center gap-1.5  border-b text-default-600 group focus:bg-default focus:text-primary-foreground rounded-none group'
-                      >
-                        <Icon
-                          icon={action.icon}
-                          className='group-hover:text-primary-foreground w-4 h-4'
-                        />
-                        <span className='text-default-700 group-hover:text-primary-foreground'>
-                          {action.name}
-                        </span>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                  </PopoverTrigger>
+                  <PopoverContent className='w-auto p-0' align='end'>
+                    <Calendar
+                      initialFocus
+                      mode='range'
+                      locale={vi}
+                      classNames={{
+                        months:
+                          'w-full  space-y-4 sm:gap-x-4 sm:space-y-0 flex',
+                      }}
+                      className='flex flex-row'
+                      defaultMonth={date?.from}
+                      selected={date}
+                      onSelect={setDate}
+                      numberOfMonths={2}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
 
@@ -108,11 +122,10 @@ const TasksPage = () => {
                     <div className='mx-auto h-10 w-10  rounded-full flex items-center justify-center bg-white mb-4'>
                       <BarChart className=' h-6 w-6 text-info' />
                     </div>
-                    <div className='block text-sm text-default-600 font-medium  mb-1.5'>
-                      Tổng số công việc <br />
-                      <span className='text-xs'>( {generateDateRange()} )</span>
+                    <div className='block text-base text-default-600 font-bold  mb-1.5'>
+                      Tổng số công việc
                     </div>
-                    <div className='text-2xl text-default-900  font-medium'>
+                    <div className='text-2xl text-default-900  font-bold'>
                       {data.totalTasks}
                       <span
                         className={cn(
@@ -138,12 +151,10 @@ const TasksPage = () => {
                         icon='heroicons:chart-pie'
                       />
                     </div>
-                    <div className='block text-sm text-default-600 font-medium  mb-1.5'>
+                    <div className='block text-base text-default-600 font-bold  mb-1.5'>
                       Công việc đã hủy
-                      <br />
-                      <span className='text-xs'>( {generateDateRange()} )</span>
                     </div>
-                    <div className='text-2xl text-default-900  font-medium'>
+                    <div className='text-2xl text-default-900  font-bold'>
                       {data.tasksCancelled}
                       <span
                         className={cn(
@@ -169,10 +180,10 @@ const TasksPage = () => {
                         icon='heroicons:calculator'
                       />
                     </div>
-                    <div className='block text-sm text-default-600 font-medium  mb-1.5'>
+                    <div className='block text-base text-default-600 font-bold  mb-1.5'>
                       Công việc đang thực hiện
                     </div>
-                    <div className='text-2xl text-default-900  font-medium'>
+                    <div className='text-2xl text-default-900  font-bold'>
                       {data.tasksPending}
                     </div>
                   </CardContent>
@@ -185,11 +196,10 @@ const TasksPage = () => {
                         icon='heroicons:clock'
                       />
                     </div>
-                    <div className='block text-sm text-default-600 font-medium  mb-1.5'>
-                      Công việc đã hoàn thành <br />
-                      <span className='text-xs'>( {generateDateRange()} )</span>
+                    <div className='block text-base text-default-600 font-bold  mb-1.5'>
+                      Công việc đã hoàn thành
                     </div>
-                    <div className='text-2xl text-default-900  font-medium'>
+                    <div className='text-2xl text-default-900  font-bold'>
                       {data.tasksCompleted}
                       <span
                         className={cn(

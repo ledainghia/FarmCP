@@ -1,12 +1,15 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Quicksand } from 'next/font/google';
 import './globals.css';
 import './theme.css';
 import { ThemeProvider } from '@/providers/theme-provider';
 import MountedProvider from '@/providers/mounted.provider';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as SonnerToaster } from '@/components/ui/sonner';
-const inter = Inter({ subsets: ['latin'] });
+const inter = Quicksand({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '700'],
+});
 // language
 import { getLangDir } from 'rtl-detect';
 import { NextIntlClientProvider } from 'next-intl';

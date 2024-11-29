@@ -115,16 +115,20 @@ const TableCustom = ({
       </div>
 
       <Table>
-        <TableHeader className='bg-default-200'>
+        <TableHeader className='bg-lime-50'>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
                   onClick={header.column.getToggleSortingHandler()}
+                  className={cn(
+                    (header.id === 'select' || header.id === 'actions') &&
+                      'w-10'
+                  )}
                 >
                   {!header.isPlaceholder && (
-                    <div className='flex items-center gap-1'>
+                    <div className='flex items-center gap-1 font-bold text-sm'>
                       {/* Label */}
                       {flexRender(
                         header.column.columnDef.header,
@@ -154,7 +158,11 @@ const TableCustom = ({
               <Fragment key={row.id}>
                 <TableRow
                   data-state={row.getIsSelected() ? 'selected' : undefined}
-                  className='cursor-pointer'
+                  className={cn(
+                    'cursor-pointer',
+                    (row.id === 'select' || row.id === 'actions') &&
+                      'justify-center items-center'
+                  )}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>

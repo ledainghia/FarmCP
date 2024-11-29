@@ -36,6 +36,7 @@ import TasksPage from './taskPage';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TaskTemplate from './tasks-template/page';
 import CalenderPage from './calenderTasks/page';
+import TasksDaily from './tasksDaily/page';
 
 const Page = () => {
   const t = useTranslations('TodoApp');
@@ -91,8 +92,7 @@ const Page = () => {
               <TasksPage />
             </TabsContent>
             <TabsContent value='daylyTasks'>
-              Aliqua id fugiat nostrud irure ex duis ea quis id quis ad et. Sunt
-              qui
+              <TasksDaily />
             </TabsContent>
             <TabsContent value='calendarTasks'>
               <CalenderPage></CalenderPage>

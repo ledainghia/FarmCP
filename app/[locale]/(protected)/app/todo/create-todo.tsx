@@ -83,11 +83,7 @@ const CreateTodo = () => {
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        <Button
-          fullWidth
-          size='lg'
-          className='dark:bg-background dark:text-foreground'
-        >
+        <Button fullWidth size='lg'>
           Phân công công việc
         </Button>
       </DialogTrigger>
