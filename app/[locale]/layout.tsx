@@ -16,6 +16,14 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import DirectionProvider from '@/providers/direction-provider';
 import AuthProvider from '@/providers/auth.provider';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query';
+import ClientQueryProvider from '@/providers/ClientQueryProvider';
 
 export const metadata: Metadata = {
   title: 'Login',
@@ -39,7 +47,7 @@ export default async function RootLayout({
             <ThemeProvider attribute='class' defaultTheme='light'>
               <MountedProvider>
                 <DirectionProvider direction={direction}>
-                  {children}
+                  <ClientQueryProvider>{children}</ClientQueryProvider>
                 </DirectionProvider>
               </MountedProvider>
               <Toaster />

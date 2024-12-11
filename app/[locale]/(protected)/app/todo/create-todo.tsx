@@ -39,8 +39,12 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useCagesQuery } from '@/hooks/use-query';
+import useCageStore from '@/config/zustandStore/cagesStore';
+import { CageDTO } from '@/dtos/cageDTO';
+import { useGetStaffPendingMutation } from '@/hooks/use-mutation';
 
 const assigneeOptions = [
   { value: 'mahedi', label: 'Mahedi Amin', image: '/images/avatar/av-1.svg' },
@@ -59,6 +63,7 @@ const FormSchema = z.object({
   }),
   assign: z.string().optional(),
   tag: z.string().optional(),
+  cages: z.string(),
   dob: z.date().optional(),
   description: z.string().optional(),
 });
@@ -66,6 +71,7 @@ const FormSchema = z.object({
 const CreateTodo = () => {
   const t = useTranslations('TodoApp');
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [cageChoice, setCageChoice] = useState<string>('');
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -73,12 +79,30 @@ const CreateTodo = () => {
     },
   });
 
+  const { data: cases, isLoading, error } = useCagesQuery();
+  const setCages = useCageStore((state) => state.setCages); // Zustand action
+
+  useEffect(() => {
+    if (cases && cases?.totalItems > 0) {
+      console.info('Cages:', cases);
+      setCages(cases.items); // Update Zustand store
+    }
+  }, [cases, setCages]);
+
   function onSubmit(data: z.infer<typeof FormSchema>) {
+    console.log('Form Data:', data);
     toast({
       title: 'Task created successfully.',
     });
     setIsDialogOpen(false);
   }
+
+  const getStaffPendingMutation = useGetStaffPendingMutation(cageChoice);
+  const handleCageChange = (value: string) => {
+    setCageChoice(value);
+    if (!value) return;
+    getStaffPendingMutation.mutate();
+  };
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -89,7 +113,7 @@ const CreateTodo = () => {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader className='mb-4'>
-          <DialogTitle> {t('addTask')}</DialogTitle>
+          <DialogTitle> Phân công công việc</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
@@ -108,22 +132,67 @@ const CreateTodo = () => {
             />
             <FormField
               control={form.control}
+              name='cages'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className='text-default-700'>
+                    Chọn chuồng
+                  </FormLabel>
+                  <Select
+                    onValueChange={(e) => {
+                      field.onChange(e);
+                      handleCageChange(e);
+                    }}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder='Chọn...' />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {cases &&
+                        Array.isArray(cases.items) &&
+                        cases.items.map((item: CageDTO) => (
+                          <SelectItem
+                            key={`item_cages` + item.id}
+                            value={item.id}
+                          >
+                            <div className='flex items-center gap-2'>
+                              <span className='text-sm text-default-900'>
+                                {item.name}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name='assign'
+              disabled={
+                !form.getValues('cages') || getStaffPendingMutation.isPending
+              }
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className='text-default-700'>Assign</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
+                    disabled={!form.getValues('cages')}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder='Select...' />
+                        <SelectValue placeholder='Chọn nhân viên...' />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {assigneeOptions.map((user, index) => (
-                        <SelectItem key={`user-${index}`} value={user.value}>
+                        <SelectItem key={`staff-${index}`} value={user.value}>
                           <div className='flex items-center gap-2'>
                             <Image
                               src={user.image}
