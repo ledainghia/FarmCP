@@ -9,9 +9,10 @@ import { redirect } from 'next/navigation';
 import { use, useEffect } from 'react';
 const Login = ({ params: { locale } }: { params: { locale: string } }) => {
   useEffect(() => {
-    console.log('checkToken', isAccessTokenValid());
     if (isAccessTokenValid()) {
       redirect('/en/dashboard/analytics');
+    } else {
+      console.log('Token is invalid');
     }
   }, []);
 

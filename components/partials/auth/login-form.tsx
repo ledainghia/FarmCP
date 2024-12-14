@@ -63,6 +63,7 @@ const LoginForm = () => {
     onSuccess: (data) => {
       toast.success('Đăng nhập thành công', { position: 'top-right' });
       localStorage.setItem('accessToken', data.data.result.accessToken);
+      localStorage.setItem('refreshToken', data.data.result.refreshToken);
       router.push('/dashboard/analytics');
     },
     onError: (error: { response: any }) => {
