@@ -17,10 +17,10 @@ import { Button } from '@/components/ui/button';
 import { SquarePen, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import DeleteConfirmationDialog from '@/components/delete-confirmation-dialog';
+import { TaskDTO } from '@/dtos/AplicationDTO';
+import { format } from 'date-fns';
 
-const Todo = ({ todo }: { todo: TodoProps }) => {
-  const { image, title, isfav, category, priority, status } = todo;
-
+const Todo = ({ todo }: { todo: TaskDTO }) => {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
   const [openEdit, setOpenEdit] = useState<boolean>(false);
 
@@ -62,7 +62,7 @@ const Todo = ({ todo }: { todo: TodoProps }) => {
           'flex items-center gap-4 border-b border-defualt-200 dark:border-default-300 last:border-none px-6 py-4 transition-all duration-300 hover:-translate-y-1'
         )}
       >
-        <div>
+        {/* <div>
           <Checkbox className='mt-0.5 dark:bg-default-300' />
         </div>
         <div className='ms-1'>
@@ -77,60 +77,94 @@ const Todo = ({ todo }: { todo: TodoProps }) => {
               className='text-xl cursor-pointer text-default-400'
             />
           )}
-        </div>
+        </div> */}
         <div className='flex'>
           <Badge
+            color='secondary'
             className={cn(
               'rounded-sm px-3 py-1 font-medium ',
-              priorityClasses[priority]
+              priorityClasses[todo.priorityNum]
             )}
           >
-            {priority}
+            {todo.priorityNum}
           </Badge>
         </div>
-        <p className='flex overflow-hidden text-sm text-default-600 truncate'>
-          {title}
+        <p className='flex  max-w-32 text-sm text-default-600 truncate'>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>{todo.taskName}</TooltipTrigger>
+              <TooltipContent>
+                <p>{todo.taskName}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </p>
+        <div className=''>
+          <Badge
+            color='secondary'
+            className={cn(
+              'rounded-sm px-3 py-1 font-medium ',
+              statusClasses[todo.status]
+            )}
+          >
+            {todo.cageName}
+          </Badge>
+        </div>
         <div className='flex-1'>
           <Badge
             className={cn(
               'rounded-sm px-3 py-1 font-medium ',
-              statusClasses[status]
+              statusClasses[todo.status]
             )}
           >
-            {status}
+            {todo.status === 'Pending'
+              ? 'Chờ xử lý'
+              : todo.status === 'In Progress'
+              ? 'Đang thực hiện'
+              : todo.status === 'Done by Staff'
+              ? 'Đã hoàn thành'
+              : todo.status === 'Verified Done by Admin'
+              ? 'Đã xác nhận'
+              : 'Đã hủy'}
           </Badge>
         </div>
 
-        <div className='-space-x-1.5 rtl:space-x-reverse flex flex-nowrap'>
-          {image.map((item, index) => (
-            <TooltipProvider key={`avatar-${index}`}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Avatar className='h-7 w-7 border-none shadow-none'>
-                    <AvatarImage src={item.image} />
-                    <AvatarFallback>SA</AvatarFallback>
-                  </Avatar>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{item.label}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ))}
-        </div>
         <div className='flex gap-1 items-center'>
-          {category.map((item, index) => (
-            <Badge
-              key={`category-${index}`}
-              className={cn(
-                'rounded-full px-3 py-1 font-medium',
-                categoryClasses[item.value]
-              )}
-            >
-              {item.label}
-            </Badge>
-          ))}
+          <Badge
+            color='secondary'
+            className={cn(
+              'rounded-sd px-3 py-1 font-medium'
+              // categoryClasses[item.value]
+            )}
+          >
+            {todo.session === 1 ? 'Sáng' : todo.session === 2 ? 'Chiều' : 'Tối'}
+          </Badge>
+          <Badge
+            color='secondary'
+            className={cn(
+              'rounded-sd px-3 py-1 font-medium'
+              // categoryClasses[item.value]
+            )}
+          >
+            {format(new Date(todo.dueDate), 'HH:mm:ss dd/MM/yyyy')}
+          </Badge>
+        </div>
+        <div className='-space-x-1.5 rtl:space-x-reverse flex flex-nowrap'>
+          {/* {image.map((item, index) => ( */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Avatar className='h-7 w-7 border-none shadow-none'>
+                  <AvatarImage src={todo.assignedToUser.fullName} />
+                  <AvatarFallback>SA</AvatarFallback>
+                </Avatar>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{todo.assignedToUser.fullName}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          {/* ))} */}
         </div>
         <Button
           className='bg-transparent text-default-400 ring-offset-transparent hover:bg-transparent hover:ring-0 hover:ring-transparent w-fit'

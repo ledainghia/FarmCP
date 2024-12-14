@@ -5,7 +5,8 @@ const DashCodeLogo = (props: IconProps) => {
     <svg
       id='Layer_1'
       data-name='Layer 1'
-      className='h-12 w-12'
+      {...props}
+      // className='h-12 w-12'
       xmlns='http://www.w3.org/2000/svg'
       xmlnsXlink='http://www.w3.org/1999/xlink'
       viewBox='0 0 1023.33 777.6'
@@ -87,7 +88,7 @@ const DashCodeLogo = (props: IconProps) => {
         >
           <feOffset dx='2' dy='2' />
           <feGaussianBlur result='blur' stdDeviation='1' />
-          <feFlood flood-color='#231f20' flood-opacity='.59' />
+          <feFlood floodColor='#231f20' floodOpacity='.59' />
           <feComposite in2='blur' operator='in' />
           <feComposite in='SourceGraphic' />
         </filter>
@@ -99,8 +100,8 @@ const DashCodeLogo = (props: IconProps) => {
           y2='449.45'
           gradientUnits='userSpaceOnUse'
         >
-          <stop offset='0' stop-color='#fdf59f' />
-          <stop offset='1' stop-color='#f8992d' />
+          <stop offset='0' stopColor='#fdf59f' />
+          <stop offset='1' stopColor='#f8992d' />
         </linearGradient>
         <linearGradient
           id='linear-gradient-2'
@@ -158,8 +159,8 @@ const DashCodeLogo = (props: IconProps) => {
           y2='709.9'
           gradientUnits='userSpaceOnUse'
         >
-          <stop offset='0' stop-color='#deeed4' />
-          <stop offset='1' stop-color='#089146' />
+          <stop offset='0' stopColor='#deeed4' />
+          <stop offset='1' stopColor='#089146' />
         </linearGradient>
         <linearGradient
           id='linear-gradient-9'

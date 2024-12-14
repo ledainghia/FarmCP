@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Quicksand } from 'next/font/google';
+import { Inter, Quicksand } from 'next/font/google';
 import './globals.css';
 import './theme.css';
 import { ThemeProvider } from '@/providers/theme-provider';
@@ -10,6 +10,7 @@ const inter = Quicksand({
   subsets: ['latin'],
   weight: ['300', '400', '500', '700'],
 });
+// const inter = Inter({ subsets: ['latin'] });
 // language
 import { getLangDir } from 'rtl-detect';
 import { NextIntlClientProvider } from 'next-intl';

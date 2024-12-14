@@ -1,16 +1,25 @@
 import axios from 'axios';
 import { baseURL } from '.';
+import { FilterDTO } from '@/dtos/FilterDTO';
+import { buildQueryString } from '@/utils/buildQuerrySearch';
 
 const axiosInstance = axios.create({
   baseURL: baseURL,
 });
 
+export const authApi = {
+  login: async (data: any) => {
+    return await axiosInstance.post('/auth/login', data);
+  },
+};
+
 export const tasksApi = {
   createTasks: async (data: any) => {
     return await axiosInstance.post('/tasks', data);
   },
-  getTasks: async () => {
-    return await axiosInstance.get('/tasks');
+  getTasks: async (filter: FilterDTO) => {
+    const searchParams = buildQueryString(filter);
+    return await axiosInstance.get(`/tasks?${searchParams}`);
   },
   deleteTasks: async (id: string) => {
     return await axiosInstance.delete(`/tasks/${id}`);

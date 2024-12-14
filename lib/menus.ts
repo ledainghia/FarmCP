@@ -80,24 +80,49 @@ export function getMenuList(pathname: string, t: any): Group[] {
         },
       ],
     },
-    {
-      groupLabel: '',
-      id: 'changelog',
-      menus: [
-        {
-          id: 'changelog',
-          href: '/changelog',
-          label: t('changelog'),
-          active: pathname.includes('/changelog'),
-          icon: 'heroicons:arrow-trending-up',
-          submenus: [],
-        },
-      ],
-    },
+    // {
+    //   groupLabel: '',
+    //   id: 'quick-menu',
+    //   menus: [
+    //     {
+    //       id: 'changelog',
+    //       href: '/changelog',
+    //       label: 'Cấu hình và Thiết lập',
+    //       active: pathname.includes('/changelog'),
+    //       icon: 'qlementine-icons:page-setup-16',
+    //       submenus: [
+    //         {
+    //           active: pathname.includes('/changelog'),
+    //           href: '/changelog',
+    //           label: 'Tài khoản và chuồng trại',
+    //           icon: 'heroicons:arrow-trending-up',
+    //           children: [],
+    //         },
+    //       ],
+    //     },
+    //   ],
+    // },
     {
       groupLabel: 'Quản lí',
       id: 'management',
       menus: [
+        {
+          id: 'changelog',
+          href: '/quick-menu',
+          label: 'Cấu hình và Thiết lập',
+          active: pathname.includes('/changelog'),
+          icon: 'qlementine-icons:page-setup-16',
+          submenus: [
+            {
+              active: pathname.includes('/account_and_barn'),
+              href: '/app/quick-menu/account_and_barn',
+              label: 'Tài khoản và chuồng trại',
+              icon: 'heroicons:arrow-trending-up',
+              children: [],
+            },
+          ],
+        },
+
         {
           id: 'todo',
           href: '/app/todo',

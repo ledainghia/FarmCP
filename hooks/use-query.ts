@@ -1,5 +1,6 @@
-import { cagesApi, staffApi } from '@/config/api';
+import { cagesApi, staffApi, tasksApi } from '@/config/api';
 import useCageStore from '@/config/zustandStore/cagesStore';
+import { TaskDTO } from '@/dtos/AplicationDTO';
 import { CageDTO } from '@/dtos/cageDTO';
 import { Pagination } from '@/dtos/Pagination';
 import { useQuery } from '@tanstack/react-query';
@@ -19,11 +20,22 @@ export const useCagesQuery = () => {
   });
 };
 
+export const useTasksQuery = () => {
+  return useQuery({
+    queryKey: ['tasks'],
+    queryFn: async () => {
+      const response = await tasksApi.getTasks(); // API call
+      const tasks: Pagination<TaskDTO> = response.data.result;
+      return tasks; // Assuming `result` contains the pagination data
+    },
+  });
+};
+
 export const useStaffQuery = (cageId: string) => {
   return useQuery({
     queryKey: ['staff', cageId],
     queryFn: async () => {
-      const response = await staffApi.getStaff(cageId); // API call
+      const response = await staffApi.getStaffWithCountTask(cageId); // API call
       return response.data.result; // Assuming `result` contains the pagination data
     },
   });

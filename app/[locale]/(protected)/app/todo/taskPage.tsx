@@ -18,50 +18,66 @@ import { generateTaskData } from '@/utils/fakeData';
 import { addDays, addMonths, format } from 'date-fns';
 import { BarChart, CalendarIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { DateRange } from 'react-day-picker';
 import CreateTodo from './create-todo';
-import { todos } from './data';
+
 import TodoSidebarWrapper from './sidebar-wrapper';
 import Todo from './todo';
 import TodoHeader from './todo-header';
-
-const actions = [
-  {
-    value: 'the previous quarter',
-    name: 'Get task statistics for the previous quarter',
-    icon: 'heroicons-outline:sort-ascending',
-  },
-  {
-    value: 'last month',
-    name: 'Get task statistics for last month',
-    icon: 'heroicons-outline:sort-ascending',
-  },
-  {
-    value: 'previous year',
-    name: 'Get task statistics for the previous year',
-    icon: 'heroicons-outline:sort-descending',
-  },
-  {
-    value: 'previous life cycle',
-    name: 'Get task statistics in previous life cycle',
-    icon: 'heroicons-outline:sort-descending',
-  },
-];
+import { useTasksQuery } from '@/hooks/use-query';
+import { Pagination } from '@/components/ui/pagination';
+import TablePagination from '@/components/table/table-pagination';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { tasksApi } from '@/config/api';
+import { TaskDTO } from '@/dtos/AplicationDTO';
+import { Pagination as PaginationType } from '@/dtos/Pagination';
+import { FilterDTO } from '@/dtos/FilterDTO';
 
 const TasksPage = () => {
-  const t = useTranslations('TodoApp');
+  const queryClient = useQueryClient();
   const [date, setDate] = useState<DateRange | undefined>({
     from: addMonths(new Date(), -1), // Lấy thời điểm hiện tại trừ đi 1 tháng
     to: new Date(), // Lấy thời điểm hiện tại
   });
-  const [statisticsTime, setStatisticsTime] = useState('previous life cycle');
-  const [data, setData] = useState(generateTaskData());
+  const [status, setStatus] = useState<string>('');
 
-  const handleSelect = (value: string) => {
-    setStatisticsTime(value);
-    setData(generateTaskData());
-  };
+  const data = generateTaskData();
+  const DEFAULT_PAGE_SIZE = 20;
+  const [pageIndex, setPageIndex] = useState(1);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+
+  const { data: todos } = useQuery({
+    queryKey: ['tasks'],
+    queryFn: async () => {
+      const filter: FilterDTO = {
+        PageSize: pageSize,
+        PageNumber: pageIndex,
+      };
+      const response = await tasksApi.getTasks(filter); // API call
+      const tasks: PaginationType<TaskDTO> = response.data.result;
+      return tasks; // Assuming `result` contains the pagination data
+    },
+  });
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ['tasks'] });
+  }, [pageIndex, pageSize]);
+  const [priorityNums, setPriorityNums] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (todos && todos.items) {
+      const uniquePriorityNums = todos?.items
+        ? Array.from(new Set(todos.items.map((todo) => todo.priorityNum)))
+        : [];
+      setPriorityNums(uniquePriorityNums);
+    }
+  }, [todos]);
+
+  // const handleSelect = (value: string) => {
+  //   setStatisticsTime(value);
+  //   setData(generateTaskData());
+  // };
   return (
     <div className='flex flex-col '>
       <div className='col-span-12 lg:col-span-7 space-y-5 mb-5'>
@@ -264,22 +280,12 @@ const TasksPage = () => {
                 </div>
                 <Nav
                   dotStyle
-                  links={[
-                    {
-                      title: 'Thấp',
-                      active: true,
-                    },
-                    {
-                      title: 'Trung bình',
-                      active: false,
-                    },
-                    {
-                      title: 'Cao',
-                      active: false,
-                    },
-                  ]}
+                  links={priorityNums.map((priorityNum) => ({
+                    title: `Mức ${priorityNum}`,
+                    active: true,
+                  }))}
                 />
-                <div className='py-4 px-5 text-default-800  font-semibold text-xs uppercase'>
+                {/* <div className='py-4 px-5 text-default-800  font-semibold text-xs uppercase'>
                   Trạng thái
                 </div>
                 <Nav
@@ -306,7 +312,7 @@ const TasksPage = () => {
                       active: false,
                     },
                   ]}
-                />
+                /> */}
               </ScrollArea>
             </CardContent>
           </Card>
@@ -317,10 +323,25 @@ const TasksPage = () => {
               <TodoHeader />
             </CardHeader>
             <CardContent className='p-0 h-full'>
-              <div className='h-[calc(100%-60px)] overflow-y-auto no-scrollbar'>
-                {todos.map((todo, index) => (
-                  <Todo key={`todo-${index}`} todo={todo} />
-                ))}
+              <div className='h-[calc(100%-60px)] overflow-y-scroll '>
+                {todos &&
+                  Array.isArray(todos.items) &&
+                  todos.items.map((todo, index) => (
+                    <Todo key={`todo-${index}`} todo={todo} />
+                  ))}
+
+                {todos && (
+                  <TablePagination
+                    hasNextPage={todos.hasNextPage}
+                    hasPreviousPage={todos.hasPreviousPage}
+                    pageIndex={pageIndex}
+                    pageSize={pageSize}
+                    setPageIndex={setPageIndex}
+                    setPageSize={setPageSize}
+                    totalItems={todos.totalItems}
+                    totalPages={todos.totalPages}
+                  />
+                )}
               </div>
             </CardContent>
           </Card>

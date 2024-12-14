@@ -1,10 +1,20 @@
-import { Link } from '@/i18n/routing';
-import LoginForm from '@/components/partials/auth/login-form';
-import Image from 'next/image';
-import Social from '@/components/partials/auth/social';
+'use client';
+import DashCodeLogo from '@/components/dascode-logo';
 import Copyright from '@/components/partials/auth/copyright';
-import Logo from '@/components/partials/auth/logo';
+import LoginForm from '@/components/partials/auth/login-form';
+import { Link } from '@/i18n/routing';
+import { isAccessTokenValid } from '@/utils/isLogin';
+import Image from 'next/image';
+import { redirect } from 'next/navigation';
+import { use, useEffect } from 'react';
 const Login = ({ params: { locale } }: { params: { locale: string } }) => {
+  useEffect(() => {
+    console.log('checkToken', isAccessTokenValid());
+    if (isAccessTokenValid()) {
+      redirect('/en/dashboard/analytics');
+    }
+  }, []);
+
   return (
     <>
       <div className='flex w-full items-center overflow-hidden min-h-dvh h-dvh basis-full'>
@@ -15,10 +25,10 @@ const Login = ({ params: { locale } }: { params: { locale: string } }) => {
           >
             <div className='max-w-[468px] pt-20 ps-20 '>
               <Link href='/' className='mb-6 inline-block'>
-                <Logo />
+                <DashCodeLogo className='!h-28 !-28'></DashCodeLogo>
               </Link>
               <h4>
-                Smart Farming
+                Smart Farminggg
                 <br />
                 <span className='text-default-800 font-bold ms-2'>
                   Smarter Future!
@@ -40,24 +50,25 @@ const Login = ({ params: { locale } }: { params: { locale: string } }) => {
               <div className='max-w-[524px] md:px-[42px] md:py-[44px] p-7  mx-auto w-full text-2xl text-default-900  mb-3 h-full flex flex-col justify-center'>
                 <div className='flex justify-center items-center text-center mb-6 lg:hidden '>
                   <Link href='/'>
-                    <Logo />
+                    <DashCodeLogo></DashCodeLogo>
                   </Link>
                 </div>
                 <div className='text-center 2xl:mb-10 mb-4'>
-                  <h4 className='font-medium'>Sign in</h4>
+                  <h4 className='font-medium'>Đăng nhập</h4>
                   <div className='text-default-500 text-base'>
-                    Sign in to your account to start using AgriSense
+                    Chào mừng bạn đến với{' '}
+                    <span className='!font-bold'>Nông Dân Online</span>
                   </div>
                 </div>
                 <LoginForm />
-                <div className='relative border-b-[#9AA2AF] border-opacity-[16%] border-b pt-6'>
+                {/* <div className='relative border-b-[#9AA2AF] border-opacity-[16%] border-b pt-6'>
                   <div className='absolute inline-block bg-default-50 dark:bg-default-100 left-1/2 top-1/2 transform -translate-x-1/2 px-4 min-w-max text-sm text-default-500 font-normal'>
                     Or continue with
                   </div>
                 </div>
                 <div className='max-w-[242px] mx-auto mt-8 w-full'>
                   <Social locale={locale} />
-                </div>
+                </div> */}
               </div>
               <div className='text-xs font-normal text-default-500  z-[999] pb-10 text-center'>
                 <Copyright />
