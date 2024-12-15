@@ -77,7 +77,7 @@ export const tasksApi = {
 
 export const usersApi = {
   getUsers: async () => {
-    return await axiosInstance.get('/users');
+    return await axiosInstance.get('/auth');
   },
 };
 

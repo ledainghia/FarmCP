@@ -28,7 +28,7 @@ const TablePagination = ({
   setPageSize,
   totalPages,
 }: DataTablePaginationProps) => {
-  const PAGE_SIZES = [10, 25, 30, 50, 100];
+  const PAGE_SIZES = [20, 25, 30, 50, 100];
   return (
     <div className='flex items-center justify-end py-4 px-10'>
       <div className='flex text-sm text-muted-foreground'>

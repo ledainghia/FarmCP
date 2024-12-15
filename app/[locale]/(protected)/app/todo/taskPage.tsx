@@ -15,24 +15,21 @@ import { vi } from 'date-fns/locale';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { generateTaskData } from '@/utils/fakeData';
-import { addDays, addMonths, format } from 'date-fns';
+import { addMonths, format } from 'date-fns';
 import { BarChart, CalendarIcon } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DateRange } from 'react-day-picker';
 import CreateTodo from './create-todo';
 
+import TablePagination from '@/components/table/table-pagination';
+import { tasksApi } from '@/config/api';
+import { TaskDTO } from '@/dtos/AplicationDTO';
+import { FilterDTO } from '@/dtos/FilterDTO';
+import { Pagination as PaginationType } from '@/dtos/Pagination';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import TodoSidebarWrapper from './sidebar-wrapper';
 import Todo from './todo';
 import TodoHeader from './todo-header';
-import { useTasksQuery } from '@/hooks/use-query';
-import { Pagination } from '@/components/ui/pagination';
-import TablePagination from '@/components/table/table-pagination';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { tasksApi } from '@/config/api';
-import { TaskDTO } from '@/dtos/AplicationDTO';
-import { Pagination as PaginationType } from '@/dtos/Pagination';
-import { FilterDTO } from '@/dtos/FilterDTO';
 
 const TasksPage = () => {
   const queryClient = useQueryClient();
@@ -74,10 +71,6 @@ const TasksPage = () => {
     }
   }, [todos]);
 
-  // const handleSelect = (value: string) => {
-  //   setStatisticsTime(value);
-  //   setData(generateTaskData());
-  // };
   return (
     <div className='flex flex-col '>
       <div className='col-span-12 lg:col-span-7 space-y-5 mb-5'>
@@ -319,9 +312,25 @@ const TasksPage = () => {
         </TodoSidebarWrapper>
         <div className='flex-1 w-full'>
           <Card className='h-full overflow-hidden'>
-            <CardHeader className='border-b border-default-200 '>
-              <TodoHeader />
-            </CardHeader>
+            {todos && Array.isArray(todos.items) && todos.items.length > 0 && (
+              <CardHeader className='border-b border-default-200 '>
+                <TodoHeader />
+              </CardHeader>
+            )}
+
+            {!todos ||
+              (Array.isArray(todos.items) && todos.items.length === 0 && (
+                <div className='flex flex-col items-center justify-center align-middle h-full bg-gray-100'>
+                  <Icon
+                    icon='oui:cross-in-circle-empty'
+                    className='text-5xl text-gray-500 mb-4'
+                  ></Icon>
+                  <p className='text-lg font-bold text-gray-500'>
+                    Không có dữ liệu
+                  </p>
+                </div>
+              ))}
+
             <CardContent className='p-0 h-full'>
               <div className='h-[calc(100%-60px)] overflow-y-scroll '>
                 {todos &&
@@ -330,18 +339,20 @@ const TasksPage = () => {
                     <Todo key={`todo-${index}`} todo={todo} />
                   ))}
 
-                {todos && (
-                  <TablePagination
-                    hasNextPage={todos.hasNextPage}
-                    hasPreviousPage={todos.hasPreviousPage}
-                    pageIndex={pageIndex}
-                    pageSize={pageSize}
-                    setPageIndex={setPageIndex}
-                    setPageSize={setPageSize}
-                    totalItems={todos.totalItems}
-                    totalPages={todos.totalPages}
-                  />
-                )}
+                {todos &&
+                  Array.isArray(todos.items) &&
+                  todos.items.length > 0 && (
+                    <TablePagination
+                      hasNextPage={todos.hasNextPage}
+                      hasPreviousPage={todos.hasPreviousPage}
+                      pageIndex={pageIndex}
+                      pageSize={pageSize}
+                      setPageIndex={setPageIndex}
+                      setPageSize={setPageSize}
+                      totalItems={todos.totalItems}
+                      totalPages={todos.totalPages}
+                    />
+                  )}
               </div>
             </CardContent>
           </Card>

@@ -12,21 +12,10 @@ export const useCagesQuery = () => {
     queryKey: ['cages'],
     queryFn: async (): Promise<Pagination<CageDTO>> => {
       const response = await cagesApi.getCages(); // API call
-      if (response.data.result) {
-        setCages(response.data.result.items);
-      }
+      // if (response.data.result) {
+      //   setCages(response.data.result.items);
+      // }
       return response.data.result; // Assuming `result` contains the pagination data
-    },
-  });
-};
-
-export const useTasksQuery = () => {
-  return useQuery({
-    queryKey: ['tasks'],
-    queryFn: async () => {
-      const response = await tasksApi.getTasks(); // API call
-      const tasks: Pagination<TaskDTO> = response.data.result;
-      return tasks; // Assuming `result` contains the pagination data
     },
   });
 };

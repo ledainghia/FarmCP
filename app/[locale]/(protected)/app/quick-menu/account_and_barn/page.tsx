@@ -34,6 +34,8 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import StaffAccount from '@/components/quick-menu/staff-account/staff-account';
+import BarnTable from '../../barn/components/barnTable';
+import Cage from '@/components/quick-menu/cage/cage';
 
 type DataProps = {
   id: string | number;
@@ -186,7 +188,7 @@ export default function Page() {
       notes: 'Theo dõi sức khỏe sau 24 giờ tiêm',
     },
   ];
-  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <Card>
       <CardHeader>
@@ -228,34 +230,7 @@ export default function Page() {
             <AccordionItem value='item-2'>
               <AccordionTrigger>Chuồng trại</AccordionTrigger>
               <AccordionContent>
-                <Collapsible
-                  open={isOpen}
-                  onOpenChange={setIsOpen}
-                  className=' space-y-2'
-                >
-                  <div className='flex items-center justify-start space-x-4'>
-                    <CollapsibleTrigger asChild>
-                      <Button variant='outline' size='icon'>
-                        <ChevronsUpDown className='h-4 w-4' />
-                        <span className='sr-only'>Toggle</span>
-                      </Button>
-                    </CollapsibleTrigger>
-                    <h4 className='text-sm font-semibold'>
-                      Danh sách chuồng trại hiện có
-                    </h4>
-                  </div>
-
-                  <Button
-                    variant={'outline'}
-                    className='border-dashed w-full mt-2'
-                  >
-                    Thêm mới chuồng trại
-                  </Button>
-
-                  <CollapsibleContent className='space-y-2'>
-                    <UsersTable />
-                  </CollapsibleContent>
-                </Collapsible>
+                <Cage />
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value='item-3'>

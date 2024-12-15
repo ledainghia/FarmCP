@@ -99,19 +99,7 @@ const TableCustom = ({
         >
           {title}
         </div>
-        <div>
-          {/* <Input
-            placeholder='Filter Status...'
-            value={
-              (table.getColumn('status')?.getFilterValue() as string) ?? ''
-            }
-            onChange={(event) =>
-              table.getColumn('status')?.setFilterValue(event.target.value)
-            }
-            className='max-w-sm'
-          /> */}
-          {header}
-        </div>
+        <div>{header}</div>
       </div>
 
       <Table>
@@ -184,40 +172,44 @@ const TableCustom = ({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className='h-24 text-center'>
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-          {isLoading && (
-            <TableRow>
-              <TableCell colSpan={columns.length} className='h-32 text-center'>
-                <Image src='/LoadingAnimation.webm' alt='loading'></Image>
+              <TableCell
+                colSpan={columns.length}
+                className='h-24 text-center p-4'
+              >
+                <div className='flex flex-col items-center justify-center align-middle h-full '>
+                  <Icon
+                    icon='oui:cross-in-circle-empty'
+                    className='text-5xl text-gray-500 mb-4'
+                  ></Icon>
+                  <p className='text-lg font-bold text-gray-500'>
+                    Không có dữ liệu
+                  </p>
+                </div>
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
-      {/* Pagination could be added here if you uncomment and configure TablePagination */}
+
       {pageIndex &&
-        pageSize &&
-        totalItems &&
-        totalPages &&
-        hasNextPage !== undefined &&
-        hasPreviousPage !== undefined &&
-        setPageSize &&
-        setPageIndex && (
-          <TablePagination
-            hasNextPage={hasNextPage}
-            hasPreviousPage={hasPreviousPage}
-            pageIndex={pageIndex}
-            pageSize={pageSize}
-            setPageIndex={setPageIndex}
-            setPageSize={setPageSize}
-            totalItems={totalItems}
-            totalPages={totalPages}
-          ></TablePagination>
-        )}
+      pageSize &&
+      totalItems &&
+      totalPages &&
+      hasNextPage !== undefined &&
+      hasPreviousPage !== undefined &&
+      setPageSize &&
+      setPageIndex ? (
+        <TablePagination
+          hasNextPage={hasNextPage}
+          hasPreviousPage={hasPreviousPage}
+          pageIndex={pageIndex}
+          pageSize={pageSize}
+          setPageIndex={setPageIndex}
+          setPageSize={setPageSize}
+          totalItems={totalItems}
+          totalPages={totalPages}
+        />
+      ) : null}
     </div>
   );
 };
