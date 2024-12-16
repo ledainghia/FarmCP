@@ -7,9 +7,44 @@ import {
 } from '@/components/ui/collapsible';
 import { ChevronsUpDown } from 'lucide-react';
 import { useState } from 'react';
+import AddNewCageCageDialog from './addNewCage';
+import { z } from 'zod';
+import toast from 'react-hot-toast';
+import CageListAddNew from './cageListAddNew';
 
 export default function Cage() {
   const [isOpen, setIsOpen] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [cages, setCages] = useState<z.infer<typeof formSchema>[]>([]);
+  const formSchema = z.object({
+    name: z.string(),
+    area: z.preprocess(
+      (value) => (value ? Number(value) : undefined),
+      z.number().positive('Diện tích phải là số dương')
+    ),
+    capacity: z.preprocess(
+      (value) => (value ? Number(value) : undefined),
+      z.number().positive('Sức chứa phải là số dương')
+    ),
+    location: z.string(),
+    animalType: z.string(),
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>, reset: () => void) {
+    try {
+      console.log(values);
+
+      toast('Thêm nhân viên thành công', {
+        icon: '👏',
+        position: 'top-right',
+      });
+      if (values) setCages([...cages, values]);
+      setOpenDialog(false);
+      reset();
+    } catch (error) {
+      console.error('Form submission error', error);
+    }
+  }
   return (
     <>
       <Collapsible
@@ -30,12 +65,19 @@ export default function Cage() {
         </div>
 
         <CollapsibleContent className='space-y-2'>
-          <BarnTable />
+          <BarnTable addNew={false} />
         </CollapsibleContent>
       </Collapsible>
-      <Button variant={'outline'} className='border-dashed w-full mt-2'>
-        Thêm mới chuồng trại
-      </Button>
+      {cages && cages.length > 0 && (
+        <CageListAddNew cageList={cages} className='mt-3' />
+      )}
+
+      <AddNewCageCageDialog
+        formSchema={formSchema}
+        openDialog={openDialog}
+        setOpenDialog={setOpenDialog}
+        onSubmit={onSubmit}
+      />
     </>
   );
 }

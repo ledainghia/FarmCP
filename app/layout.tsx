@@ -6,15 +6,13 @@ import { ThemeProvider } from '@/providers/theme-provider';
 import MountedProvider from '@/providers/mounted.provider';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as SonnerToaster } from '@/components/ui/sonner';
+import toast, { Toaster as HotToast } from 'react-hot-toast';
 const inter = Quicksand({
   subsets: ['latin'],
   weight: ['300', '400', '500', '700'],
 });
 // const inter = Inter({ subsets: ['latin'] });
-// language
-import { getLangDir } from 'rtl-detect';
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+
 import DirectionProvider from '@/providers/direction-provider';
 
 import ClientQueryProvider from '@/providers/ClientQueryProvider';
@@ -40,6 +38,7 @@ export default async function RootLayout({
             </DirectionProvider>
           </MountedProvider>
           <Toaster />
+          <HotToast position='top-right' />
           <SonnerToaster />
         </ThemeProvider>
       </body>

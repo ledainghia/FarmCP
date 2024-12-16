@@ -15,7 +15,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from '@/components/ui/card';
 import { Icon } from '@iconify/react/dist/iconify.js';
 
 export default function Page() {
@@ -44,9 +50,11 @@ export default function Page() {
           <AlertDescription className='!text-base'>
             <Icon icon='heroicons-outline:exclamation' className='w-5 h-5' />{' '}
             Bạn hãy chắc chắn rằng tất cả dữ liệu bạn nhập chính xác trước khi
-            lưu.
+            lưu. <br /> Dữ liệu bạn nhập và lưu chỉ là tạm thời cho tới khi bạn
+            xác nhận hoành thành quy trình
           </AlertDescription>
         </Alert>
+
         <div className='full w-full flex justify-start mt-4'>
           {/* <div className='flex-1'>Nhân viên</div>`
           <Separator className='' /> */}
@@ -75,6 +83,11 @@ export default function Page() {
           </Accordion>
         </div>
       </CardContent>
+      <CardFooter className='flex justify-end'>
+        <div className='flex justify-end'>
+          <Button>Lưu</Button>
+        </div>
+      </CardFooter>
     </Card>
   );
 }

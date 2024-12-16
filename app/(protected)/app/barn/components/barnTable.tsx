@@ -26,7 +26,7 @@ import SensorsTable from '../../sensors/components/sensorsTables';
 import ControlDevicesTable from '../../control_device/components/controlDevicesTable';
 import { useCagesQuery } from '@/hooks/use-query';
 
-export default function BarnTable() {
+export default function BarnTable({ addNew = true }: { addNew?: boolean }) {
   const DEFAULT_PAGE_SIZE = 20;
   const [search, setSearch] = useState('');
   const [pageIndex, setPageIndex] = useState(1);
@@ -67,15 +67,24 @@ export default function BarnTable() {
       cell: ({ row }) => <span>{row.getValue('name')}</span>,
     },
     {
-      accessorKey: 'detail',
-      header: 'Chi tiết',
-      cell: ({ row }) => <span>{row.getValue('detail')}</span>,
+      accessorKey: 'animalType',
+      header: 'Loại động vật',
     },
     {
-      id: 'active',
-      header: 'Kích hoạt',
-      cell: ({ row }) => <Switch />,
+      accessorKey: 'area',
+      header: 'Diện tích',
     },
+    { accessorKey: 'capacity', header: 'Sức chứa' },
+    // {
+    //   accessorKey: 'detail',
+    //   header: 'Chi tiết',
+    //   cell: ({ row }) => <span>{row.getValue('detail')}</span>,
+    // },
+    // {
+    //   id: 'active',
+    //   header: 'Kích hoạt',
+    //   cell: ({ row }) => <Switch />,
+    // },
     {
       id: 'actions',
       header: 'Hành Động',
@@ -160,7 +169,7 @@ export default function BarnTable() {
             placeholder='Tìm kiếm theo tên hoặc mã sinh viên'
             onChange={(e) => setSearch(e.target.value)}
           />
-          <Button>Thêm mới</Button>
+          {addNew && <Button>Thêm mới</Button>}
         </div>
       }
     />

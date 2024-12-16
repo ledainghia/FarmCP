@@ -16,15 +16,18 @@ import StaffListAddNew from './staffListAddNew';
 export default function StaffAccount() {
   const [isOpen, setIsOpen] = useState(false);
   const [staffs, setStaffs] = useState<z.infer<typeof formSchema>[]>([]);
+  const [openDialog, setOpenDialog] = useState(false);
   const formSchema: z.ZodSchema = z
     .object({
-      fullName: z.string(),
-      username: z.string(),
-      email: z.string(),
-      phoneNumber: z.string(),
-      address: z.string(),
-      password: z.string(),
-      rePassword: z.string(),
+      fullName: z.string({ message: 'Tên không được để trống' }),
+      username: z.string({ message: 'Tên đăng nhập không được để trống' }),
+      email: z.string({ message: 'Email không được để trống' }),
+      phoneNumber: z.string({ message: 'Số điện thoại không được để trống' }),
+      address: z.string({ message: 'Địa chỉ không được để trống' }),
+      password: z.string({ message: 'Mật khẩu không được để trống' }),
+      rePassword: z.string({
+        message: 'Nhập lại mật khẩu không được để trống',
+      }),
     })
     .superRefine((values, ctx) => {
       if (values.password !== values.rePassword) {
@@ -44,7 +47,7 @@ export default function StaffAccount() {
       }
     });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof formSchema>, reset: () => void) {
     try {
       console.log(values);
       if (staffs.some((staff) => staff.username === values.username)) {
@@ -53,6 +56,12 @@ export default function StaffAccount() {
         return;
       }
       if (values) setStaffs([...staffs, values]);
+      toast('Thêm nhân viên thành công', {
+        icon: '👏',
+        position: 'top-right',
+      });
+      setOpenDialog(false);
+      reset();
     } catch (error) {
       console.error('Form submission error', error);
     }
@@ -75,14 +84,19 @@ export default function StaffAccount() {
         </div>
 
         <CollapsibleContent className='space-y-2'>
-          <UsersTable />
+          <UsersTable addNew={false} />
         </CollapsibleContent>
       </Collapsible>
       {staffs && staffs.length > 0 && (
         <StaffListAddNew className='mt-2' staffsList={staffs} />
       )}
 
-      <AddNewStaffAccountDialog onSubmit={onSubmit} formSchema={formSchema} />
+      <AddNewStaffAccountDialog
+        openDialog={openDialog}
+        setOpenDialog={setOpenDialog}
+        onSubmit={onSubmit}
+        formSchema={formSchema}
+      />
     </>
   );
 }

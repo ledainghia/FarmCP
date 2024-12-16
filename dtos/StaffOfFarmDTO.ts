@@ -7,4 +7,6 @@ export type StaffOfFarmDTO = {
   address: string;
   role: string;
   isActive: boolean;
+  cageId: string;
+  cageName: string;
 };

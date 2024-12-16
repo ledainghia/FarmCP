@@ -19,9 +19,13 @@ import { useStaffOfFarmQuery } from '@/hooks/use-query';
 
 type UsersTableProps = {
   hasTitle?: boolean;
+  addNew?: boolean;
 };
 
-export default function UsersTable({ hasTitle = true }: UsersTableProps) {
+export default function UsersTable({
+  hasTitle = true,
+  addNew = true,
+}: UsersTableProps) {
   const DEFAULT_PAGE_SIZE = 10;
   const [search, setSearch] = useState('');
   const [pageIndex, setPageIndex] = useState(1);
@@ -42,15 +46,26 @@ export default function UsersTable({ hasTitle = true }: UsersTableProps) {
     {
       accessorKey: 'email',
       header: 'Email',
+      cell: ({ row }) => (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className='w-16 truncate'>{row.getValue('email')}</div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className=' normal-case'>{row.getValue('email')}</div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ),
     },
     {
       accessorKey: 'phoneNumber',
       header: 'Số điện thoại',
     },
     {
-      accessorKey: 'role',
-      header: 'Vai trò',
-      cell: ({ row }) => <span>{row.getValue('role')}</span>,
+      accessorKey: 'cageName',
+      header: 'Quản lí chuồng',
     },
 
     {
@@ -192,7 +207,7 @@ export default function UsersTable({ hasTitle = true }: UsersTableProps) {
             placeholder='Tìm kiếm người dùng'
             onChange={(e) => setSearch(e.target.value)}
           />
-          <Button>Thêm mới</Button>
+          {addNew && <Button>Thêm mới</Button>}
         </div>
       }
     />

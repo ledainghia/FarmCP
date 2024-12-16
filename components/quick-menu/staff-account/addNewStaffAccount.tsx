@@ -29,20 +29,27 @@ import {
 } from '@/components/ui/dialog';
 
 type Props = {
-  onSubmit: (values: z.infer<any>) => void;
+  onSubmit: (values: z.infer<any>, reset: () => void) => void;
   formSchema: z.ZodSchema;
+  openDialog: boolean;
+  setOpenDialog: (value: boolean) => void;
 };
 
 export default function AddNewStaffAccountDialog({
   onSubmit,
   formSchema,
+  openDialog,
+  setOpenDialog,
 }: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    await onSubmit(values, form.reset); // Truyền form.reset vào hàm onSubmit
+  };
   return (
-    <Dialog>
+    <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <DialogTrigger asChild>
         <Button variant={'outline'} className='border-dashed w-full mt-2'>
           Thêm mới nhân viên
@@ -52,7 +59,7 @@ export default function AddNewStaffAccountDialog({
         <DialogHeader>
           <DialogTitle>Thêm mới nhân viên</DialogTitle>
         </DialogHeader>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6 '>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-6 '>
           <DialogDescription>
             <Form {...form}>
               <div className='space-y-4'>
