@@ -2,9 +2,10 @@
 import DashCodeLogo from '@/components/dascode-logo';
 import Copyright from '@/components/partials/auth/copyright';
 import LoginForm from '@/components/partials/auth/login-form';
-import { Link } from '@/i18n/routing';
+
 import { isAccessTokenValid } from '@/utils/isLogin';
 import Image from 'next/image';
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { use, useEffect } from 'react';
 const Login = ({ params: { locale } }: { params: { locale: string } }) => {

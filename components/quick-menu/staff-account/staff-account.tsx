@@ -7,7 +7,7 @@ import {
 } from '../../ui/collapsible';
 import { Button } from '../../ui/button';
 import { ChevronsUpDown } from 'lucide-react';
-import UsersTable from '@/app/[locale]/(protected)/app/users/components/usersTables';
+import UsersTable from '@/app/(protected)/app/users/components/usersTables';
 import AddNewStaffAccountDialog from './addNewStaffAccount';
 import { z } from 'zod';
 import toast from 'react-hot-toast';

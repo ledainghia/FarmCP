@@ -14,6 +14,8 @@ import {
 import { DataProps } from '@/type_define/dataProps';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye, SquarePen, Trash2 } from 'lucide-react';
+import farmStore from '@/config/zustandStore/farmStore';
+import { useStaffOfFarmQuery } from '@/hooks/use-query';
 
 type UsersTableProps = {
   hasTitle?: boolean;
@@ -24,23 +26,33 @@ export default function UsersTable({ hasTitle = true }: UsersTableProps) {
   const [search, setSearch] = useState('');
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const { farm } = farmStore();
+
+  const { data: staffList } = useStaffOfFarmQuery(farm?.id ?? '');
 
   const columns: ColumnDef<DataProps>[] = [
     {
-      accessorKey: 'name',
+      accessorKey: 'username',
+      header: 'Tài khoản',
+    },
+    {
+      accessorKey: 'fullName',
       header: 'Tên',
-      cell: ({ row }) => <span>{row.getValue('name')}</span>,
+    },
+    {
+      accessorKey: 'email',
+      header: 'Email',
+    },
+    {
+      accessorKey: 'phoneNumber',
+      header: 'Số điện thoại',
     },
     {
       accessorKey: 'role',
       header: 'Vai trò',
       cell: ({ row }) => <span>{row.getValue('role')}</span>,
     },
-    {
-      accessorKey: 'permissions',
-      header: 'Quyền hạn',
-      cell: ({ row }) => <span>{row.getValue('permissions')}</span>,
-    },
+
     {
       accessorKey: 'isActive',
       header: 'Kích hoạt',
@@ -120,64 +132,57 @@ export default function UsersTable({ hasTitle = true }: UsersTableProps) {
   ];
 
   // Dữ liệu giả
-  const data = [
-    {
-      id: 1,
-      name: 'Nguyễn Văn A',
-      role: 'Quản trị viên',
-      permissions: 'Toàn quyền',
-      isActive: true,
-    },
-    {
-      id: 2,
-      name: 'Trần Thị B',
-      role: 'Người dùng',
-      permissions: 'Hạn chế',
-      isActive: false,
-    },
-    {
-      id: 3,
-      name: 'Phạm Văn C',
-      role: 'Nhân viên',
-      permissions: 'Chỉnh sửa',
-      isActive: true,
-    },
-    {
-      id: 4,
-      name: 'Lê Thị D',
-      role: 'Nhân viên',
-      permissions: 'Chỉ xem',
-      isActive: false,
-    },
-    {
-      id: 5,
-      name: 'Võ Minh E',
-      role: 'Quản trị viên',
-      permissions: 'Toàn quyền',
-      isActive: true,
-    },
-  ];
+  // const data = [
+  //   {
+  //     id: 1,
+  //     name: 'Nguyễn Văn A',
+  //     role: 'Quản trị viên',
+  //     permissions: 'Toàn quyền',
+  //     isActive: true,
+  //   },
+  //   {
+  //     id: 2,
+  //     name: 'Trần Thị B',
+  //     role: 'Người dùng',
+  //     permissions: 'Hạn chế',
+  //     isActive: false,
+  //   },
+  //   {
+  //     id: 3,
+  //     name: 'Phạm Văn C',
+  //     role: 'Nhân viên',
+  //     permissions: 'Chỉnh sửa',
+  //     isActive: true,
+  //   },
+  //   {
+  //     id: 4,
+  //     name: 'Lê Thị D',
+  //     role: 'Nhân viên',
+  //     permissions: 'Chỉ xem',
+  //     isActive: false,
+  //   },
+  //   {
+  //     id: 5,
+  //     name: 'Võ Minh E',
+  //     role: 'Quản trị viên',
+  //     permissions: 'Toàn quyền',
+  //     isActive: true,
+  //   },
+  // ];
 
   // Phân trang
-  const paginatedData = data.slice(
-    (pageIndex - 1) * pageSize,
-    pageIndex * pageSize
-  );
-  const totalPages = Math.ceil(data.length / pageSize);
-  const hasNextPage = pageIndex < totalPages;
-  const hasPreviousPage = pageIndex > 1;
 
   return (
     <TableCustom
-      data={paginatedData}
+      data={staffList?.items ?? []}
       columns={columns}
       title={hasTitle ? 'Danh sách người dùng' : ''}
       pageSize={pageSize}
       pageIndex={pageIndex}
-      totalItems={data.length}
-      totalPages={totalPages}
-      hasNextPage={hasNextPage}
-      hasPreviousPage={hasPreviousPage}
+      totalItems={staffList?.totalItems}
+      totalPages={staffList?.totalPages}
+      hasNextPage={staffList?.hasNextPage}
+      hasPreviousPage={staffList?.hasPreviousPage}
       setPageSize={setPageSize}
       setPageIndex={setPageIndex}
       header={

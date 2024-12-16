@@ -1,9 +1,10 @@
 import React from 'react';
 import FooterContent from './footer-content';
-import { Link } from '@/components/navigation';
+
 import Image from 'next/image';
 import { Icon } from '@/components/ui/icon';
 import { auth } from '@/lib/auth';
+import Link from 'next/link';
 
 const DashCodeFooter = async () => {
   const session = await auth();

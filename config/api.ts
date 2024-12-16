@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { baseURL } from '.';
+
 import { FilterDTO } from '@/dtos/FilterDTO';
 import { buildQueryString } from '@/utils/buildQuerrySearch';
 import { jwtDecode } from 'jwt-decode';
-import { redirect } from 'next/dist/server/api-utils';
+const baseURL = process.env.NEXT_PUBLIC_SITE_URL + '/api';
 
 const axiosInstance = axios.create({
   baseURL: baseURL,
@@ -90,5 +90,14 @@ export const cagesApi = {
 export const staffApi = {
   getStaffWithCountTask: async (cageId: String) => {
     return await axiosInstance.get('/staff/pending-tasks?cageId=' + cageId);
+  },
+};
+
+export const farmsApi = {
+  getFarms: async (userID: string) => {
+    return await axiosInstance.get(`/users/${userID}/farms`);
+  },
+  getStaffOfFarm: async (farmId: string) => {
+    return await axiosInstance.get(`/farm/${farmId}/users`);
   },
 };

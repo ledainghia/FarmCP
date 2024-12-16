@@ -1,10 +1,11 @@
 'use client';
 import React from 'react';
 import DashCodeLogo from './dascode-logo';
-import { Link } from '@/i18n/routing';
+
 import { useConfig } from '@/hooks/use-config';
 import { useMenuHoverConfig } from '@/hooks/use-menu-hover';
 import { useMediaQuery } from '@/hooks/use-media-query';
+import Link from 'next/link';
 
 const Logo = () => {
   const [config] = useConfig();

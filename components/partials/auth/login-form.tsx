@@ -4,18 +4,19 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Link } from '@/i18n/routing';
+
 import { Icon } from '@/components/ui/icon';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
-import { loginUser } from '@/action/auth-action';
+
 import { toast } from 'sonner';
-import { useRouter } from '@/components/navigation';
+
 import { useMutation } from '@tanstack/react-query';
 import { authApi } from '@/config/api';
+import { useRouter } from 'next/navigation';
 
 const schema = z.object({
   email: z.string().min(4, { message: 'Username phải có ít nhất 6 ký tự' }),

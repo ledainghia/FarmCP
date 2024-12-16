@@ -1,4 +1,4 @@
-import BarnTable from '@/app/[locale]/(protected)/app/barn/components/barnTable';
+import BarnTable from '@/app/(protected)/app/barn/components/barnTable';
 import { Button } from '@/components/ui/button';
 import {
   Collapsible,

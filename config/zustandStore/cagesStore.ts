@@ -1,4 +1,4 @@
-import { CageDTO } from '@/dtos/cageDTO';
+import { CageDTO } from '@/dtos/CageDTO';
 import { create } from 'zustand';
 
 interface CageStore {

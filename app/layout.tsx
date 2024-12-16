@@ -16,14 +16,7 @@ import { getLangDir } from 'rtl-detect';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import DirectionProvider from '@/providers/direction-provider';
-import AuthProvider from '@/providers/auth.provider';
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query';
+
 import ClientQueryProvider from '@/providers/ClientQueryProvider';
 
 export const metadata: Metadata = {
@@ -33,29 +26,22 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-  params: { locale },
 }: Readonly<{
   children: React.ReactNode;
-  params: { locale: string };
 }>) {
-  const messages = await getMessages();
-  const direction = getLangDir(locale);
+  const direction = 'ltrltr';
   return (
-    <html lang={locale} dir={direction}>
+    <html lang={'vi'} dir={direction}>
       <body className={`${inter.className} dashcode-app`}>
-        <NextIntlClientProvider messages={messages} locale={locale}>
-          <AuthProvider>
-            <ThemeProvider attribute='class' defaultTheme='light'>
-              <MountedProvider>
-                <DirectionProvider direction={direction}>
-                  <ClientQueryProvider>{children}</ClientQueryProvider>
-                </DirectionProvider>
-              </MountedProvider>
-              <Toaster />
-              <SonnerToaster />
-            </ThemeProvider>
-          </AuthProvider>
-        </NextIntlClientProvider>
+        <ThemeProvider attribute='class' defaultTheme='light'>
+          <MountedProvider>
+            <DirectionProvider direction={direction}>
+              <ClientQueryProvider>{children}</ClientQueryProvider>
+            </DirectionProvider>
+          </MountedProvider>
+          <Toaster />
+          <SonnerToaster />
+        </ThemeProvider>
       </body>
     </html>
   );

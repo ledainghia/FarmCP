@@ -43,7 +43,7 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useCagesQuery } from '@/hooks/use-query';
 import useCageStore from '@/config/zustandStore/cagesStore';
-import { CageDTO } from '@/dtos/cageDTO';
+import { CageDTO } from '@/dtos/CageDTO';
 import { useGetStaffPendingMutation } from '@/hooks/use-mutation';
 import { StaffWithCountTaskDTO } from '@/dtos/StaffWithCountTask';
 import { useMutation, useQueryClient } from '@tanstack/react-query';

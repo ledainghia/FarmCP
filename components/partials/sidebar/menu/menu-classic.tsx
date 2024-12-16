@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Ellipsis, LogOut } from 'lucide-react';
-import { usePathname } from '@/components/navigation';
+
 import { cn } from '@/lib/utils';
 import { getMenuList } from '@/lib/menus';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -18,9 +18,9 @@ import MenuItem from '../common/menu-item';
 import { CollapseMenuButton } from '../common/collapse-menu-button';
 import MenuWidget from '../common/menu-widget';
 import SearchBar from '@/components/partials/sidebar/common/search-bar';
-import TeamSwitcher from '../common/team-switcher';
+import FarmSwitcher from '../common/farm-switcher';
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import { getLangDir } from 'rtl-detect';
 import Logo from '@/components/logo';
 import SidebarHoverToggle from '@/components/partials/sidebar/sidebar-hover-toggle';
@@ -29,14 +29,14 @@ import { useMediaQuery } from '@/hooks/use-media-query';
 
 export function MenuClassic({}) {
   // translate
-  const t = useTranslations('Menu');
-  const pathname = usePathname();
+
+  const pathname = usePathname() || '';
   const params = useParams<{ locale: string }>();
   const direction = getLangDir(params?.locale ?? '');
 
   const isDesktop = useMediaQuery('(min-width: 1280px)');
 
-  const menuList = getMenuList(pathname, t);
+  const menuList = getMenuList(pathname);
   const [config, setConfig] = useConfig();
   const collapsed = config.collapsed;
   const [hoverConfig] = useMenuHoverConfig();
@@ -76,7 +76,7 @@ export function MenuClassic({}) {
               'text-center': collapsed || !hovered,
             })}
           >
-            <TeamSwitcher />
+            <FarmSwitcher />
             <SearchBar />
           </div>
         )}
