@@ -11,7 +11,7 @@ import { use, useEffect } from 'react';
 const Login = ({ params: { locale } }: { params: { locale: string } }) => {
   useEffect(() => {
     if (isAccessTokenValid()) {
-      redirect('/en/dashboard/analytics');
+      redirect('/dashboard/analytics');
     } else {
       console.log('Token is invalid');
     }
