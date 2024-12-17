@@ -39,8 +39,6 @@ import CalenderPage from './calenderTasks/page';
 import TasksDaily from './tasksDaily/page';
 
 const Page = () => {
-  const t = useTranslations('TodoApp');
-
   return (
     <>
       <Card>

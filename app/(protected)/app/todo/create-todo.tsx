@@ -52,16 +52,12 @@ import { jwtDecode } from 'jwt-decode';
 
 const TaskType = [
   {
-    taskTypeId: '6b1ae9e3-1e82-4a25-bcea-5a7b3adebc56',
-    taskTypeName: 'Feeding',
+    taskTypeId: '37fcbc5f-4824-4151-ac05-a65240334c70',
+    taskTypeName: 'Feed',
   },
   {
-    taskTypeId: 'ae6682e2-f315-4850-b3cb-7b3003e817b3',
-    taskTypeName: 'Inspection',
-  },
-  {
-    taskTypeId: '1af7dbea-0a2c-4ec6-91d3-eac4546a2c2b',
-    taskTypeName: 'Cleaning',
+    taskTypeId: 'dbd1e320-b87c-447f-8486-b73d5d515f36',
+    taskTypeName: 'Clean',
   },
 ];
 
@@ -156,6 +152,7 @@ const CreateTodo = () => {
         title: 'Failed to fetch staffs.',
         variant: 'destructive',
       });
+      setStaffPendingTask([]);
     } else {
       toast({
         title: 'Staffs fetched successfully.',
@@ -290,28 +287,31 @@ const CreateTodo = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {staffPendingTask &&
-                          staffPendingTask.length > 0 &&
-                          staffPendingTask.map((user, index) => (
-                            <SelectItem
-                              key={`staff-${index}`}
-                              value={user.staffId}
-                            >
-                              <div className='flex items-center gap-2'>
-                                {/* <Image
+                        {getStaffPendingMutation.data?.data.result &&
+                          getStaffPendingMutation.data?.data.result.length >
+                            0 &&
+                          getStaffPendingMutation.data?.data.result.map(
+                            (user: any, index: any) => (
+                              <SelectItem
+                                key={`staff-${index}`}
+                                value={user.staffId}
+                              >
+                                <div className='flex items-center gap-2'>
+                                  {/* <Image
                               src={user.image}
                               alt={user.label}
                               width={20}
                               height={20}
                               className='w-5 h-5 rounded-full'
                             /> */}
-                                <span className='text-sm text-default-900'>
-                                  {user.fullName} ( đang thực hiện{' '}
-                                  {user.pendingTaskCount} công việc )
-                                </span>
-                              </div>
-                            </SelectItem>
-                          ))}
+                                  <span className='text-sm text-default-900'>
+                                    {user.fullName} ( đang thực hiện{' '}
+                                    {user.pendingTaskCount} công việc )
+                                  </span>
+                                </div>
+                              </SelectItem>
+                            )
+                          )}
                       </SelectContent>
                     </Select>
                     <FormMessage />

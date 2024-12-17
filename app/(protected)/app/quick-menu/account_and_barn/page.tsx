@@ -23,6 +23,8 @@ import {
   CardHeader,
 } from '@/components/ui/card';
 import { Icon } from '@iconify/react/dist/iconify.js';
+import BarnTable from '../../barn/components/barnTable';
+import AssignCage from '@/components/quick-menu/assign-cage/assignCage';
 
 export default function Page() {
   return (
@@ -74,10 +76,7 @@ export default function Page() {
             <AccordionItem value='item-3'>
               <AccordionTrigger>Phân công công việc</AccordionTrigger>
               <AccordionContent>
-                Journalist call this critical, introductory section the and when
-                bridge properly executed, it is the that carries your reader
-                from anheadine try at attention-grabbing to the body of your
-                blog post.
+                <AssignCage />
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -85,7 +84,7 @@ export default function Page() {
       </CardContent>
       <CardFooter className='flex justify-end'>
         <div className='flex justify-end'>
-          <Button>Lưu</Button>
+          <Button>Lưu quy trình</Button>
         </div>
       </CardFooter>
     </Card>

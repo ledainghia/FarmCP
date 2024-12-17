@@ -3,28 +3,19 @@
 import { useEffect, useState } from 'react';
 
 import TableCustom from '@/components/table/table';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useCagesQuery } from '@/hooks/use-query';
 import { DataProps } from '@/type_define/dataProps';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye, SquarePen, Trash2 } from 'lucide-react';
-import SensorsTable from '../../sensors/components/sensorsTables';
-import ControlDevicesTable from '../../control_device/components/controlDevicesTable';
-import { useCagesQuery } from '@/hooks/use-query';
 
 export default function BarnTable({ addNew = true }: { addNew?: boolean }) {
   const DEFAULT_PAGE_SIZE = 20;
