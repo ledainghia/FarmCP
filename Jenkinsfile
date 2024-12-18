@@ -2,26 +2,25 @@ pipeline {
     agent any
 
     stages {
-        stage('Build Docker Images') {
+        stage('Packaging') {
             steps {
-                echo 'Building Docker Images using Docker Compose'
-                sh 'docker-compose -f "docker-compose.yml" up -d --build'
+                    sh 'docker build --pull --rm -f Dockerfile -t nongtraionlinefe:latest .'
             }
         }
-        
 
-        stage('Cleaning up') {
+       
+        stage('Deploy') {
             steps {
-                echo 'Cleaning up unused Docker resources'
-                sh 'docker system prune -f'
-                sh 'docker ps -a'
+                echo 'Deploying and cleaning'
+                sh 'docker container stop nongtraionlinefe || echo "this container does not exist"'
+                sh 'docker container run -d --name nongtraionlinefe -p 5052:3000 nongtraionlinefe'
+                sh 'echo y | docker system prune'
             }
         }
     }
 
     post {
         always {
-            echo 'Cleaning workspace'
             cleanWs()
         }
     }

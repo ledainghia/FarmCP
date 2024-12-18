@@ -9,7 +9,7 @@ import CompanyTable from './components/company-table';
 import RecentActivity from './components/recent-activity';
 import MostSales from './components/most-sales';
 import OverviewRadialChart from './components/overview-radial';
-import { useTranslations } from 'next-intl';
+
 const DashboardPage = () => {
   return (
     <div>

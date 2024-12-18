@@ -11,7 +11,6 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import TablePagination from '@/app/(protected)/table/react-table/example2/table-pagination';
 import {
   Table,
   TableBody,
@@ -25,6 +24,7 @@ import Image from 'next/image';
 import { Fragment, useState } from 'react';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Icon } from '../ui/icon';
+import TablePagination from './table-pagination';
 
 export type TableProps = {
   data: any[];
