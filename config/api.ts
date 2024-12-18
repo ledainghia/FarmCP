@@ -50,10 +50,10 @@ axiosInstance.interceptors.request.use(
 
 export const authApi = {
   login: async (data: any) => {
-    return await axiosInstance.post('/auth/login', data);
+    return await axios.post(baseURL + '/auth/login', data);
   },
   refreshToken: async () => {
-    return await axios.post(baseURL + '/auth/refresh', {
+    return await axiosInstance.post(baseURL + '/auth/refresh', {
       refreshToken: localStorage.getItem('refreshToken'),
     });
   },
