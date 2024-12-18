@@ -1,5 +1,6 @@
 'use client';
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Dialog,
   DialogContent,
@@ -7,11 +8,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { CalendarIcon, Plus } from 'lucide-react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { vi } from 'date-fns/locale';
 import {
   Form,
   FormControl,
@@ -21,8 +17,11 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { toast } from '@/components/ui/use-toast';
-import { Textarea } from '@/components/ui/textarea';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
@@ -30,25 +29,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import Image from 'next/image';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
-import { useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { useCagesQuery } from '@/hooks/use-query';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from '@/components/ui/use-toast';
+import { tasksApi } from '@/config/api';
 import useCageStore from '@/config/zustandStore/cagesStore';
 import { CageDTO } from '@/dtos/CageDTO';
-import { useGetStaffPendingMutation } from '@/hooks/use-mutation';
 import { StaffWithCountTaskDTO } from '@/dtos/StaffWithCountTask';
+import { useGetStaffPendingMutation } from '@/hooks/use-mutation';
+import { useCagesQuery } from '@/hooks/use-query';
+import { cn } from '@/lib/utils';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { staffApi, tasksApi } from '@/config/api';
+import { format } from 'date-fns';
+import { vi } from 'date-fns/locale';
 import { jwtDecode } from 'jwt-decode';
+import { CalendarIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const TaskType = [
   {
