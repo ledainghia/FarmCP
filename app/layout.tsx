@@ -27,7 +27,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const direction = 'ltrltr';
+  const direction = 'ltr';
   return (
     <html lang={'vi'} dir={direction}>
       <body className={`${inter.className} dashcode-app`}>
