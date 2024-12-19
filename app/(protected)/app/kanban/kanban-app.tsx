@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { type Column, type Task } from './data';
 import {
   DndContext,
@@ -17,21 +17,52 @@ import TaskCard from './task';
 import { createPortal } from 'react-dom';
 import AddBoard from './add-board';
 import CreateTask from './create-task';
-const KanBanApp = ({
-  defaultCols,
-  defaultTasks,
-}: {
-  defaultCols: Column[];
-  defaultTasks: Task[];
-}) => {
-  const [columns, setColumns] = useState<Column[]>(defaultCols);
-  const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { FilterDTO } from '@/dtos/FilterDTO';
+import { tasksApi } from '@/config/api';
+import { TaskDTO } from '@/dtos/AplicationDTO';
+import { Pagination } from '@/dtos/Pagination';
+const KanBanApp = ({ defaultCols }: { defaultCols: Column[] }) => {
+  const queryClient = useQueryClient();
+  const DEFAULT_PAGE_SIZE = 20;
+  const [pageIndex, setPageIndex] = useState(1);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const { data: todos } = useQuery({
+    queryKey: ['tasks'],
+    queryFn: async () => {
+      const filter: FilterDTO = {
+        PageSize: pageSize,
+        PageNumber: pageIndex,
+      };
+      const response = await tasksApi.getTasks(filter); // API call
+      const tasks: Pagination<TaskDTO> = response.data.result;
+      return tasks; // Assuming `result` contains the pagination data
+    },
+  });
 
-  const [tasks, setTasks] = useState<Task[]>(defaultTasks);
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ['tasks'] });
+  }, [pageIndex, pageSize]);
 
-  const [activeColumn, setActiveColumn] = useState<Column | null>(null);
+  const [tasks, setTasks] = useState<TaskDTO[]>([]);
+  useEffect(() => {
+    if (todos) {
+      const sortedTasks = todos.items.sort((a, b) => {
+        if (a.createdAt !== b.createdAt) {
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        }
+        if (a.dueDate !== b.dueDate) {
+          return new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
+        }
+        return a.priorityNum - b.priorityNum;
+      });
+      setTasks(sortedTasks);
+    }
+  }, [todos]);
 
-  const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [activeTask, setActiveTask] = useState<TaskDTO | null>(null);
 
   // create task state
   const [open, setOpen] = useState<boolean>(false);
@@ -83,21 +114,10 @@ const KanBanApp = ({
     if (isActiveATask && isOverAColumn) {
       setTasks((tasks) => {
         const activeIndex = tasks.findIndex((t) => t.id === activeId);
-        tasks[activeIndex].columnId = overId.toString();
+        tasks[activeIndex].id = overId.toString();
         return arrayMove(tasks, activeIndex, activeIndex);
       });
     }
-
-    // const isActiveAColumn = active.data.current?.type === 'Column';
-    // if (!isActiveAColumn) return;
-
-    // setColumns((columns) => {
-    //   const activeColumnIndex = columns.findIndex((col) => col.id === activeId);
-
-    //   const overColumnIndex = columns.findIndex((col) => col.id === overId);
-
-    //   return arrayMove(columns, activeColumnIndex, overColumnIndex);
-    // });
   }
   function onDragOver(event: DragOverEvent) {
     console.log('DRAG OVER');
@@ -113,8 +133,8 @@ const KanBanApp = ({
       setTasks((tasks) => {
         const activeIndex = tasks.findIndex((t) => t.id === activeId);
         const overIndex = tasks.findIndex((t) => t.id === overId);
-        if (tasks[activeIndex].columnId != tasks[overIndex].columnId) {
-          tasks[activeIndex].columnId = tasks[overIndex].columnId;
+        if (tasks[activeIndex].status != tasks[overIndex].status) {
+          tasks[activeIndex].status = tasks[overIndex].status;
           return arrayMove(tasks, activeIndex, overIndex - 1);
         }
         return arrayMove(tasks, activeIndex, overIndex);
@@ -124,7 +144,7 @@ const KanBanApp = ({
     if (isActiveATask && isOverAColumn) {
       setTasks((tasks) => {
         const activeIndex = tasks.findIndex((t) => t.id === activeId);
-        tasks[activeIndex].columnId = overId.toString();
+        tasks[activeIndex].status = overId.toString();
         return arrayMove(tasks, activeIndex, activeIndex);
       });
     }
@@ -134,7 +154,7 @@ const KanBanApp = ({
       <div className=''>
         <div className='flex gap-2 mb-5'>
           <div className='flex-1 font-medium lg:text-2xl text-xl capitalize text-default-900'>
-            titlea
+            Danh sách công việc
           </div>
           <div className='flex-none'>
             <AddBoard />
@@ -146,13 +166,13 @@ const KanBanApp = ({
           onDragEnd={onDragEnd}
           onDragOver={onDragOver}
         >
-          <div className='flex z gap-4 overflow-x-auto no-scrollbar'>
-            <div className='flex gap-4'>
-              {columns.map((col) => (
+          <div className='flex  gap-4 overflow-x-auto no-scrollbar'>
+            <div className='flex flex-1 gap-4'>
+              {defaultCols.map((col) => (
                 <ColumnContainer
                   key={col.id}
                   column={col}
-                  tasks={tasks.filter((task) => task.columnId === col.id)}
+                  tasks={tasks.filter((task) => task.status === col.id)}
                   handleOpenTask={() => setOpen(true)}
                 />
               ))}

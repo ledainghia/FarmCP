@@ -30,6 +30,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import TodoSidebarWrapper from './sidebar-wrapper';
 import Todo from './todo';
 import TodoHeader from './todo-header';
+import KanBanApp from '../kanban/kanban-app';
+import { defaultCols, defaultTasks } from '../kanban/data';
 
 const TasksPage = () => {
   const queryClient = useQueryClient();
@@ -231,8 +233,8 @@ const TasksPage = () => {
           </CardContent>
         </Card>
       </div>
-      <div className='flex gap-5  '>
-        <TodoSidebarWrapper>
+      <div className='flex col-span-12 gap-5  '>
+        {/* <TodoSidebarWrapper>
           <Card className='h-full'>
             <CardContent className='h-full p-0'>
               <ScrollArea className='h-[calc(100%-30px)]'>
@@ -278,34 +280,7 @@ const TasksPage = () => {
                     active: true,
                   }))}
                 />
-                {/* <div className='py-4 px-5 text-default-800  font-semibold text-xs uppercase'>
-                  Trạng thái
-                </div>
-                <Nav
-                  dotStyle
-                  links={[
-                    {
-                      title: 'Khởi tạo',
-                      active: true,
-                    },
-                    {
-                      title: 'Đang thực hiện',
-                      active: false,
-                    },
-                    {
-                      title: 'Nhân viên đã hoàn thành',
-                      active: false,
-                    },
-                    {
-                      title: 'Admin đã xác nhận',
-                      active: false,
-                    },
-                    {
-                      title: 'Admin đã từ chối xác nhận',
-                      active: false,
-                    },
-                  ]}
-                /> */}
+                
               </ScrollArea>
             </CardContent>
           </Card>
@@ -356,8 +331,9 @@ const TasksPage = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </div> */}
       </div>
+      <KanBanApp defaultCols={defaultCols} />
     </div>
   );
 };
