@@ -6,7 +6,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal } from 'lucide-react';
-import { useTranslations } from 'next-intl';
 const DashboardDropdown = () => {
   return (
     <DropdownMenu>
