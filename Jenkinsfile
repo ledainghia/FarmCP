@@ -24,7 +24,7 @@ pipeline {
                     sh 'docker container stop nongtraionlinefe || echo "this container does not exist"'
                     sh 'echo y | docker system prune'
                     sh '''
-                        docker container run -d --name nongtraionlinefe -p 3000:3000 chalsfptu/nongtraionlinefe
+                        docker container run -d --name nongtraionlinefe -p 5052:3000 chalsfptu/nongtraionlinefe
                     '''
                 }
         }
