@@ -53,7 +53,7 @@ export const authApi = {
     return await axios.post(baseURL + '/auth/login', data);
   },
   refreshToken: async () => {
-    return await axiosInstance.post(baseURL + '/auth/refresh', {
+    return await axios.post(baseURL + '/auth/refresh', {
       refreshToken: localStorage.getItem('refreshToken'),
     });
   },
