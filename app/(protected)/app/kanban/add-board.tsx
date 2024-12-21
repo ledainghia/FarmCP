@@ -1,6 +1,15 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
 import {
   Dialog,
   DialogContent,
@@ -11,12 +20,21 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import {
+  MultiSelector,
+  MultiSelectorContent,
+  MultiSelectorInput,
+  MultiSelectorItem,
+  MultiSelectorList,
+  MultiSelectorTrigger,
+} from '@/components/ui/multi-select';
 import {
   Popover,
   PopoverContent,
@@ -43,7 +61,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { jwtDecode } from 'jwt-decode';
-import { CalendarIcon } from 'lucide-react';
+import { set } from 'lodash';
+import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -73,19 +92,24 @@ const FormSchema = z.object({
   }),
   taskTypeId: z.string().optional(),
   createdByUserId: z.string().optional(),
+  name_3994754233: z.array(z.string()).nonempty('Please at least one item'),
+  name_5641602954: z.boolean().default(true),
 });
 
 const AddBoard = () => {
   const clientQuery = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [cageChoice, setCageChoice] = useState<string>('');
+  const [isLoop, setIsLoop] = useState<boolean>(false);
   const [staffPendingTask, setStaffPendingTask] = useState<
     StaffWithCountTaskDTO[]
   >([]);
+  const [title, setTitle] = useState<string>('');
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       taskName: '',
+      name_3994754233: ['Buổi sáng'],
     },
   });
 
@@ -160,6 +184,43 @@ const AddBoard = () => {
     }
   };
 
+  const setTitleValue = (type: string, value: string) => {
+    if (type && value) {
+      let valueSet = '-';
+      const currentTitle = form.getValues('taskName') || '';
+
+      // Xử lý Task_Type
+      if (type === 'Task_Type') {
+        const task = TaskType.find((item) => item.taskTypeId === value);
+        const taskName = task?.taskTypeName || '';
+        if (currentTitle.includes('-')) {
+          // Thay thế trước dấu '-'
+          const [_, suffix] = currentTitle.split('-');
+          valueSet = `${taskName} -${suffix}`;
+        } else {
+          // Thêm mới
+          valueSet = `${taskName} -`;
+        }
+      }
+      // Xử lý Cage
+      else if (type === 'Cage') {
+        const cage = cases?.items.find((item) => item.id === value);
+        const cageName = cage?.name || '';
+        if (currentTitle.includes('-')) {
+          // Thay thế sau dấu '-'
+          const [prefix] = currentTitle.split('-');
+          valueSet = `${prefix}- ${cageName}`;
+        } else {
+          // Thêm mới
+          valueSet = `- ${cageName}`;
+        }
+      }
+
+      setTitle(valueSet);
+      form.setValue('taskName', valueSet);
+    }
+  };
+
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
@@ -179,9 +240,16 @@ const AddBoard = () => {
                 name='taskName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className='text-default-700'>Tiêu đề</FormLabel>
+                    <FormLabel className='text-default-700'>
+                      Tiêu đề <span className='text-destructive'>*</span>
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder='Enter Title' {...field} />
+                      <Input
+                        disabled
+                        className='text-sm'
+                        placeholder='Enter Title'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -193,15 +261,20 @@ const AddBoard = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='text-default-700'>
-                      Loại công việc
+                      Loại công việc <span className='text-destructive'>*</span>
                     </FormLabel>
                     <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      onValueChange={(e) => {
+                        field.onChange(e);
+                        setTitleValue('Task_Type', e);
+                      }}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder='Select...' />
+                          <SelectValue
+                            className='text-sm'
+                            placeholder='Select...'
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -210,7 +283,9 @@ const AddBoard = () => {
                             key={item.taskTypeId}
                             value={item.taskTypeId}
                           >
-                            {item.taskTypeName}
+                            <span className='text-sm text-default-900'>
+                              {item.taskTypeName}
+                            </span>
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -221,63 +296,91 @@ const AddBoard = () => {
               />
             </div>
 
-            <div className='grid grid-cols-2 w-full gap-2'>
+            <div className='grid grid-cols-2 w-full gap-2 items-start'>
+              {/* Field chọn chuồng */}
               <FormField
                 control={form.control}
                 name='cageId'
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-default-700'>
-                      Chọn chuồng
+                  <FormItem className='flex flex-col'>
+                    <FormLabel>
+                      Chọn chuồng <span className='text-destructive'> *</span>
                     </FormLabel>
-                    <Select
-                      onValueChange={(e) => {
-                        field.onChange(e);
-                        handleCageChange(e);
-                      }}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder='Chọn...' />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {cases &&
-                          Array.isArray(cases.items) &&
-                          cases.items.map((item: CageDTO) => (
-                            <SelectItem
-                              key={`item_cages` + item.id}
-                              value={item.id}
-                            >
-                              <div className='flex items-center gap-2'>
-                                <span className='text-sm text-default-900'>
-                                  {item.name}
-                                </span>
-                              </div>
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant='outline'
+                            role='checkbox'
+                            size='md'
+                            className={cn(
+                              '!px-3',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            <span className='flex flex-1'>
+                              {cases
+                                ? cases.items.find(
+                                    (language) => language.id === field.value
+                                  )?.name
+                                : 'Select language'}
+                            </span>
+                            <ChevronsUpDown className='h-4 w-4 shrink-0 opacity-50' />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className='w-full p-0'>
+                        <Command className='w-full'>
+                          <CommandInput placeholder='Tìm kiếm chuồng...' />
+                          <CommandList className='w-full'>
+                            <CommandEmpty>Không tìm thấy chuồng</CommandEmpty>
+                            <CommandGroup>
+                              {cases?.items.map((language) => (
+                                <CommandItem
+                                  value={language.name}
+                                  key={language.id}
+                                  onSelect={() => {
+                                    form.setValue('cageId', language.id);
+                                    handleCageChange(language.id);
+                                    setTitleValue('Cage', language.id);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      'mr-2 h-4 w-4',
+                                      language.id === field.value
+                                        ? 'opacity-100'
+                                        : 'opacity-0'
+                                    )}
+                                  />
+                                  {language.name}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              {/* Field phân công */}
               <FormField
                 control={form.control}
                 name='assignedToUserId'
-                disabled={
-                  !form.getValues('cageId') || getStaffPendingMutation.isPending
-                }
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className='flex flex-col'>
                     <FormLabel className='text-default-700'>
-                      Phân công cho
+                      Phân công cho <span className='text-destructive'>*</span>
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      disabled={!form.getValues('cageId')}
+                      disabled={
+                        !form.getValues('cageId') ||
+                        getStaffPendingMutation.isPending
+                      }
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -295,13 +398,14 @@ const AddBoard = () => {
                                 value={user.staffId}
                               >
                                 <div className='flex items-center gap-2'>
+                                  {/* Nếu cần hiển thị hình ảnh */}
                                   {/* <Image
-                              src={user.image}
-                              alt={user.label}
-                              width={20}
-                              height={20}
-                              className='w-5 h-5 rounded-full'
-                            /> */}
+                        src={user.image}
+                        alt={user.label}
+                        width={20}
+                        height={20}
+                        className="w-5 h-5 rounded-full"
+                      /> */}
                                   <span className='text-sm text-default-900'>
                                     {user.fullName} ( đang thực hiện{' '}
                                     {user.pendingTaskCount} công việc )
@@ -317,94 +421,130 @@ const AddBoard = () => {
                 )}
               />
             </div>
-            <div className='grid grid-cols-2 w-full gap-2'>
-              <FormField
-                control={form.control}
-                name='dueDate'
-                render={({ field }) => (
-                  <FormItem className=''>
-                    <FormLabel className='text-default-700'>
-                      Chọn ngày
-                    </FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant='outline'
-                            size='md'
-                            fullWidth
-                            className={cn(
-                              'border-default md:px-3',
-                              !field.value &&
-                                'text-muted-foreground border-default-200 md:px-3'
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, 'PPP', { locale: vi })
-                            ) : (
-                              <span>Chọn ngày</span>
-                            )}
-                            <CalendarIcon
-                              className={cn(
-                                'ms-auto h-4 w-4 text-default-300',
-                                {
-                                  'text-default-900': field.value,
-                                }
-                              )}
-                            />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className='w-auto p-0' align='start'>
-                        <Calendar
-                          mode='single'
-                          selected={field.value}
-                          classNames={{
-                            months:
-                              'w-full  space-y-4 sm:gap-x-4 sm:space-y-0 flex',
-                          }}
-                          locale={vi}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date < new Date() ||
-                            date >
-                              new Date(
-                                new Date().setDate(new Date().getDate() + 2)
-                              )
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
+            <div className='grid grid-cols-2 w-full gap-4 items-start'>
+              <div className='grid grid-cols-3 w-full gap-4'>
+                <FormField
+                  control={form.control}
+                  name='name_5641602954'
+                  render={({ field }) => (
+                    <FormItem className='flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4'>
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className='space-y-1 leading-none'>
+                        <FormLabel>Công việc có thể lặp lại</FormLabel>
+
+                        <FormMessage />
+                      </div>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='dueDate'
+                  render={({ field }) => (
+                    <FormItem className='flex flex-col'>
+                      <FormLabel className='text-default-700'>
+                        Chọn ngày
+                      </FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant='outline'
+                              size='md'
+                              className={cn(
+                                'border-default md:px-3',
+                                !field.value &&
+                                  'text-muted-foreground border-default-200 md:px-3'
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, 'PPP', { locale: vi })
+                              ) : (
+                                <span>Chọn ngày</span>
+                              )}
+                              <CalendarIcon
+                                className={cn(
+                                  'ms-auto h-4 w-4 text-default-300',
+                                  { 'text-default-900': field.value }
+                                )}
+                              />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className='w-auto p-0' align='start'>
+                          <Calendar
+                            mode='single'
+                            selected={field.value}
+                            classNames={{
+                              months:
+                                'w-full space-y-4 sm:gap-x-4 sm:space-y-0 flex',
+                            }}
+                            locale={vi}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                              date <
+                                new Date(
+                                  new Date().setDate(new Date().getDate() - 1)
+                                ) ||
+                              date >
+                                new Date(
+                                  new Date().setDate(new Date().getDate() + 1)
+                                )
+                            }
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Chọn buổi */}
               <FormField
                 control={form.control}
-                name='session'
+                name='name_3994754233'
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className='flex flex-col'>
                     <FormLabel className='text-default-700'>
                       Chọn buổi
                     </FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder='Select...' />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value='Morning'>Buổi sáng</SelectItem>
-                        <SelectItem value='Afternoon'>Buổi chiều</SelectItem>
-                        <SelectItem value='Evening'>Buổi tối</SelectItem>
-                        <SelectItem value='AllDay'>Cả ngày</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <MultiSelector
+                        values={field.value}
+                        onValuesChange={field.onChange}
+                        loop
+                        className='mt-0'
+                      >
+                        <MultiSelectorTrigger className='!mt-0 !rounded-sm'>
+                          <MultiSelectorInput
+                            placeholder={field.value.length ? '' : 'Chọn buổi'}
+                            className='text-sm'
+                          />
+                        </MultiSelectorTrigger>
+                        <MultiSelectorContent>
+                          <MultiSelectorList>
+                            <MultiSelectorItem value='Buổi sáng'>
+                              Buổi sáng
+                            </MultiSelectorItem>
+                            <MultiSelectorItem value='Buổi chiều'>
+                              Buổi chiều
+                            </MultiSelectorItem>
+                            <MultiSelectorItem value='Buổi tối'>
+                              Buổi tối
+                            </MultiSelectorItem>
+                          </MultiSelectorList>
+                        </MultiSelectorContent>
+                      </MultiSelector>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

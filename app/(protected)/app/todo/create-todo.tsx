@@ -156,7 +156,6 @@ const CreateTodo = () => {
         title: 'Staffs fetched successfully.',
       });
       setStaffPendingTask(getStaffPendingMutation.data?.data.result);
-      console.table('Staffs:', getStaffPendingMutation.data?.data?.result);
     }
   };
 
@@ -176,12 +175,19 @@ const CreateTodo = () => {
             <div className='grid grid-cols-2 w-full gap-2'>
               <FormField
                 control={form.control}
+                disabled={true}
                 name='taskName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className='text-default-700'>Tiêu đề</FormLabel>
+                    <FormLabel className='text-default-700'>
+                      Tiêu đề aaaa
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder='Enter Title' {...field} />
+                      <Input
+                        disabled={true}
+                        placeholder='Enter Title'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
