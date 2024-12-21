@@ -1,9 +1,8 @@
 'use client';
 
-import Nav from '@/components/nav';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Icon } from '@/components/ui/icon';
 import {
   Popover,
@@ -12,26 +11,18 @@ import {
 } from '@/components/ui/popover';
 import { vi } from 'date-fns/locale';
 
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { generateTaskData } from '@/utils/fakeData';
 import { addMonths, format } from 'date-fns';
 import { BarChart, CalendarIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { DateRange } from 'react-day-picker';
-import CreateTodo from './create-todo';
 
-import TablePagination from '@/components/table/table-pagination';
 import { tasksApi } from '@/config/api';
 import { TaskDTO } from '@/dtos/AplicationDTO';
 import { FilterDTO } from '@/dtos/FilterDTO';
 import { Pagination as PaginationType } from '@/dtos/Pagination';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import TodoSidebarWrapper from './sidebar-wrapper';
-import Todo from './todo';
-import TodoHeader from './todo-header';
-import KanBanApp from '../kanban/kanban-app';
-import { defaultCols, defaultTasks } from '../kanban/data';
 
 const TasksPage = () => {
   const queryClient = useQueryClient();
@@ -333,7 +324,7 @@ const TasksPage = () => {
           </Card>
         </div> */}
       </div>
-      <KanBanApp defaultCols={defaultCols} />
+      {/* <KanBanApp defaultCols={defaultCols} /> */}
     </div>
   );
 };
