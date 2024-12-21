@@ -61,9 +61,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { jwtDecode } from 'jwt-decode';
-import { set } from 'lodash';
+import _, { set } from 'lodash';
 import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -93,7 +93,7 @@ const FormSchema = z.object({
   taskTypeId: z.string().optional(),
   createdByUserId: z.string().optional(),
   name_3994754233: z.array(z.string()).nonempty('Please at least one item'),
-  name_5641602954: z.boolean().optional(),
+  isLoop: z.boolean().optional(),
 });
 
 const AddBoard = () => {
@@ -101,6 +101,7 @@ const AddBoard = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [cageChoice, setCageChoice] = useState<string>('');
   const [isLoop, setIsLoop] = useState<boolean>(false);
+
   const [staffPendingTask, setStaffPendingTask] = useState<
     StaffWithCountTaskDTO[]
   >([]);
@@ -253,7 +254,7 @@ const AddBoard = () => {
                       <Input
                         disabled
                         className='text-sm'
-                        placeholder='Enter Title'
+                        placeholder='Tiêu đề được tạo tự động'
                         {...field}
                       />
                     </FormControl>
@@ -308,10 +309,8 @@ const AddBoard = () => {
                 control={form.control}
                 name='cageId'
                 render={({ field }) => (
-                  <FormItem className='flex flex-col'>
-                    <FormLabel>
-                      Chọn chuồng <span className='text-destructive'> *</span>
-                    </FormLabel>
+                  <FormItem className='flex flex-col w-full'>
+                    <FormLabel required={true}>Chọn chuồng</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -320,7 +319,7 @@ const AddBoard = () => {
                             role='checkbox'
                             size='md'
                             className={cn(
-                              '!px-3',
+                              '!px-3 ',
                               !field.value && 'text-muted-foreground'
                             )}
                           >
@@ -335,10 +334,10 @@ const AddBoard = () => {
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className='w-full p-0'>
-                        <Command className='w-full'>
+                      <PopoverContent className={cn(`w-[43vw] p-0`)}>
+                        <Command>
                           <CommandInput placeholder='Tìm kiếm chuồng...' />
-                          <CommandList className='w-full'>
+                          <CommandList>
                             <CommandEmpty>Không tìm thấy chuồng</CommandEmpty>
                             <CommandGroup>
                               {cases?.items.map((language) => (
@@ -377,8 +376,8 @@ const AddBoard = () => {
                 name='assignedToUserId'
                 render={({ field }) => (
                   <FormItem className='flex flex-col'>
-                    <FormLabel className='text-default-700'>
-                      Phân công cho <span className='text-destructive'>*</span>
+                    <FormLabel required={true} className='text-default-700'>
+                      Phân công cho
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
@@ -432,7 +431,7 @@ const AddBoard = () => {
               <div className='grid grid-cols-3 w-full gap-4'>
                 <FormField
                   control={form.control}
-                  name='name_5641602954'
+                  name='isLoop'
                   render={({ field }) => (
                     <FormItem className='flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4'>
                       <FormControl>
@@ -457,7 +456,7 @@ const AddBoard = () => {
                     control={form.control}
                     name='dueDate'
                     render={({ field }) => (
-                      <FormItem className='flex flex-col'>
+                      <FormItem className='flex flex-col col-span-2'>
                         <FormLabel className='text-default-700'>
                           Chọn ngày
                         </FormLabel>
@@ -474,15 +473,16 @@ const AddBoard = () => {
                                 )}
                               >
                                 {field.value ? (
-                                  format(field.value, 'PPP', { locale: vi })
+                                  _.capitalize(
+                                    format(field.value, 'PPP', {
+                                      locale: vi,
+                                    }).trim()
+                                  )
                                 ) : (
                                   <span>Chọn ngày</span>
                                 )}
                                 <CalendarIcon
-                                  className={cn(
-                                    'ms-auto h-4 w-4 text-default-300',
-                                    { 'text-default-900': field.value }
-                                  )}
+                                  className={cn('ms-auto h-4 w-4')}
                                 />
                               </Button>
                             </FormControl>
@@ -538,15 +538,16 @@ const AddBoard = () => {
                                   )}
                                 >
                                   {field.value ? (
-                                    format(field.value, 'PPP', { locale: vi })
+                                    _.capitalize(
+                                      format(field.value, 'PPP', {
+                                        locale: vi,
+                                      }).trim()
+                                    )
                                   ) : (
                                     <span>Chọn ngày</span>
                                   )}
                                   <CalendarIcon
-                                    className={cn(
-                                      'ms-auto h-4 w-4 text-default-300',
-                                      { 'text-default-900': field.value }
-                                    )}
+                                    className={cn('ms-auto h-4 w-4 ')}
                                   />
                                 </Button>
                               </FormControl>
@@ -566,17 +567,9 @@ const AddBoard = () => {
                                 onSelect={field.onChange}
                                 disabled={(date) =>
                                   date <
-                                    new Date(
-                                      new Date().setDate(
-                                        new Date().getDate() - 1
-                                      )
-                                    ) ||
-                                  date >
-                                    new Date(
-                                      new Date().setDate(
-                                        new Date().getDate() + 1
-                                      )
-                                    )
+                                  new Date(
+                                    new Date().setDate(new Date().getDate() - 1)
+                                  )
                                 }
                                 initialFocus
                               />
@@ -591,7 +584,10 @@ const AddBoard = () => {
                       name='endDate'
                       render={({ field }) => (
                         <FormItem className='flex flex-col'>
-                          <FormLabel className='text-default-700'>
+                          <FormLabel
+                            required={true}
+                            className='text-default-700'
+                          >
                             Đến ngày
                           </FormLabel>
                           <Popover>
@@ -602,20 +598,20 @@ const AddBoard = () => {
                                   size='md'
                                   className={cn(
                                     'border-default md:px-3',
-                                    !field.value &&
-                                      'text-muted-foreground border-default-200 md:px-3'
+                                    !field.value && 'border-default-200 md:px-3'
                                   )}
                                 >
                                   {field.value ? (
-                                    format(field.value, 'PPP', { locale: vi })
+                                    _.capitalize(
+                                      format(field.value, 'PPP', {
+                                        locale: vi,
+                                      }).trim()
+                                    )
                                   ) : (
                                     <span>Chọn ngày</span>
                                   )}
                                   <CalendarIcon
-                                    className={cn(
-                                      'ms-auto h-4 w-4 text-default-300',
-                                      { 'text-default-900': field.value }
-                                    )}
+                                    className={cn('ms-auto h-4 w-4 ')}
                                   />
                                 </Button>
                               </FormControl>
@@ -635,17 +631,15 @@ const AddBoard = () => {
                                 onSelect={field.onChange}
                                 disabled={(date) =>
                                   date <
-                                    new Date(
-                                      new Date().setDate(
-                                        new Date().getDate() - 1
-                                      )
-                                    ) ||
-                                  date >
-                                    new Date(
-                                      new Date().setDate(
-                                        new Date().getDate() + 1
-                                      )
+                                  new Date(
+                                    new Date().setDate(
+                                      form.getValues('startDate')
+                                        ? new Date(
+                                            form.getValues('startDate')!
+                                          ).getDate() - 1
+                                        : new Date().getDate() - 1
                                     )
+                                  )
                                 }
                                 initialFocus
                               />
@@ -665,7 +659,7 @@ const AddBoard = () => {
                 name='name_3994754233'
                 render={({ field }) => (
                   <FormItem className='flex flex-col'>
-                    <FormLabel className='text-default-700'>
+                    <FormLabel required={true} className='text-default-700'>
                       Chọn buổi
                     </FormLabel>
                     <FormControl>
@@ -704,34 +698,6 @@ const AddBoard = () => {
                 )}
               />
             </div>
-
-            {/* <FormField
-              control={form.control}
-              name='tag'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-default-700'>Tag</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder='Select...' />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value='team'>Team</SelectItem>
-                      <SelectItem value='low'>Low</SelectItem>
-                      <SelectItem value='medium'>Medium</SelectItem>
-                      <SelectItem value='high'>High</SelectItem>
-                      <SelectItem value='update'>Update</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
 
             <FormField
               control={form.control}
