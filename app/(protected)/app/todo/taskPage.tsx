@@ -23,6 +23,8 @@ import { TaskDTO } from '@/dtos/AplicationDTO';
 import { FilterDTO } from '@/dtos/FilterDTO';
 import { Pagination as PaginationType } from '@/dtos/Pagination';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import KanBanApp from '../kanban/kanban-app';
+import { defaultCols } from '../kanban/data';
 
 const TasksPage = () => {
   const queryClient = useQueryClient();
@@ -324,7 +326,7 @@ const TasksPage = () => {
           </Card>
         </div> */}
       </div>
-      {/* <KanBanApp defaultCols={defaultCols} /> */}
+      <KanBanApp defaultCols={defaultCols} />
     </div>
   );
 };
