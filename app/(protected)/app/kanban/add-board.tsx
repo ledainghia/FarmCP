@@ -79,21 +79,21 @@ const TaskType = [
 ];
 
 const FormSchema = z.object({
-  taskName: z.string().min(2, {
-    message: 'Tiêu đề có ít nhất 2 kí tự',
-  }),
+  taskName: z.string().optional(),
   assignedToUserId: z.string().optional(),
   // tag: z.string().optional(),
-  cageId: z.string(),
-  dueDate: z.date().optional(),
+  cageId: z.string().optional(),
+  dueDate: z.date(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
   description: z.string().optional(),
-  session: z.enum(['Morning', 'Afternoon', 'Evening'], {
-    message: 'Buổi không hợp lệ',
-  }),
+  // session: z.enum(['Morning', 'Afternoon', 'Evening'], {
+  //   message: 'Buổi không hợp lệ',
+  // }),
   taskTypeId: z.string().optional(),
   createdByUserId: z.string().optional(),
   name_3994754233: z.array(z.string()).nonempty('Please at least one item'),
-  name_5641602954: z.boolean().default(true),
+  name_5641602954: z.boolean().optional(),
 });
 
 const AddBoard = () => {
@@ -109,7 +109,7 @@ const AddBoard = () => {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       taskName: '',
-      name_3994754233: ['Buổi sáng'],
+      name_3994754233: [],
     },
   });
 
@@ -146,6 +146,7 @@ const AddBoard = () => {
   }, [cases, setCages]);
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
+    console.log('Form Data:', data);
     const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) {
       toast({
@@ -160,8 +161,7 @@ const AddBoard = () => {
       dueDate: data.dueDate ? data.dueDate : undefined,
       createdByUserId: decodedToken?.nameid?.toString(),
     };
-    createTaskMutation.mutate(payload);
-    // console.log('Form Data:', payload);
+    // createTaskMutation.mutate(payload);
   }
 
   const getStaffPendingMutation = useGetStaffPendingMutation(cageChoice);
@@ -233,7 +233,13 @@ const AddBoard = () => {
           <DialogTitle> Phân công công việc</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2'>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            onError={(e) => {
+              console.error(e);
+            }}
+            className='space-y-2'
+          >
             <div className='grid grid-cols-2 w-full gap-2'>
               <FormField
                 control={form.control}
@@ -432,7 +438,10 @@ const AddBoard = () => {
                       <FormControl>
                         <Checkbox
                           checked={field.value}
-                          onCheckedChange={field.onChange}
+                          onCheckedChange={(e) => {
+                            field.onChange(e);
+                            setIsLoop(e ? true : false);
+                          }}
                         />
                       </FormControl>
                       <div className='space-y-1 leading-none'>
@@ -443,69 +452,211 @@ const AddBoard = () => {
                     </FormItem>
                   )}
                 />
-
-                <FormField
-                  control={form.control}
-                  name='dueDate'
-                  render={({ field }) => (
-                    <FormItem className='flex flex-col'>
-                      <FormLabel className='text-default-700'>
-                        Chọn ngày
-                      </FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant='outline'
-                              size='md'
-                              className={cn(
-                                'border-default md:px-3',
-                                !field.value &&
-                                  'text-muted-foreground border-default-200 md:px-3'
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, 'PPP', { locale: vi })
-                              ) : (
-                                <span>Chọn ngày</span>
-                              )}
-                              <CalendarIcon
+                {!isLoop ? (
+                  <FormField
+                    control={form.control}
+                    name='dueDate'
+                    render={({ field }) => (
+                      <FormItem className='flex flex-col'>
+                        <FormLabel className='text-default-700'>
+                          Chọn ngày
+                        </FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant='outline'
+                                size='md'
                                 className={cn(
-                                  'ms-auto h-4 w-4 text-default-300',
-                                  { 'text-default-900': field.value }
+                                  'border-default md:px-3',
+                                  !field.value &&
+                                    'text-muted-foreground border-default-200 md:px-3'
                                 )}
+                              >
+                                {field.value ? (
+                                  format(field.value, 'PPP', { locale: vi })
+                                ) : (
+                                  <span>Chọn ngày</span>
+                                )}
+                                <CalendarIcon
+                                  className={cn(
+                                    'ms-auto h-4 w-4 text-default-300',
+                                    { 'text-default-900': field.value }
+                                  )}
+                                />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className='w-auto p-0' align='start'>
+                            <Calendar
+                              mode='single'
+                              selected={field.value}
+                              classNames={{
+                                months:
+                                  'w-full space-y-4 sm:gap-x-4 sm:space-y-0 flex',
+                              }}
+                              locale={vi}
+                              onSelect={field.onChange}
+                              disabled={(date) =>
+                                date <
+                                  new Date(
+                                    new Date().setDate(new Date().getDate() - 1)
+                                  ) ||
+                                date >
+                                  new Date(
+                                    new Date().setDate(new Date().getDate() + 1)
+                                  )
+                              }
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ) : (
+                  <>
+                    <FormField
+                      control={form.control}
+                      name='startDate'
+                      render={({ field }) => (
+                        <FormItem className='flex flex-col'>
+                          <FormLabel className='text-default-700'>
+                            Từ ngày
+                          </FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant='outline'
+                                  size='md'
+                                  className={cn(
+                                    'border-default md:px-3',
+                                    !field.value &&
+                                      'text-muted-foreground border-default-200 md:px-3'
+                                  )}
+                                >
+                                  {field.value ? (
+                                    format(field.value, 'PPP', { locale: vi })
+                                  ) : (
+                                    <span>Chọn ngày</span>
+                                  )}
+                                  <CalendarIcon
+                                    className={cn(
+                                      'ms-auto h-4 w-4 text-default-300',
+                                      { 'text-default-900': field.value }
+                                    )}
+                                  />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className='w-auto p-0'
+                              align='start'
+                            >
+                              <Calendar
+                                mode='single'
+                                selected={field.value}
+                                classNames={{
+                                  months:
+                                    'w-full space-y-4 sm:gap-x-4 sm:space-y-0 flex',
+                                }}
+                                locale={vi}
+                                onSelect={field.onChange}
+                                disabled={(date) =>
+                                  date <
+                                    new Date(
+                                      new Date().setDate(
+                                        new Date().getDate() - 1
+                                      )
+                                    ) ||
+                                  date >
+                                    new Date(
+                                      new Date().setDate(
+                                        new Date().getDate() + 1
+                                      )
+                                    )
+                                }
+                                initialFocus
                               />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className='w-auto p-0' align='start'>
-                          <Calendar
-                            mode='single'
-                            selected={field.value}
-                            classNames={{
-                              months:
-                                'w-full space-y-4 sm:gap-x-4 sm:space-y-0 flex',
-                            }}
-                            locale={vi}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date <
-                                new Date(
-                                  new Date().setDate(new Date().getDate() - 1)
-                                ) ||
-                              date >
-                                new Date(
-                                  new Date().setDate(new Date().getDate() + 1)
-                                )
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name='endDate'
+                      render={({ field }) => (
+                        <FormItem className='flex flex-col'>
+                          <FormLabel className='text-default-700'>
+                            Đến ngày
+                          </FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant='outline'
+                                  size='md'
+                                  className={cn(
+                                    'border-default md:px-3',
+                                    !field.value &&
+                                      'text-muted-foreground border-default-200 md:px-3'
+                                  )}
+                                >
+                                  {field.value ? (
+                                    format(field.value, 'PPP', { locale: vi })
+                                  ) : (
+                                    <span>Chọn ngày</span>
+                                  )}
+                                  <CalendarIcon
+                                    className={cn(
+                                      'ms-auto h-4 w-4 text-default-300',
+                                      { 'text-default-900': field.value }
+                                    )}
+                                  />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className='w-auto p-0'
+                              align='start'
+                            >
+                              <Calendar
+                                mode='single'
+                                selected={field.value}
+                                classNames={{
+                                  months:
+                                    'w-full space-y-4 sm:gap-x-4 sm:space-y-0 flex',
+                                }}
+                                locale={vi}
+                                onSelect={field.onChange}
+                                disabled={(date) =>
+                                  date <
+                                    new Date(
+                                      new Date().setDate(
+                                        new Date().getDate() - 1
+                                      )
+                                    ) ||
+                                  date >
+                                    new Date(
+                                      new Date().setDate(
+                                        new Date().getDate() + 1
+                                      )
+                                    )
+                                }
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </>
+                )}
               </div>
 
               {/* Chọn buổi */}
@@ -520,7 +671,10 @@ const AddBoard = () => {
                     <FormControl>
                       <MultiSelector
                         values={field.value}
-                        onValuesChange={field.onChange}
+                        onValuesChange={(e) => {
+                          field.onChange(e);
+                          console.log(e);
+                        }}
                         loop
                         className='mt-0'
                       >
