@@ -78,23 +78,43 @@ const TaskType = [
   },
 ];
 
-const FormSchema = z.object({
-  taskName: z.string().optional(),
-  assignedToUserId: z.string().optional(),
-  // tag: z.string().optional(),
-  cageId: z.string().optional(),
-  dueDate: z.date(),
-  startDate: z.date().optional(),
-  endDate: z.date().optional(),
-  description: z.string().optional(),
-  // session: z.enum(['Morning', 'Afternoon', 'Evening'], {
-  //   message: 'Buổi không hợp lệ',
-  // }),
-  taskTypeId: z.string().optional(),
-  createdByUserId: z.string().optional(),
-  name_3994754233: z.array(z.string()).nonempty('Please at least one item'),
-  isLoop: z.boolean().optional(),
-});
+const FormSchema = z
+  .object({
+    taskName: z.string({ message: 'Có lỗi khi xử lí tiêu đề tự động' }),
+    assignedToUserId: z.string({ message: 'Vui lòng chọn nhân viên' }),
+    cageId: z.string({ message: 'Vui lòng chọn chuồng' }),
+    dueDate: z.date().optional(),
+    startDate: z.date().optional(),
+    endDate: z.date().optional(),
+    description: z.string().optional(),
+    taskTypeId: z.string({ message: 'Vui lòng chọn loại công việc' }),
+    createdByUserId: z.string().optional(),
+    name_3994754233: z
+      .array(z.string())
+      .nonempty('Vui lòng chọn ít nhất một buổi trong ngày'),
+    isLoop: z.boolean().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.isLoop) {
+      if (!data.startDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['startDate'],
+          message: 'Vui lòng chọn ngày bắt đầuđầu',
+        });
+      }
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['endDate'],
+        message: 'Vui lòng chọn ngày kết thúc',
+      });
+    }
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['dueDate'],
+      message: 'Vui lòng chọn ngày',
+    });
+  });
 
 const AddBoard = () => {
   const clientQuery = useQueryClient();
@@ -267,10 +287,11 @@ const AddBoard = () => {
                 name='taskTypeId'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className='text-default-700'>
+                    <FormLabel>
                       Loại công việc <span className='text-destructive'>*</span>
                     </FormLabel>
                     <Select
+                      value={field.value}
                       onValueChange={(e) => {
                         field.onChange(e);
                         setTitleValue('Task_Type', e);
@@ -375,52 +396,80 @@ const AddBoard = () => {
                 control={form.control}
                 name='assignedToUserId'
                 render={({ field }) => (
-                  <FormItem className='flex flex-col'>
-                    <FormLabel required={true} className='text-default-700'>
-                      Phân công cho
-                    </FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      disabled={
-                        !form.getValues('cageId') ||
-                        getStaffPendingMutation.isPending
-                      }
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder='Chọn nhân viên...' />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {getStaffPendingMutation.data?.data.result &&
-                          getStaffPendingMutation.data?.data.result.length >
-                            0 &&
-                          getStaffPendingMutation.data?.data.result.map(
-                            (user: any, index: any) => (
-                              <SelectItem
-                                key={`staff-${index}`}
-                                value={user.staffId}
-                              >
-                                <div className='flex items-center gap-2'>
-                                  {/* Nếu cần hiển thị hình ảnh */}
-                                  {/* <Image
-                        src={user.image}
-                        alt={user.label}
-                        width={20}
-                        height={20}
-                        className="w-5 h-5 rounded-full"
-                      /> */}
-                                  <span className='text-sm text-default-900'>
-                                    {user.fullName} ( đang thực hiện{' '}
-                                    {user.pendingTaskCount} công việc )
-                                  </span>
-                                </div>
-                              </SelectItem>
-                            )
-                          )}
-                      </SelectContent>
-                    </Select>
+                  <FormItem className='flex flex-col w-full'>
+                    <FormLabel required={true}>Phân công cho</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant='outline'
+                            role='checkbox'
+                            size='md'
+                            disabled={
+                              !form.getValues('cageId') ||
+                              getStaffPendingMutation.isPending
+                            }
+                            className={cn(
+                              '!px-3 ',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            <span className='flex flex-1'>
+                              {getStaffPendingMutation.data?.data.result &&
+                                getStaffPendingMutation.data?.data.result
+                                  .length > 0 &&
+                                getStaffPendingMutation.data?.data.result.find(
+                                  (item: StaffWithCountTaskDTO) =>
+                                    item.staffId === field.value
+                                )?.fullName}
+                            </span>
+                            <ChevronsUpDown className='h-4 w-4 shrink-0 opacity-50' />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className={cn(`w-[43vw] p-0`)}>
+                        <Command>
+                          <CommandInput placeholder='Tìm kiếm chuồng...' />
+                          <CommandList>
+                            <CommandEmpty>
+                              Không tìm thấy nhân viên
+                            </CommandEmpty>
+                            <CommandGroup>
+                              {getStaffPendingMutation.data?.data.result &&
+                                getStaffPendingMutation.data?.data.result
+                                  .length > 0 &&
+                                getStaffPendingMutation.data?.data.result.map(
+                                  (item: StaffWithCountTaskDTO) => (
+                                    <CommandItem
+                                      value={item.fullName}
+                                      key={item.staffId}
+                                      onSelect={() => {
+                                        form.setValue(
+                                          'assignedToUserId',
+                                          item.staffId
+                                        );
+                                      }}
+                                    >
+                                      <Check
+                                        className={cn(
+                                          'mr-2 h-4 w-4',
+                                          item.staffId === field.value
+                                            ? 'opacity-100'
+                                            : 'opacity-0'
+                                        )}
+                                      />
+                                      <span className='text-sm text-default-900'>
+                                        {item.fullName} ( đang thực hiện{' '}
+                                        {item.pendingTaskCount} công việc )
+                                      </span>
+                                    </CommandItem>
+                                  )
+                                )}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -457,7 +506,7 @@ const AddBoard = () => {
                     name='dueDate'
                     render={({ field }) => (
                       <FormItem className='flex flex-col col-span-2'>
-                        <FormLabel className='text-default-700'>
+                        <FormLabel required={true} className='text-default-700'>
                           Chọn ngày
                         </FormLabel>
                         <Popover>
@@ -522,7 +571,10 @@ const AddBoard = () => {
                       name='startDate'
                       render={({ field }) => (
                         <FormItem className='flex flex-col'>
-                          <FormLabel className='text-default-700'>
+                          <FormLabel
+                            required={true}
+                            className='text-default-700'
+                          >
                             Từ ngày
                           </FormLabel>
                           <Popover>
@@ -659,9 +711,7 @@ const AddBoard = () => {
                 name='name_3994754233'
                 render={({ field }) => (
                   <FormItem className='flex flex-col'>
-                    <FormLabel required={true} className='text-default-700'>
-                      Chọn buổi
-                    </FormLabel>
+                    <FormLabel required={true}>Chọn buổi</FormLabel>
                     <FormControl>
                       <MultiSelector
                         values={field.value}
