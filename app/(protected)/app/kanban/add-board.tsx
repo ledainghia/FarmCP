@@ -100,20 +100,23 @@ const FormSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['startDate'],
-          message: 'Vui lòng chọn ngày bắt đầuđầu',
+          message: 'Vui lòng chọn ngày bắt đầu',
         });
       }
+      if (!data.endDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['endDate'],
+          message: 'Vui lòng chọn ngày kết thúc',
+        });
+      }
+    } else if (!data.dueDate) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ['endDate'],
-        message: 'Vui lòng chọn ngày kết thúc',
+        path: ['dueDate'],
+        message: 'Vui lòng chọn ngày',
       });
     }
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['dueDate'],
-      message: 'Vui lòng chọn ngày',
-    });
   });
 
 const AddBoard = () => {
@@ -429,7 +432,7 @@ const AddBoard = () => {
                       </PopoverTrigger>
                       <PopoverContent className={cn(`w-[43vw] p-0`)}>
                         <Command>
-                          <CommandInput placeholder='Tìm kiếm chuồng...' />
+                          <CommandInput placeholder='Tìm kiếm nhân viên...' />
                           <CommandList>
                             <CommandEmpty>
                               Không tìm thấy nhân viên
@@ -636,12 +639,7 @@ const AddBoard = () => {
                       name='endDate'
                       render={({ field }) => (
                         <FormItem className='flex flex-col'>
-                          <FormLabel
-                            required={true}
-                            className='text-default-700'
-                          >
-                            Đến ngày
-                          </FormLabel>
+                          <FormLabel required={true}>Đến ngày</FormLabel>
                           <Popover>
                             <PopoverTrigger asChild>
                               <FormControl>
