@@ -3,6 +3,7 @@ import axios from 'axios';
 import { FilterDTO } from '@/dtos/FilterDTO';
 import { buildQueryString } from '@/utils/buildQuerrySearch';
 import { jwtDecode } from 'jwt-decode';
+import { get } from 'lodash';
 const baseURL = process.env.NEXT_PUBLIC_SITE_URL + '/api';
 
 const axiosInstance = axios.create({
@@ -72,6 +73,9 @@ export const tasksApi = {
   },
   updateTasks: async (id: string, data: any) => {
     return await axiosInstance.put(`/tasks/${id}`, data);
+  },
+  getTaskTypes: async () => {
+    return await axiosInstance.get('/tasktype');
   },
 };
 

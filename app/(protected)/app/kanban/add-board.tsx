@@ -20,7 +20,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -51,59 +50,49 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/use-toast';
 import { tasksApi } from '@/config/api';
 import useCageStore from '@/config/zustandStore/cagesStore';
-import { CageDTO } from '@/dtos/CageDTO';
 import { StaffWithCountTaskDTO } from '@/dtos/StaffWithCountTask';
+import { TaskTypeDTO } from '@/dtos/TaskTypeDTO';
 import { useGetStaffPendingMutation } from '@/hooks/use-mutation';
-import { useCagesQuery } from '@/hooks/use-query';
+import { useCagesQuery, useTaskTypesQuery } from '@/hooks/use-query';
 import { cn } from '@/lib/utils';
+import { cleanObject } from '@/utils/cleanObj';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { vi } from 'date-fns/locale';
+import { ca, se, vi } from 'date-fns/locale';
 import { jwtDecode } from 'jwt-decode';
-import _, { set } from 'lodash';
+import _ from 'lodash';
 import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-
-const TaskType = [
-  {
-    taskTypeId: '37fcbc5f-4824-4151-ac05-a65240334c70',
-    taskTypeName: 'Feed',
-  },
-  {
-    taskTypeId: 'dbd1e320-b87c-447f-8486-b73d5d515f36',
-    taskTypeName: 'Clean',
-  },
-];
 
 const FormSchema = z
   .object({
     taskName: z.string({ message: 'Có lỗi khi xử lí tiêu đề tự động' }),
-    assignedToUserId: z.string({ message: 'Vui lòng chọn nhân viên' }),
+    assignedToUserId: z.string().optional(),
     cageId: z.string({ message: 'Vui lòng chọn chuồng' }),
     dueDate: z.date().optional(),
-    startDate: z.date().optional(),
-    endDate: z.date().optional(),
+    startAt: z.date().optional(),
+    endAt: z.date().optional(),
     description: z.string().optional(),
     taskTypeId: z.string({ message: 'Vui lòng chọn loại công việc' }),
     createdByUserId: z.string().optional(),
-    name_3994754233: z
+    sessions: z
       .array(z.string())
       .nonempty('Vui lòng chọn ít nhất một buổi trong ngày'),
     isLoop: z.boolean().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.isLoop) {
-      if (!data.startDate) {
+      if (!data.startAt) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['startDate'],
           message: 'Vui lòng chọn ngày bắt đầu',
         });
       }
-      if (!data.endDate) {
+      if (!data.endAt) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['endDate'],
@@ -123,28 +112,29 @@ const AddBoard = () => {
   const clientQuery = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [cageChoice, setCageChoice] = useState<string>('');
-  const [isLoop, setIsLoop] = useState<boolean>(false);
 
-  const [staffPendingTask, setStaffPendingTask] = useState<
-    StaffWithCountTaskDTO[]
-  >([]);
+  const [staffPendingTask, setStaffPendingTask] =
+    useState<StaffWithCountTaskDTO>();
   const [title, setTitle] = useState<string>('');
+  const [isLoop, setIsLoop] = useState<boolean>(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       taskName: '',
-      name_3994754233: [],
+      sessions: [],
     },
   });
 
   const { data: cases } = useCagesQuery();
+  const { data: taskTypes } = useTaskTypesQuery();
+
   const createTaskMutation = useMutation({
-    mutationFn: (data: z.infer<typeof FormSchema>) => {
+    mutationFn: (data: any) => {
       return tasksApi.createTasks(data);
     },
     onSuccess() {
       toast({
-        title: 'Task created successfully.',
+        title: 'Công việc đã được phân công.',
       });
 
       form.reset();
@@ -160,6 +150,30 @@ const AddBoard = () => {
       });
     },
   });
+
+  const createTaskRecurring = useMutation({
+    mutationFn: (data: any) => {
+      return tasksApi.createTasks(data);
+    },
+    onSuccess() {
+      toast({
+        title: 'Công việc đã được phân công.',
+      });
+
+      form.reset();
+      clientQuery.invalidateQueries({
+        queryKey: ['tasks'],
+      });
+      setIsDialogOpen(false);
+    },
+    onError() {
+      toast({
+        title: 'Lỗi khi tạo công việc.',
+        variant: 'destructive',
+      });
+    },
+  });
+
   const setCages = useCageStore((state) => state.setCages); // Zustand action
 
   useEffect(() => {
@@ -170,7 +184,7 @@ const AddBoard = () => {
   }, [cases, setCages]);
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log('Form Data:', data);
+    console.log('Form Data:', cleanObject(data));
     const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) {
       toast({
@@ -180,66 +194,68 @@ const AddBoard = () => {
       return;
     }
     const decodedToken = jwtDecode(accessToken) as { nameid?: number };
-    const payload = {
-      ...data,
-      dueDate: data.dueDate ? data.dueDate : undefined,
-      createdByUserId: decodedToken?.nameid?.toString(),
+    const sessionMapping: { [key: string]: number } = {
+      'Buổi sáng': 0,
+      'Buổi chiều': 1,
+      'Buổi tối': 2,
     };
-    // createTaskMutation.mutate(payload);
+    if (!data.isLoop) {
+      const payload = {
+        ...data,
+        dueDate: data.dueDate ? data.dueDate : undefined,
+        createdByUserId: decodedToken?.nameid?.toString(),
+        isLoop: undefined,
+        sessions: data.sessions.map((session) => sessionMapping[session]),
+      };
+      createTaskMutation.mutate(payload);
+    } else {
+      const payload = {
+        ...data,
+        createdByUserId: decodedToken?.nameid?.toString(),
+        isLoop: undefined,
+        sessions: data.sessions.map((session) => sessionMapping[session]),
+      };
+      createTaskRecurring.mutate(payload);
+    }
   }
 
-  const getStaffPendingMutation = useGetStaffPendingMutation(cageChoice);
   const handleCageChange = (value: string) => {
-    setCageChoice(value);
     if (!value) return;
-    getStaffPendingMutation.mutate();
-    if (getStaffPendingMutation.isError) {
-      toast({
-        title: 'Failed to fetch staffs.',
-        variant: 'destructive',
-      });
-      setStaffPendingTask([]);
-    } else {
-      toast({
-        title: 'Staffs fetched successfully.',
-      });
-      setStaffPendingTask(getStaffPendingMutation.data?.data.result);
-      console.table('Staffs:', getStaffPendingMutation.data?.data?.result);
+    const cageCh = cases?.items?.find((item) => item.id === value);
+    if (!cageCh || !cageCh.staffId || !cageCh.staffName) {
+      return;
     }
+    const staff: StaffWithCountTaskDTO = {
+      staffId: cageCh.staffId,
+      staffName: cageCh.staffName,
+    };
+
+    setStaffPendingTask(staff);
   };
 
   const setTitleValue = (type: string, value: string) => {
     if (type && value) {
       let valueSet = '-';
       const currentTitle = form.getValues('taskName') || '';
-
-      // Xử lý Task_Type
       if (type === 'Task_Type') {
-        const task = TaskType.find((item) => item.taskTypeId === value);
+        const task = taskTypes.find((item: TaskTypeDTO) => item.id === value);
         const taskName = task?.taskTypeName || '';
         if (currentTitle.includes('-')) {
-          // Thay thế trước dấu '-'
           const [_, suffix] = currentTitle.split('-');
           valueSet = `${taskName} -${suffix}`;
         } else {
-          // Thêm mới
           valueSet = `${taskName} -`;
         }
-      }
-      // Xử lý Cage
-      else if (type === 'Cage') {
+      } else if (type === 'Cage') {
         const cage = cases?.items.find((item) => item.id === value);
         const cageName = cage?.name || '';
         if (currentTitle.includes('-')) {
-          // Thay thế sau dấu '-'
           const [prefix] = currentTitle.split('-');
           valueSet = `${prefix}- ${cageName}`;
         } else {
-          // Thêm mới
           valueSet = `- ${cageName}`;
         }
       }
-
       setTitle(valueSet);
       form.setValue('taskName', valueSet);
     }
@@ -309,13 +325,11 @@ const AddBoard = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {TaskType.map((item) => (
-                          <SelectItem
-                            key={item.taskTypeId}
-                            value={item.taskTypeId}
-                          >
+                        {taskTypes.map((item: TaskTypeDTO) => (
+                          <SelectItem key={item.id} value={item.id}>
                             <span className='text-sm text-default-900'>
-                              {item.taskTypeName}
+                              {item.taskTypeName} - [ Mức độ ưu tiên{' '}
+                              {item.priorityNum} ]
                             </span>
                           </SelectItem>
                         ))}
@@ -400,79 +414,15 @@ const AddBoard = () => {
                 name='assignedToUserId'
                 render={({ field }) => (
                   <FormItem className='flex flex-col w-full'>
-                    <FormLabel required={true}>Phân công cho</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant='outline'
-                            role='checkbox'
-                            size='md'
-                            disabled={
-                              !form.getValues('cageId') ||
-                              getStaffPendingMutation.isPending
-                            }
-                            className={cn(
-                              '!px-3 ',
-                              !field.value && 'text-muted-foreground'
-                            )}
-                          >
-                            <span className='flex flex-1'>
-                              {getStaffPendingMutation.data?.data.result &&
-                                getStaffPendingMutation.data?.data.result
-                                  .length > 0 &&
-                                getStaffPendingMutation.data?.data.result.find(
-                                  (item: StaffWithCountTaskDTO) =>
-                                    item.staffId === field.value
-                                )?.fullName}
-                            </span>
-                            <ChevronsUpDown className='h-4 w-4 shrink-0 opacity-50' />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className={cn(`w-[43vw] p-0`)}>
-                        <Command>
-                          <CommandInput placeholder='Tìm kiếm nhân viên...' />
-                          <CommandList>
-                            <CommandEmpty>
-                              Không tìm thấy nhân viên
-                            </CommandEmpty>
-                            <CommandGroup>
-                              {getStaffPendingMutation.data?.data.result &&
-                                getStaffPendingMutation.data?.data.result
-                                  .length > 0 &&
-                                getStaffPendingMutation.data?.data.result.map(
-                                  (item: StaffWithCountTaskDTO) => (
-                                    <CommandItem
-                                      value={item.fullName}
-                                      key={item.staffId}
-                                      onSelect={() => {
-                                        form.setValue(
-                                          'assignedToUserId',
-                                          item.staffId
-                                        );
-                                      }}
-                                    >
-                                      <Check
-                                        className={cn(
-                                          'mr-2 h-4 w-4',
-                                          item.staffId === field.value
-                                            ? 'opacity-100'
-                                            : 'opacity-0'
-                                        )}
-                                      />
-                                      <span className='text-sm text-default-900'>
-                                        {item.fullName} ( đang thực hiện{' '}
-                                        {item.pendingTaskCount} công việc )
-                                      </span>
-                                    </CommandItem>
-                                  )
-                                )}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
+                    <FormLabel required={true}>Nhân viên quản lí</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled
+                        className='text-sm'
+                        placeholder='Phân công tự động'
+                        value={staffPendingTask?.staffName}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -571,7 +521,7 @@ const AddBoard = () => {
                   <>
                     <FormField
                       control={form.control}
-                      name='startDate'
+                      name='startAt'
                       render={({ field }) => (
                         <FormItem className='flex flex-col'>
                           <FormLabel
@@ -636,7 +586,7 @@ const AddBoard = () => {
                     />
                     <FormField
                       control={form.control}
-                      name='endDate'
+                      name='endAt'
                       render={({ field }) => (
                         <FormItem className='flex flex-col'>
                           <FormLabel required={true}>Đến ngày</FormLabel>
@@ -683,9 +633,9 @@ const AddBoard = () => {
                                   date <
                                   new Date(
                                     new Date().setDate(
-                                      form.getValues('startDate')
+                                      form.getValues('startAt')
                                         ? new Date(
-                                            form.getValues('startDate')!
+                                            form.getValues('startAt')!
                                           ).getDate() - 1
                                         : new Date().getDate() - 1
                                     )
@@ -706,7 +656,7 @@ const AddBoard = () => {
               {/* Chọn buổi */}
               <FormField
                 control={form.control}
-                name='name_3994754233'
+                name='sessions'
                 render={({ field }) => (
                   <FormItem className='flex flex-col'>
                     <FormLabel required={true}>Chọn buổi</FormLabel>

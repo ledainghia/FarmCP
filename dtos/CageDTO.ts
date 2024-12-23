@@ -11,4 +11,6 @@ export type CageDTO = {
   boardStatus: boolean; // true if the board is functional
   createdDate: string; // ISO date format
   cameraUrl: string; // URL for the cage's camera feed
+  staffId?: string; // ID of the staff assigned to the cage
+  staffName?: string; // Name of the staff assigned to the cage
 };

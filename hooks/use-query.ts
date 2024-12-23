@@ -1,4 +1,4 @@
-import { cagesApi, farmsApi, staffApi } from '@/config/api';
+import { cagesApi, farmsApi, staffApi, tasksApi } from '@/config/api';
 import { CageDTO } from '@/dtos/CageDTO';
 import { FarmDTO } from '@/dtos/FarmDTO';
 import { Pagination } from '@/dtos/Pagination';
@@ -44,6 +44,16 @@ export const useFarmsQuery = (userID: string) => {
     queryKey: ['farms', userID],
     queryFn: async (): Promise<Pagination<FarmDTO>> => {
       const response = await farmsApi.getFarms(userID); // API call
+      return response.data.result; // Assuming `result` contains the pagination data
+    },
+  });
+};
+
+export const useTaskTypesQuery = () => {
+  return useQuery({
+    queryKey: ['taskTypes'],
+    queryFn: async () => {
+      const response = await tasksApi.getTaskTypes(); // API call
       return response.data.result; // Assuming `result` contains the pagination data
     },
   });
