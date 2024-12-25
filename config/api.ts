@@ -104,4 +104,12 @@ export const farmsApi = {
   getStaffOfFarm: async (farmId: string) => {
     return await axiosInstance.get(`/farm/${farmId}/users`);
   },
+  getAnimalsTemplates: async () => {
+    return await axiosInstance.get('/animaltemplates');
+  },
+  getGrowthStageTemplate: async (animalID: string) => {
+    return await axiosInstance.get(
+      `/growthstagetemplate?TemplateId=${animalID}`
+    );
+  },
 };

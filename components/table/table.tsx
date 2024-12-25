@@ -102,7 +102,7 @@ const TableCustom = ({
         <div>{header}</div>
       </div>
 
-      <Table>
+      <Table className='border border-default-200'>
         <TableHeader className='bg-lime-50'>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>

@@ -58,3 +58,23 @@ export const useTaskTypesQuery = () => {
     },
   });
 };
+
+export const useAnimalsTemplatesQuery = () => {
+  return useQuery({
+    queryKey: ['animalsTemplates'],
+    queryFn: async () => {
+      const response = await farmsApi.getAnimalsTemplates(); // API call
+      return response.data.result; // Assuming `result` contains the pagination data
+    },
+  });
+};
+
+export const useGrowStageTemplatesQuery = (animalID: string) => {
+  return useQuery({
+    queryKey: ['growStageTemplates', animalID],
+    queryFn: async () => {
+      const response = await farmsApi.getGrowthStageTemplate(animalID); // API call
+      return response.data.result; // Assuming `result` contains the pagination data
+    },
+  });
+};
