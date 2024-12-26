@@ -35,7 +35,7 @@ export default function Page() {
           </Breadcrumb>
         </CardHeader>
         <CardContent className='pt-3'>
-          <Tabs defaultValue='tasks' className='w-full'>
+          <Tabs defaultValue='animalsTemplate' className='w-full'>
             <TabsList>
               <TabsTrigger
                 value='animalsTemplate'

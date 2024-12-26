@@ -1,5 +1,5 @@
 export type AnimalsTemplateDTO = {
-  id: string;
+  id?: string;
   name: string;
   species: string;
   status: string;

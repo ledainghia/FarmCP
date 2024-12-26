@@ -69,7 +69,7 @@ export const useAnimalsTemplatesQuery = () => {
   });
 };
 
-export const useGrowStageTemplatesQuery = (animalID: string) => {
+export const useGrowStageTemplatesQuery = (animalID?: string) => {
   return useQuery({
     queryKey: ['growStageTemplates', animalID],
     queryFn: async () => {

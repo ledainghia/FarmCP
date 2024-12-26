@@ -18,6 +18,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Eye, SquarePen, Trash2 } from 'lucide-react';
 import GrowStageTemplates from './growStageTemplate';
 import { AnimalsTemplateDTO } from '@/dtos/AnimalsTemplateDTO';
+import AnimalsTemplateDialog from './animalsTemplateDialog';
 
 export default function AnimalsTemplate({
   addNew = true,
@@ -45,7 +46,7 @@ export default function AnimalsTemplate({
     }
   }, [animalsTemplates]);
 
-  const columns: ColumnDef<DataProps>[] = [
+  const columns: ColumnDef<any>[] = [
     {
       id: 'select',
       size: 3,
@@ -83,11 +84,14 @@ export default function AnimalsTemplate({
     {
       accessorKey: 'defaultCapacity',
       header: 'Số lượng mặc định',
+      meta: 'end',
+      cell: ({ row }) => <span>{row.getValue('defaultCapacity')} con</span>,
     },
     { accessorKey: 'notes', header: 'Ghi chú' },
     {
       id: 'actions',
       header: 'Hành Động',
+      meta: 'center',
 
       cell: ({ row }) => (
         <div className='flex items-center gap-2'>
@@ -169,7 +173,7 @@ export default function AnimalsTemplate({
             placeholder=''
             onChange={(e) => setSearch(e.target.value)}
           />
-          {addNew && <Button>Thêm mới</Button>}
+          {addNew && <AnimalsTemplateDialog />}
         </div>
       }
     />

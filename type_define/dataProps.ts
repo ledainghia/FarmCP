@@ -6,4 +6,5 @@ export type DataProps = {
   detail: string;
   expandedContent?: React.ReactNode;
   action: React.ReactNode;
+  defaultCapacity?: number;
 };

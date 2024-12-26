@@ -23,7 +23,7 @@ export default function GrowStageTemplates({
   animalName,
 }: {
   addNew?: boolean;
-  animalID: string;
+  animalID?: string;
   animalName: string;
 }) {
   const DEFAULT_PAGE_SIZE = 20;
@@ -46,12 +46,14 @@ export default function GrowStageTemplates({
     {
       accessorKey: 'weightAnimal',
       header: 'Cân nặng',
+      meta: 'end',
     },
     {
       accessorKey: 'ageStart',
       header: 'Tuổi bắt đầu',
+      meta: 'end',
     },
-    { accessorKey: 'ageEnd', header: 'Tuổi kết thúc' },
+    { accessorKey: 'ageEnd', header: 'Tuổi kết thúc', meta: 'end' },
 
     {
       accessorKey: 'notes',

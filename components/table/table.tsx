@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  ColumnDef,
   SortingState,
   VisibilityState,
   flexRender,
@@ -28,7 +29,7 @@ import TablePagination from './table-pagination';
 
 export type TableProps = {
   data: any[];
-  columns: any[];
+  columns: ColumnDef<any, CustomColumnMeta>[];
   isLoading?: boolean;
   title: string;
   header?: React.ReactNode;
@@ -43,6 +44,10 @@ export type TableProps = {
   hasPreviousPage?: boolean;
   setPageSize?: (pageSize: number) => void;
   setPageIndex?: (pageIndex: number) => void;
+};
+
+type CustomColumnMeta = {
+  align?: 'start' | 'center' | 'end';
 };
 
 const TableCustom = ({
@@ -105,18 +110,24 @@ const TableCustom = ({
       <Table className='border border-default-200'>
         <TableHeader className='bg-lime-50'>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow key={headerGroup.id} className='text-end'>
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
                   onClick={header.column.getToggleSortingHandler()}
-                  className={cn(
-                    (header.id === 'select' || header.id === 'actions') &&
-                      'w-10'
-                  )}
+                  className='text-end'
                 >
                   {!header.isPlaceholder && (
-                    <div className='flex items-center gap-1 font-bold text-sm'>
+                    <div
+                      className={cn(
+                        'flex    gap-1 font-bold text-sm text-end',
+                        header.column.columnDef.meta === 'end'
+                          ? 'justify-end'
+                          : header.column.columnDef.meta === 'center'
+                          ? 'justify-center'
+                          : 'justify-start'
+                      )}
+                    >
                       {/* Label */}
                       {flexRender(
                         header.column.columnDef.header,
@@ -153,7 +164,12 @@ const TableCustom = ({
                   )}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className={cn(
+                        cell.column.columnDef.meta === 'end' ? 'text-right' : ''
+                      )}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
