@@ -197,6 +197,7 @@ const AddBoard = () => {
       'Buổi sáng': 0,
       'Buổi chiều': 1,
       'Buổi tối': 2,
+      CN: 3,
     };
     if (!data.isLoop) {
       const payload = {
