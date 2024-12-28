@@ -19,7 +19,8 @@ import ClientQueryProvider from '@/providers/ClientQueryProvider';
 
 export const metadata: Metadata = {
   title: 'Login',
-  description: 'Manage your future farm',
+  description:
+    'Manage your future farma ec đây là môột caái gì đó râất hay đây xin chào taâ cả c baạn yêu cuủa xin chào các bạn yêu của tôi ',
 };
 
 export default async function RootLayout({

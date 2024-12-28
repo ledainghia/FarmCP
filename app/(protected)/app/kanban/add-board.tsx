@@ -152,7 +152,7 @@ const AddBoard = () => {
 
   const createTaskRecurring = useMutation({
     mutationFn: (data: any) => {
-      return tasksApi.createTasks(data);
+      return tasksApi.createTaskRecurring(data);
     },
     onSuccess() {
       toast({
@@ -201,10 +201,12 @@ const AddBoard = () => {
     if (!data.isLoop) {
       const payload = {
         ...data,
-        dueDate: data.dueDate ? data.dueDate : undefined,
+        dueDate: data.dueDate
+          ? new Date(data.dueDate.getTime() + 24 * 60 * 60 * 1000)
+          : undefined,
         createdByUserId: decodedToken?.nameid?.toString(),
         isLoop: undefined,
-        sessions: data.sessions.map((session) => sessionMapping[session]),
+        session: data.sessions.map((session) => sessionMapping[session]),
       };
       createTaskMutation.mutate(payload);
     } else {
@@ -212,6 +214,7 @@ const AddBoard = () => {
         ...data,
         createdByUserId: decodedToken?.nameid?.toString(),
         isLoop: undefined,
+        dueDate: undefined,
         sessions: data.sessions.map((session) => sessionMapping[session]),
       };
       createTaskRecurring.mutate(payload);

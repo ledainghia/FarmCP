@@ -10,11 +10,11 @@ export const defaultCols = [
     title: 'Đang thực hiện',
   },
   {
-    id: faker.string.uuid(),
+    id: 'OverSchedules',
     title: 'Đã hủy',
   },
   {
-    id: faker.string.uuid(),
+    id: 'Done',
     title: 'Đã hoàn thành',
   },
 ];

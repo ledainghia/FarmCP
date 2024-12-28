@@ -64,6 +64,9 @@ export const tasksApi = {
   createTasks: async (data: any) => {
     return await axiosInstance.post('/tasks', data);
   },
+  createTaskRecurring: async (data: any) => {
+    return await axiosInstance.post('/tasks/create-recurring-task', data);
+  },
   getTasks: async (filter: FilterDTO) => {
     const searchParams = buildQueryString(filter);
     return await axiosInstance.get(`/tasks?${searchParams}`);
