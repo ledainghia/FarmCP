@@ -1,6 +1,7 @@
 import { cagesApi, farmsApi, staffApi, tasksApi } from '@/config/api';
 import { CageDTO } from '@/dtos/CageDTO';
 import { FarmDTO } from '@/dtos/FarmDTO';
+import { FarmingBatchDTO } from '@/dtos/FarmingBatchDTO';
 import { Pagination } from '@/dtos/Pagination';
 import { StaffOfFarmDTO } from '@/dtos/StaffOfFarmDTO';
 import { useQuery } from '@tanstack/react-query';
@@ -74,6 +75,16 @@ export const useGrowStageTemplatesQuery = (animalID?: string) => {
     queryKey: ['growStageTemplates', animalID],
     queryFn: async () => {
       const response = await farmsApi.getGrowthStageTemplate(animalID); // API call
+      return response.data.result; // Assuming `result` contains the pagination data
+    },
+  });
+};
+
+export const useFarmingBatchQuery = () => {
+  return useQuery({
+    queryKey: ['farmingBatch'],
+    queryFn: async (): Promise<Pagination<FarmingBatchDTO>> => {
+      const response = await farmsApi.getFarmingBatch(); // API call
       return response.data.result; // Assuming `result` contains the pagination data
     },
   });

@@ -25,6 +25,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Icon } from '@/components/ui/icon';
 import { Input } from '@/components/ui/input';
 import {
   MultiSelector,
@@ -110,7 +111,6 @@ const FormSchema = z
 const AddBoard = () => {
   const clientQuery = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-  const [cageChoice, setCageChoice] = useState<string>('');
 
   const [staffPendingTask, setStaffPendingTask] =
     useState<StaffWithCountTaskDTO>();
@@ -273,7 +273,7 @@ const AddBoard = () => {
       </DialogTrigger>
       <DialogContent size='lg'>
         <DialogHeader className='mb-4'>
-          <DialogTitle> Phân công công việc</DialogTitle>
+          <DialogTitle>Phân công công việc</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
