@@ -16,6 +16,8 @@ import { useCagesQuery } from '@/hooks/use-query';
 import { DataProps } from '@/type_define/dataProps';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye, SquarePen, Trash2 } from 'lucide-react';
+import { CageDTO } from '@/dtos/CageDTO';
+import FarmingBatchTable from './farmingBatchTable';
 
 export default function BarnTable({ addNew = true }: { addNew?: boolean }) {
   const DEFAULT_PAGE_SIZE = 20;
@@ -26,19 +28,30 @@ export default function BarnTable({ addNew = true }: { addNew?: boolean }) {
   const { data: cages } = useCagesQuery();
 
   useEffect(() => {
-    if (cages) {
-      setCagesList(cages.items);
+    if (cages && Array.isArray(cages.items) && cages.items.length > 0) {
+      const updatedItems = cages.items.map((item: CageDTO) => ({
+        ...item,
+        expandedContent: (
+          <FarmingBatchTable
+            key={item.id}
+            cageName={item.name}
+            cageID={item.id}
+          />
+        ),
+      }));
+      setCagesList(updatedItems);
     }
   }, [cages]);
   const columns: ColumnDef<DataProps>[] = [
     {
       id: 'select',
       size: 3,
+      meta: 'select',
       cell: ({ row }) => (
         <div className=''>
           <Button
             variant={'ghost'}
-            size='sm'
+            size='icon'
             onClick={() => row.toggleExpanded()}
             className='hover:bg-white hover:text-primary'
           >

@@ -80,11 +80,11 @@ export const useGrowStageTemplatesQuery = (animalID?: string) => {
   });
 };
 
-export const useFarmingBatchQuery = () => {
+export const useFarmingBatchQuery = (cageID: { cageID: string }) => {
   return useQuery({
-    queryKey: ['farmingBatch'],
+    queryKey: ['farmingBatch', cageID],
     queryFn: async (): Promise<Pagination<FarmingBatchDTO>> => {
-      const response = await farmsApi.getFarmingBatch(); // API call
+      const response = await farmsApi.getFarmingBatch(cageID); // API call
       return response.data.result; // Assuming `result` contains the pagination data
     },
   });

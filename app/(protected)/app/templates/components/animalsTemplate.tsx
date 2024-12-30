@@ -54,7 +54,7 @@ export default function AnimalsTemplate({
         <div className=''>
           <Button
             variant={'ghost'}
-            size='sm'
+            size='icon'
             onClick={() => row.toggleExpanded()}
             className='hover:bg-white hover:text-primary'
           >

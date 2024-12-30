@@ -98,7 +98,7 @@ const TableCustom = ({
       <div className='flex items-center py-4 '>
         <div
           className={cn(
-            'flex-1  font-normal text-default-900',
+            'flex-1  !font-normal text-default-900',
             !isDesktop ? 'text-sm' : 'text-base'
           )}
         >
@@ -115,12 +115,14 @@ const TableCustom = ({
                 <TableHead
                   key={header.id}
                   onClick={header.column.getToggleSortingHandler()}
-                  className='text-end'
+                  className={cn(
+                    header.column.columnDef.meta === 'select' ? 'w-1' : ''
+                  )}
                 >
                   {!header.isPlaceholder && (
                     <div
                       className={cn(
-                        'flex    gap-1 font-bold text-sm text-end',
+                        'flex gap-1 font-bold text-sm',
                         header.column.columnDef.meta === 'end'
                           ? 'justify-end'
                           : header.column.columnDef.meta === 'center'
@@ -178,7 +180,7 @@ const TableCustom = ({
                   ))}
                 </TableRow>
                 {row.getIsExpanded() && (
-                  <TableRow>
+                  <TableRow className='bg-neutral-50'>
                     <TableCell colSpan={columns.length} className=' p-4'>
                       {row.original.expandedContent}
                     </TableCell>

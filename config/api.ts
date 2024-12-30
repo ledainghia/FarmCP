@@ -118,7 +118,7 @@ export const farmsApi = {
   createAnimalTemplate: async (data: any) => {
     return await axiosInstance.post('/animaltemplates', data);
   },
-  getFarmingBatch: async () => {
-    return await axiosInstance.get(`/farmingbatchs`);
+  getFarmingBatch: async ({ cageID }: { cageID: string }) => {
+    return await axiosInstance.get(`/farmingbatchs?CageId=${cageID}`);
   },
 };
