@@ -101,6 +101,12 @@ export const staffApi = {
 };
 
 export const farmsApi = {
+  createCage: async (data: any) => {
+    return await axiosInstance.post('/cages', data);
+  },
+  createFarmingBatch: async (data: any) => {
+    return await axiosInstance.post('/farmingbatchs', data);
+  },
   getFarms: async (userID: string) => {
     return await axiosInstance.get(`/users/${userID}/farms`);
   },

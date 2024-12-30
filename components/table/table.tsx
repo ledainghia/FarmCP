@@ -26,6 +26,7 @@ import { Fragment, useState } from 'react';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Icon } from '../ui/icon';
 import TablePagination from './table-pagination';
+import { safeIncludes } from '@/utils/checkIncludesString';
 
 export type TableProps = {
   data: any[];
@@ -75,6 +76,7 @@ const TableCustom = ({
   const table = useReactTable({
     data,
     columns,
+
     state: {
       sorting,
       columnVisibility,
@@ -116,16 +118,19 @@ const TableCustom = ({
                   key={header.id}
                   onClick={header.column.getToggleSortingHandler()}
                   className={cn(
-                    header.column.columnDef.meta === 'select' ? 'w-1' : ''
+                    safeIncludes(header.column.columnDef.meta, 'actions') ||
+                      safeIncludes(header.column.columnDef.meta, 'select')
+                      ? 'w-1'
+                      : ''
                   )}
                 >
                   {!header.isPlaceholder && (
                     <div
                       className={cn(
                         'flex gap-1 font-bold text-sm',
-                        header.column.columnDef.meta === 'end'
+                        safeIncludes(header.column.columnDef.meta, 'end')
                           ? 'justify-end'
-                          : header.column.columnDef.meta === 'center'
+                          : safeIncludes(header.column.columnDef.meta, 'center')
                           ? 'justify-center'
                           : 'justify-start'
                       )}
@@ -169,7 +174,11 @@ const TableCustom = ({
                     <TableCell
                       key={cell.id}
                       className={cn(
-                        cell.column.columnDef.meta === 'end' ? 'text-right' : ''
+                        cell.column.columnDef.meta === 'end'
+                          ? 'text-right'
+                          : cell.column.columnDef.meta === 'center'
+                          ? 'text-center'
+                          : 'text-left'
                       )}
                     >
                       {flexRender(

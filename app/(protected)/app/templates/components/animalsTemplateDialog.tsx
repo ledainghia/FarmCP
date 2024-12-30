@@ -18,13 +18,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { farmsApi } from '@/config/api';
-import useCageStore from '@/config/zustandStore/cagesStore';
-import { StaffWithCountTaskDTO } from '@/dtos/StaffWithCountTask';
-import { useCagesQuery } from '@/hooks/use-query';
 import { cleanObject } from '@/utils/cleanObj';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 

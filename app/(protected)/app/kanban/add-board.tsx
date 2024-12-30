@@ -369,7 +369,7 @@ const AddBoard = () => {
                                 ? cases.items.find(
                                     (language) => language.id === field.value
                                   )?.name
-                                : 'Select language'}
+                                : 'Chọn chuồng'}
                             </span>
                             <ChevronsUpDown className='h-4 w-4 shrink-0 opacity-50' />
                           </Button>
@@ -381,25 +381,25 @@ const AddBoard = () => {
                           <CommandList>
                             <CommandEmpty>Không tìm thấy chuồng</CommandEmpty>
                             <CommandGroup>
-                              {cases?.items.map((language) => (
+                              {cases?.items.map((cage) => (
                                 <CommandItem
-                                  value={language.name}
-                                  key={language.id}
+                                  value={cage.name}
+                                  key={cage.id}
                                   onSelect={() => {
-                                    form.setValue('cageId', language.id);
-                                    handleCageChange(language.id);
-                                    setTitleValue('Cage', language.id);
+                                    form.setValue('cageId', cage.id);
+                                    handleCageChange(cage.id);
+                                    setTitleValue('Cage', cage.id);
                                   }}
                                 >
                                   <Check
                                     className={cn(
                                       'mr-2 h-4 w-4',
-                                      language.id === field.value
+                                      cage.id === field.value
                                         ? 'opacity-100'
                                         : 'opacity-0'
                                     )}
                                   />
-                                  {language.name}
+                                  {cage.name}
                                 </CommandItem>
                               ))}
                             </CommandGroup>

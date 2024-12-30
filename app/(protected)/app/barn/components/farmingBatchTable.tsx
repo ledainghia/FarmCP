@@ -1,10 +1,14 @@
 import TableCustom from '@/components/table/table';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import { DEFAULT_PAGE_SIZE } from '@/constant/site';
 import { useFarmingBatchQuery } from '@/hooks/use-query';
 import { ColumnDef } from '@tanstack/react-table';
+import { Search } from 'lucide-react';
 import React, { useState } from 'react';
+import AddFarmingBatchDialog from './addFarmingBatchDialog';
 
 export default function FarmingBatchTable({
   cageID,
@@ -48,10 +52,12 @@ export default function FarmingBatchTable({
     {
       accessorKey: 'cleaningFrequency',
       header: 'Tần suất vệ sinh',
+      meta: 'end',
     },
     {
       accessorKey: 'quantity',
       header: 'Số lượng',
+      meta: 'end',
     },
     {
       accessorKey: 'template.species',
@@ -60,6 +66,13 @@ export default function FarmingBatchTable({
     {
       accessorKey: 'template.status',
       header: 'Trạng thái giống',
+
+      meta: 'center',
+      cell: ({ row }) => (
+        <Switch
+          checked={row.original.template.status === 'Active' ? true : false}
+        />
+      ),
     },
     {
       accessorKey: 'template.notes',
@@ -85,11 +98,12 @@ export default function FarmingBatchTable({
       header={
         <div className='flex gap-2 w-full'>
           <Input
-            className='w-[400px] h-full'
-            placeholder='Tìm kiếm theo tên hoặc mã sinh viên'
+            className='w-[400px] h-full '
+            endIcon={Search}
+            placeholder='Tìm kiếm vụ nuôi'
             onChange={(e) => setSearch(e.target.value)}
           />
-          <Button>Thêm mới</Button>
+          <AddFarmingBatchDialog cageID={cageID} cageName={cageName} />
         </div>
       }
     />

@@ -15,9 +15,16 @@ import {
 import { useCagesQuery } from '@/hooks/use-query';
 import { DataProps } from '@/type_define/dataProps';
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye, SquarePen, Trash2 } from 'lucide-react';
+import {
+  Eye,
+  MessageSquareText,
+  Search,
+  SquarePen,
+  Trash2,
+} from 'lucide-react';
 import { CageDTO } from '@/dtos/CageDTO';
 import FarmingBatchTable from './farmingBatchTable';
+import AddCageDialog from './addCageDialog';
 
 export default function BarnTable({ addNew = true }: { addNew?: boolean }) {
   const DEFAULT_PAGE_SIZE = 20;
@@ -45,7 +52,7 @@ export default function BarnTable({ addNew = true }: { addNew?: boolean }) {
   const columns: ColumnDef<DataProps>[] = [
     {
       id: 'select',
-      size: 3,
+
       meta: 'select',
       cell: ({ row }) => (
         <div className=''>
@@ -77,22 +84,15 @@ export default function BarnTable({ addNew = true }: { addNew?: boolean }) {
     {
       accessorKey: 'area',
       header: 'Diện tích',
+      meta: 'end',
     },
-    { accessorKey: 'capacity', header: 'Sức chứa' },
-    // {
-    //   accessorKey: 'detail',
-    //   header: 'Chi tiết',
-    //   cell: ({ row }) => <span>{row.getValue('detail')}</span>,
-    // },
-    // {
-    //   id: 'active',
-    //   header: 'Kích hoạt',
-    //   cell: ({ row }) => <Switch />,
-    // },
+    { accessorKey: 'capacity', header: 'Sức chứa', meta: 'end' },
+
     {
       id: 'actions',
       header: 'Hành Động',
-
+      meta: 'center actions',
+      size: 3,
       cell: ({ row }) => (
         <div className='flex items-center gap-2'>
           <TooltipProvider>
@@ -169,11 +169,13 @@ export default function BarnTable({ addNew = true }: { addNew?: boolean }) {
       header={
         <div className='flex gap-2 w-full'>
           <Input
-            className='w-[400px] h-full'
-            placeholder='Tìm kiếm theo tên hoặc mã sinh viên'
+            className='w-[400px] h-full '
+            endIcon={Search}
+            placeholder='Tìm kiếm chuồng trại'
             onChange={(e) => setSearch(e.target.value)}
           />
-          {addNew && <Button>Thêm mới</Button>}
+
+          {addNew && <AddCageDialog />}
         </div>
       }
     />
