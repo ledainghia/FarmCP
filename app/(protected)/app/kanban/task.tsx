@@ -168,7 +168,7 @@ function TaskCard({ task }: { task: TaskDTO }) {
           <div className='flex mt-5'>
             <div className='flex-1'>
               <div className='text-default-400  text-sm font-normal mb-3'>
-                Assigned to
+                Phân công cho nhân viên
               </div>
 
               <TooltipProvider>

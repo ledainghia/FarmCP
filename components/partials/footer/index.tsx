@@ -12,8 +12,8 @@ const DashCodeFooter = async () => {
     <FooterContent>
       <div className=' md:flex  justify-between text-default-600 hidden'>
         <div className='text-center ltr:md:text-start rtl:md:text-right text-sm'>
-          COPYRIGHT &copy; {new Date().getFullYear()} AgriSense, All rights
-          Reserved
+          Bản quyền &copy; {new Date().getFullYear()} Nong Dan Online, Bảo tồn
+          mọi quyền
         </div>
       </div>
       <div className='flex md:hidden justify-around items-center'>

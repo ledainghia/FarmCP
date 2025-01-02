@@ -365,7 +365,7 @@ const MultiSelectorItem = forwardRef<
       className={cn(
         'rounded-md cursor-pointer px-2 py-1 transition-colors flex justify-between ',
         className,
-        isIncluded && 'opacity-50 cursor-default',
+        isIncluded && 'opacity-50 cursor-default hidden',
         props.disabled && 'opacity-50 cursor-not-allowed'
       )}
       onMouseDown={mousePreventDefault}

@@ -241,7 +241,7 @@ const AddBoard = () => {
       let valueSet = '-';
       const currentTitle = form.getValues('taskName') || '';
       if (type === 'Task_Type') {
-        const task = taskTypes.find((item: TaskTypeDTO) => item.id === value);
+        const task = taskTypes?.find((item: TaskTypeDTO) => item.id === value);
         const taskName = task?.taskTypeName || '';
         if (currentTitle.includes('-')) {
           const [_, suffix] = currentTitle.split('-');
@@ -288,7 +288,7 @@ const AddBoard = () => {
                 control={form.control}
                 name='taskName'
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className='flex flex-col w-full'>
                     <FormLabel className='text-default-700'>
                       Tiêu đề <span className='text-destructive'>*</span>
                     </FormLabel>
@@ -308,36 +308,68 @@ const AddBoard = () => {
                 control={form.control}
                 name='taskTypeId'
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className='flex flex-col w-full'>
                     <FormLabel>
                       Loại công việc <span className='text-destructive'>*</span>
                     </FormLabel>
-                    <Select
-                      value={field.value}
-                      onValueChange={(e) => {
-                        field.onChange(e);
-                        setTitleValue('Task_Type', e);
-                      }}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue
-                            className='text-sm'
-                            placeholder='Select...'
-                          />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {taskTypes.map((item: TaskTypeDTO) => (
-                          <SelectItem key={item.id} value={item.id}>
-                            <span className='text-sm text-default-900'>
-                              {item.taskTypeName} - [ Mức độ ưu tiên{' '}
-                              {item.priorityNum} ]
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant='outline'
+                            role='checkbox'
+                            size='md'
+                            className={cn(
+                              '!px-3 ',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            <span className='flex flex-1'>
+                              {taskTypes
+                                ? taskTypes.find(
+                                    (task: TaskTypeDTO) =>
+                                      task.id === field.value
+                                  )?.taskTypeName || 'Chọn loại công việc'
+                                : 'Chọn loại công việc'}
                             </span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                            <ChevronsUpDown className='h-4 w-4 shrink-0 opacity-50' />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className={cn(`w-[43vw] p-0`)}>
+                        <Command>
+                          <CommandInput placeholder='Tìm kiếm loại công việc...' />
+                          <CommandList>
+                            <CommandEmpty>
+                              Không tìm thấy loại công việc nào{' '}
+                            </CommandEmpty>
+                            <CommandGroup>
+                              {taskTypes?.map((task) => (
+                                <CommandItem
+                                  value={task.taskTypeName}
+                                  key={task.id}
+                                  onSelect={() => {
+                                    field.onChange(task.id);
+                                    setTitleValue('Task_Type', task.id);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      'mr-2 h-4 w-4',
+                                      task.id === field.value
+                                        ? 'opacity-100'
+                                        : 'opacity-0'
+                                    )}
+                                  />
+                                  {task.taskTypeName} - [Mức độ ưu tiên{' '}
+                                  {task.priorityNum}]
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -368,7 +400,7 @@ const AddBoard = () => {
                               {cases
                                 ? cases.items.find(
                                     (language) => language.id === field.value
-                                  )?.name
+                                  )?.name || 'Chọn chuồng'
                                 : 'Chọn chuồng'}
                             </span>
                             <ChevronsUpDown className='h-4 w-4 shrink-0 opacity-50' />
@@ -704,7 +736,7 @@ const AddBoard = () => {
               control={form.control}
               name='description'
               render={({ field }) => (
-                <FormItem>
+                <FormItem className='flex flex-col w-full'>
                   <FormLabel className='text-default-700'>
                     Chi tiết công việc
                   </FormLabel>
@@ -718,7 +750,7 @@ const AddBoard = () => {
                 </FormItem>
               )}
             />
-            <div className='flex justify-end gap-2'>
+            <div className='pt-9 flex justify-end gap-2 '>
               <Button
                 type='reset'
                 variant={'outline'}

@@ -120,7 +120,7 @@ const TasksPage = () => {
             </div>
 
             <div className='grid grid-cols-12 gap-3'>
-              <div className='col-span-12 grid grid-cols-4 gap-3'>
+              <div className='col-span-12 grid md:grid-cols-1 lg:grid-cols-4 gap-3'>
                 <Card className='bg-info/20 shadow-none border-none'>
                   <CardContent className=' p-4  text-center'>
                     <div className='mx-auto h-10 w-10  rounded-full flex items-center justify-center bg-white mb-4'>

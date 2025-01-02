@@ -4,6 +4,7 @@ import { FarmDTO } from '@/dtos/FarmDTO';
 import { FarmingBatchDTO } from '@/dtos/FarmingBatchDTO';
 import { Pagination } from '@/dtos/Pagination';
 import { StaffOfFarmDTO } from '@/dtos/StaffOfFarmDTO';
+import { TaskTypeDTO } from '@/dtos/TaskTypeDTO';
 import { useQuery } from '@tanstack/react-query';
 
 // Define a custom hook
@@ -53,7 +54,7 @@ export const useFarmsQuery = (userID: string) => {
 export const useTaskTypesQuery = () => {
   return useQuery({
     queryKey: ['taskTypes'],
-    queryFn: async () => {
+    queryFn: async (): Promise<TaskTypeDTO[]> => {
       const response = await tasksApi.getTaskTypes(); // API call
       return response.data.result; // Assuming `result` contains the pagination data
     },

@@ -166,8 +166,8 @@ const KanBanApp = ({ defaultCols }: { defaultCols: Column[] }) => {
           onDragEnd={onDragEnd}
           onDragOver={onDragOver}
         >
-          <div className='flex  gap-4 overflow-x-auto no-scrollbar'>
-            <div className='flex flex-1 gap-4'>
+          <div className='flex  gap-4 overflow-x-auto '>
+            <div className=' gap-4 grid md:grid-cols-1 lg:grid-cols-4'>
               {defaultCols.map((col) => (
                 <ColumnContainer
                   key={col.id}
