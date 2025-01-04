@@ -9,8 +9,11 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { ColumnDef } from '@tanstack/react-table';
-import FarmingBatchTable from './components/farmingBatchTable';
+import KanBanApp from '../../kanban/kanban-app';
 
+import KanBanLayout from '@/components/kanban/kanban-layout';
+import { defaultCols } from '@/components/kanban/data';
+import { Steps, StepsProvider, useSteps } from 'react-step-builder';
 export default function Page() {
   return (
     <Card>
@@ -18,17 +21,19 @@ export default function Page() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbPage>Quản lí</BreadcrumbPage>
+              <BreadcrumbPage>Bác sĩ thú y</BreadcrumbPage>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Quản lí vụ nuôi </BreadcrumbPage>
+              <BreadcrumbPage>Báo cáo bệnh tật</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </CardHeader>
       <CardContent>
-        <FarmingBatchTable />
+        <StepsProvider>
+          <KanBanLayout defaultCols={defaultCols} />
+        </StepsProvider>
       </CardContent>
     </Card>
   );

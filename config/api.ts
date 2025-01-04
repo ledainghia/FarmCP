@@ -128,3 +128,12 @@ export const farmsApi = {
     return await axiosInstance.get(`/farmingbatchs?CageId=${cageID}`);
   },
 };
+
+export const docterApi = {
+  getMedicalsymptom: async () => {
+    return await axiosInstance.get('/medicalsymptom');
+  },
+  getMedication: async () => {
+    return await axiosInstance.get('/medication?page=1&pageSize=1000');
+  },
+};

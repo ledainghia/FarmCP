@@ -52,28 +52,20 @@ export function getMenuList(pathname: string): Group[] {
         },
       ],
     },
-    // {
-    //   groupLabel: '',
-    //   id: 'quick-menu',
-    //   menus: [
-    //     {
-    //       id: 'changelog',
-    //       href: '/changelog',
-    //       label: 'Cấu hình và Thiết lập',
-    //       active: pathname.includes('/changelog'),
-    //       icon: 'qlementine-icons:page-setup-16',
-    //       submenus: [
-    //         {
-    //           active: pathname.includes('/changelog'),
-    //           href: '/changelog',
-    //           label: 'Tài khoản và chuồng trại',
-    //           icon: 'heroicons:arrow-trending-up',
-    //           children: [],
-    //         },
-    //       ],
-    //     },
-    //   ],
-    // },
+    {
+      groupLabel: 'Bác sĩ thú y',
+      id: 'bac_si_thu_y',
+      menus: [
+        {
+          id: 'benh_tat',
+          href: '/app/bac_si/benh_tat',
+          label: 'Báo cáo bệnh tật',
+          active: pathname.includes('/app/bac_si/benh_tat'),
+          icon: 'map:veterinary-care',
+          submenus: [],
+        },
+      ],
+    },
     {
       groupLabel: 'Quản lí',
       id: 'management',

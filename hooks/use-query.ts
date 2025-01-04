@@ -1,7 +1,15 @@
-import { cagesApi, farmsApi, staffApi, tasksApi } from '@/config/api';
+import {
+  cagesApi,
+  docterApi,
+  farmsApi,
+  staffApi,
+  tasksApi,
+} from '@/config/api';
 import { CageDTO } from '@/dtos/CageDTO';
 import { FarmDTO } from '@/dtos/FarmDTO';
 import { FarmingBatchDTO } from '@/dtos/FarmingBatchDTO';
+import { MedicalSymptomDTO } from '@/dtos/MedicalSymptomDTO';
+import { MedicationDTO } from '@/dtos/MedicationDTO';
 import { Pagination } from '@/dtos/Pagination';
 import { StaffOfFarmDTO } from '@/dtos/StaffOfFarmDTO';
 import { TaskTypeDTO } from '@/dtos/TaskTypeDTO';
@@ -86,6 +94,26 @@ export const useFarmingBatchQuery = (cageID: { cageID: string }) => {
     queryKey: ['farmingBatch', cageID],
     queryFn: async (): Promise<Pagination<FarmingBatchDTO>> => {
       const response = await farmsApi.getFarmingBatch(cageID); // API call
+      return response.data.result; // Assuming `result` contains the pagination data
+    },
+  });
+};
+
+export const useMedicalSymptomQuery = () => {
+  return useQuery({
+    queryKey: ['medicalSymptom'],
+    queryFn: async (): Promise<MedicalSymptomDTO[]> => {
+      const response = await docterApi.getMedicalsymptom(); // API call
+      return response.data.result; // Assuming `result` contains the pagination data
+    },
+  });
+};
+
+export const useMedicationQuery = () => {
+  return useQuery({
+    queryKey: ['medications'],
+    queryFn: async (): Promise<Pagination<MedicationDTO>> => {
+      const response = await docterApi.getMedication(); // API call
       return response.data.result; // Assuming `result` contains the pagination data
     },
   });

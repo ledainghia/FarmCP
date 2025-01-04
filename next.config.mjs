@@ -1,4 +1,5 @@
 import nextra from 'nextra';
+import { hostname } from 'os';
 
 /** @type {import('next').NextConfig} */
 
@@ -41,6 +42,10 @@ const nextConfig = {
       {
         protocol: 'http',
         hostname: '192.168.0.110',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
       },
     ],
   },
