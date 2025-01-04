@@ -1,13 +1,11 @@
 'use client';
 import React, { CSSProperties } from 'react';
 
-import { useState } from 'react';
-import { ChevronDown, Dot, LucideIcon } from 'lucide-react';
-import { GripVertical } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { DropdownMenuArrow } from '@radix-ui/react-dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
+import { ChevronDown, GripVertical } from 'lucide-react';
+import { useState } from 'react';
 
 import {
   Collapsible,
@@ -15,44 +13,38 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from '@/components/ui/tooltip';
-import {
   DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuSeparator,
-  DropdownMenuGroup,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
   DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
   DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Icon } from '@/components/ui/icon';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { Submenu } from '@/lib/menus';
 
 // for dnd
 
-import {
-  useSortable,
-  arrayMove,
-  SortableContext,
-  verticalListSortingStrategy,
-  horizontalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { useConfig } from '@/hooks/use-config';
-import { MultiCollapseMenuButton } from './classic-multi-collapse-button';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { useMobileMenuConfig } from '@/hooks/use-mobile-menu';
 import { useMenuHoverConfig } from '@/hooks/use-menu-hover';
-import { usePathname } from 'next/navigation';
+import { useMobileMenuConfig } from '@/hooks/use-mobile-menu';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { MultiCollapseMenuButton } from './classic-multi-collapse-button';
 
 interface CollapseMenuButtonProps {
   icon: string;

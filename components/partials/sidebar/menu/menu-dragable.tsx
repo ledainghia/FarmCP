@@ -1,56 +1,50 @@
 'use client';
 
-import React from 'react';
 import Logo from '@/components/logo';
 import SidebarHoverToggle from '@/components/partials/sidebar/sidebar-hover-toggle';
-import { Ellipsis, LogOut } from 'lucide-react';
+import { Ellipsis } from 'lucide-react';
+import React from 'react';
 
-import { cn } from '@/lib/utils';
 import { getMenuList } from '@/lib/menus';
+import { cn } from '@/lib/utils';
 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Tooltip,
-  TooltipTrigger,
   TooltipContent,
   TooltipProvider,
+  TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useConfig } from '@/hooks/use-config';
 import MenuLabel from '../common/menu-label';
 
-import MenuItem from '../common/menu-item';
-import { CollapseMenuButton } from '../common/collapse-menu-button';
-import MenuWidget from '../common/menu-widget';
 import SearchBar from '@/components/partials/sidebar/common/search-bar';
+import { CollapseMenuButton } from '../common/collapse-menu-button';
 import TeamSwitcher from '../common/farm-switcher';
+import MenuItem from '../common/menu-item';
+import MenuWidget from '../common/menu-widget';
 
 // for dnd
 import {
+  closestCenter,
   DndContext,
   KeyboardSensor,
   MouseSensor,
   TouchSensor,
-  closestCenter,
   useSensor,
+  useSensors,
   type DragEndEvent,
   type UniqueIdentifier,
-  useSensors,
 } from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
-  restrictToVerticalAxis,
-  restrictToHorizontalAxis,
-} from '@dnd-kit/modifiers';
-import {
-  useSortable,
   arrayMove,
   SortableContext,
   verticalListSortingStrategy,
-  horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { useTranslations } from 'next-intl';
 import { useParams, usePathname } from 'next/navigation';
 import { getLangDir } from 'rtl-detect';
-import { CSS } from '@dnd-kit/utilities';
 
 export function MenuDragAble() {
   const t = useTranslations('Menu');

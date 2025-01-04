@@ -12,7 +12,7 @@ import { useCagesQuery, useMedicationQuery } from '@/hooks/use-query';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import Image from 'next/image';
-import { use, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
@@ -49,9 +49,17 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Textarea } from '../ui/textarea';
 
 import AddMedication from '@/app/(protected)/app/bac_si/benh_tat/components/addMedication';
-import StepProgressBar from '../ui/steps';
+import DiagnosisMedication from '@/app/(protected)/app/bac_si/benh_tat/components/diagnosisMedication';
 import StepsProgress from '@/app/(protected)/app/bac_si/benh_tat/components/stepsProgress';
-import { m } from 'framer-motion';
+
+import 'lightgallery/css/lg-thumbnail.css';
+import 'lightgallery/css/lg-zoom.css';
+import 'lightgallery/css/lightgallery.css';
+
+// import plugins if you need
+import lgThumbnail from 'lightgallery/plugins/thumbnail';
+import lgZoom from 'lightgallery/plugins/zoom';
+import LightGallery from 'lightgallery/react';
 const formSchema = z
   .object({
     isSeperatorCage: z.boolean().optional(),
@@ -118,6 +126,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
 
   const [numberOfMedication, setNumberOfMedication] = useState<number>(0);
   const [numberOfMedicationSC, setNumberOfMedicationSC] = useState<number>(0);
+  const [hasAddMedication, setHasAddMedication] = useState<boolean>(false);
 
   const { data: cases } = useCagesQuery();
   const { data: medications } = useMedicationQuery();
@@ -140,7 +149,6 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
 
   const formDataRef = useRef<{ [key: number]: any }>({}); // Lưu dữ liệu form trực tiếp
 
-  const submitMedication = () => {};
   const handleNext = () => {
     if (stepCurrent === 1) {
       submitButtonRef.current?.click();
@@ -215,11 +223,130 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
     }
   }, [isSeperatorCage]);
 
+  useEffect(() => {
+    if (hasAddMedication) {
+      setOpen(true);
+      console.log('hasAddMedication change ', hasAddMedication);
+    }
+  }, [hasAddMedication, setHasAddMedication]);
+
   return (
     <>
       {/* <DeleteConfirmationDialog open={open} onClose={() => setOpen(false)} /> */}
       {/* <EditTask open={editTaskOpen} setOpen={setEditTaskOpen} /> */}
+      <DiagnosisMedication
+        medicalsymptoms={task}
+        hasAddMedication={hasAddMedication}
+        setHasAddMedication={setHasAddMedication}
+      >
+        <Card
+          className={cn('', {
+            'opacity-10 bg-primary/50 ': isDragging,
+          })}
+          ref={setNodeRef}
+          style={style}
+          {...attributes}
+          {...listeners}
+        >
+          <CardHeader className='flex-row gap-1 p-2.5 items-center space-y-0'>
+            {/* <Avatar className="flex-none h-8 w-8 rounded bg-default-200 text-default hover:bg-default-200">
+                        <AvatarImage src={projectLogo} />
+                        <AvatarFallback className="uppercase">  {title.charAt(0) + title.charAt(1)}</AvatarFallback>
+                    </Avatar> */}
+            <h3 className='flex-1 text-default-800 text-lg font-medium truncate text-center  '>
+              Bệnh ở {task.nameAnimal}
+            </h3>
+          </CardHeader>
+          <CardContent className='p-2.5 pt-1'>
+            <div className='flex-col gap-2 '>
+              <div className=' text-default-400 mb-1'>Triệu chứng</div>
+              <div className='text-default-600 '>{task.symptoms}</div>
+            </div>
 
+            <div className='flex gap-2 mt-2'>
+              <div>
+                <div className=' text-default-400 mb-1'>Ngày khởi tạo</div>
+                <div className=' text-default-600  font-medium'>12/12/2025</div>
+              </div>
+              <Separator
+                orientation='vertical'
+                className='text-default-200 h-12'
+              />
+              <div>
+                <div className=' text-default-400 mb-1'>
+                  Số lượng vật nuôi ảnh hưởng
+                </div>
+                <div className=' text-default-600  font-medium'>
+                  {task.affectedQuantity} / {task.quantity}
+                </div>
+              </div>
+            </div>
+
+            <div className='flex-col gap-2 mt-2'>
+              <div className=' text-default-400 mb-1'>Ghi chú</div>
+              <div className='text-default-600 '>{task.notes}</div>
+            </div>
+            <div className='mt-1'>
+              <div className='text-end text-xs text-default-600 mb-1.5 font-medium'>
+                {/* {progress}% */}
+              </div>
+              {/* <Progress value={progress} color='primary' size='sm' /> */}
+            </div>
+            {task.pictures && task.pictures.length > 0 ? (
+              <div className='flex mt-5'>
+                <div className='flex-1'>
+                  <div className='text-default-400   font-normal mb-3'>
+                    Hình ảnh bệnh
+                  </div>
+                </div>
+              </div>
+            ) : null}
+            <div className='flex mt-5'>
+              <div className='flex-1'>
+                <div className='text-default-400   font-normal mb-3'>
+                  Hình ảnh thực tế
+                </div>
+                <div className=''>
+                  <LightGallery
+                    speed={500}
+                    plugins={[lgThumbnail, lgZoom]}
+                    addClass='w-full grid grid-cols-6 gap-3'
+                    elementClassNames='w-full grid grid-cols-6 gap-3'
+                  >
+                    {Array.from({ length: 6 }).map((_, index) => (
+                      <div
+                        key={index + 'Images'}
+                        className='relative group w-full'
+                        data-src='https://images.unsplash.com/photo-1523569467793-70cfeec01d58?q=80&w=2671&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+                      >
+                        <Image
+                          src='https://images.unsplash.com/photo-1523569467793-70cfeec01d58?q=80&w=2671&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+                          width={500}
+                          height={500}
+                          className='w-full rounded-lg'
+                          alt='Hình ảnh vật nuôi bị bệnh'
+                        />
+
+                        <div className='absolute rounded-lg inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity duration-300'>
+                          <div className='flex flex-col justify-center items-center gap-1'>
+                            <Icon
+                              icon={'lets-icons:full-alt'}
+                              className='h-6 w-6'
+                            />
+                            <span className='text-sm font-medium'>
+                              Phóng to ảnh
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </LightGallery>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </DiagnosisMedication>
       <Dialog
         open={open}
         key={task.id + '-dialogTask'}
@@ -227,124 +354,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
           setOpen(e);
         }}
       >
-        <DialogTrigger asChild>
-          <Card
-            className={cn('', {
-              'opacity-10 bg-primary/50 ': isDragging,
-            })}
-            ref={setNodeRef}
-            style={style}
-            {...attributes}
-            {...listeners}
-          >
-            <CardHeader className='flex-row gap-1 p-2.5 items-center space-y-0'>
-              {/* <Avatar className="flex-none h-8 w-8 rounded bg-default-200 text-default hover:bg-default-200">
-                        <AvatarImage src={projectLogo} />
-                        <AvatarFallback className="uppercase">  {title.charAt(0) + title.charAt(1)}</AvatarFallback>
-                    </Avatar> */}
-              <h3 className='flex-1 text-default-800 text-lg font-medium truncate text-center  '>
-                Bệnh ở {task.nameAnimal}
-              </h3>
-            </CardHeader>
-            <CardContent className='p-2.5 pt-1'>
-              <div className='flex-col gap-2 '>
-                <div className=' text-default-400 mb-1'>Triệu chứng</div>
-                <div className='text-default-600 '>{task.symptoms}</div>
-              </div>
-
-              <div className='flex gap-2 mt-2'>
-                <div>
-                  <div className=' text-default-400 mb-1'>Ngày khởi tạo</div>
-                  <div className=' text-default-600  font-medium'>
-                    12/12/2025
-                  </div>
-                </div>
-                <Separator
-                  orientation='vertical'
-                  className='text-default-200 h-12'
-                />
-                <div>
-                  <div className=' text-default-400 mb-1'>
-                    Số lượng vật nuôi ảnh hưởng
-                  </div>
-                  <div className=' text-default-600  font-medium'>
-                    {task.affectedQuantity} / {task.quantity}
-                  </div>
-                </div>
-              </div>
-
-              <div className='flex-col gap-2 mt-2'>
-                <div className=' text-default-400 mb-1'>Ghi chú</div>
-                <div className='text-default-600 '>{task.notes}</div>
-              </div>
-              <div className='mt-1'>
-                <div className='text-end text-xs text-default-600 mb-1.5 font-medium'>
-                  {/* {progress}% */}
-                </div>
-                {/* <Progress value={progress} color='primary' size='sm' /> */}
-              </div>
-              {task.pictures ? (
-                <div className='flex mt-5'>
-                  <div className='flex-1'>
-                    <div className='text-default-400   font-normal mb-3'>
-                      Hình ảnh bệnh
-                    </div>
-                  </div>
-                </div>
-              ) : null}
-              <div className='flex mt-5'>
-                <div className='flex-1'>
-                  <div className='text-default-400   font-normal mb-3'>
-                    Hình ảnh thực tế
-                  </div>
-                  <div className='w-full grid grid-cols-6 gap-3'>
-                    {Array.from({ length: 6 }).map((_, index) => (
-                      <div
-                        key={index + 'Images'}
-                        className='relative group w-full'
-                      >
-                        <Image
-                          src='https://images.unsplash.com/photo-1523569467793-70cfeec01d58?q=80&w=2671&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-                          width={500}
-                          height={500}
-                          className='w-full rounded-lg'
-                          alt='Picture of the author'
-                        />
-
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <div className='absolute rounded-lg inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity duration-300'>
-                              <div className='flex flex-col justify-center items-center gap-1'>
-                                <Icon
-                                  icon={'lets-icons:full-alt'}
-                                  className='h-6 w-6'
-                                />
-                                <span className='text-sm font-medium'>
-                                  Phóng to ảnh
-                                </span>
-                              </div>
-                            </div>
-                          </DialogTrigger>
-                          <DialogContent className='p-0' size='lg'>
-                            <DialogHeader>
-                              <Image
-                                src='https://images.unsplash.com/photo-1523569467793-70cfeec01d58?q=80&w=2671&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-                                width={500}
-                                height={500}
-                                className='w-full h-[90vh] rounded-lg object-contain'
-                                alt='Picture of the author'
-                              />
-                            </DialogHeader>
-                          </DialogContent>
-                        </Dialog>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </DialogTrigger>
+        <DialogTrigger asChild></DialogTrigger>
         <DialogContent size='lg'>
           <DialogHeader>
             <DialogTitle>Phương án chữa bệnh cho {task.nameAnimal}</DialogTitle>
@@ -353,7 +363,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
               thông tin
             </DialogDescription>
           </DialogHeader>
-          <h2>Current Step {stepCurrent}</h2>
+
           <StepsProgress steps={steps} currentStep={stepCurrent} />
           <div className={stepCurrent === 1 ? '' : 'hidden'}>
             <Form {...form}>
@@ -716,8 +726,17 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
             </div>
           </div>
           <div className='flex justify-end gap-2 mt-3'>
-            <Button onClick={handlePrev}>Quay lại</Button>
-            <Button onClick={() => handleNext()}>Tiếp tục</Button>
+            <Button onClick={handlePrev} disabled={stepCurrent === 1}>
+              Quay lại
+            </Button>
+            <Button
+              onClick={() => handleNext()}
+              disabled={
+                (stepCurrent === 3 && !isSeperatorCage) || stepCurrent === 4
+              }
+            >
+              Tiếp tục
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
