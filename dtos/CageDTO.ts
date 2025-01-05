@@ -1,3 +1,5 @@
+import { FarmingBatchDTO } from './FarmingBatchDTO';
+
 export type CageDTO = {
   id: string;
   penCode: string;
@@ -13,4 +15,5 @@ export type CageDTO = {
   cameraUrl: string; // URL for the cage's camera feed
   staffId?: string; // ID of the staff assigned to the cage
   staffName?: string; // Name of the staff assigned to the cage
+  farmingBatch: FarmingBatchDTO[];
 };

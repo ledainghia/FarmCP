@@ -60,6 +60,8 @@ import 'lightgallery/css/lightgallery.css';
 import lgThumbnail from 'lightgallery/plugins/thumbnail';
 import lgZoom from 'lightgallery/plugins/zoom';
 import LightGallery from 'lightgallery/react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { docterApi } from '@/config/api';
 const formSchema = z
   .object({
     isSeperatorCage: z.boolean().optional(),
@@ -88,6 +90,8 @@ const formSchema2 = z.object({
 });
 
 function TaskCard({ task }: { task: MedicalSymptomDTO }) {
+  const clientQuery = useQueryClient();
+
   const [open, setOpen] = useState<boolean>(false);
   const [stepCurrent, setStepCurrent] = useState<number>(1);
 
@@ -147,7 +151,26 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
   const [medicationDataOfSeperatorCage, setMedicationDataOfSeperatorCage] =
     useState<z.infer<typeof formSchema2>[]>([]);
 
-  const formDataRef = useRef<{ [key: number]: any }>({}); // Lưu dữ liệu form trực tiếp
+  const createPrescription = useMutation({
+    mutationFn: (data: any) => {
+      return docterApi.createPrescription(data, task.id);
+    },
+    onSuccess() {
+      toast.success('Đơn thuốc đã được tạo thành công');
+
+      form.reset();
+      clientQuery.invalidateQueries({ queryKey: ['medicalSymptom'] });
+      setOpen(false);
+    },
+    onError(erorr: any) {
+      console.error('Lỗi khi tạo đơn thuốc! vui lòng kiểm tra lại', erorr);
+      setOpen(true);
+      toast.error(
+        erorr.response?.data?.result?.message ||
+          'Lỗi khi tạo đơn thuốc! Vui lòng kiểm tra lại'
+      );
+    },
+  });
 
   const handleNext = () => {
     if (stepCurrent === 1) {
@@ -170,6 +193,30 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
       if (numberOfValidMedication === numberOfMedicationSC) {
         setStepCurrent(stepCurrent + 1);
       }
+      return;
+    } else if ((stepCurrent === 3 && !isSeperatorCage) || stepCurrent === 4) {
+      const medications = medicationDataOfSeperatorCage.map((medication) => {
+        return {
+          medicationId: medication.medicationId,
+          dosage: medication.dosage,
+          morning: medication.sessions.includes('Buổi sáng'),
+          noon: medication.sessions.includes('Buổi trưa'),
+          afternoon: medication.sessions.includes('Buổi chiều'),
+          evening: medication.sessions.includes('Buổi tối'),
+        };
+      });
+
+      const dataRequest = {
+        ...baseDataInput,
+        medications: medications,
+        recordId: task.id,
+        prescribedDate: new Date().toISOString(),
+        status: 'Active',
+        caseType: isSeperatorCage ? 'SeperatorCage' : 'Normal',
+        cageId: isSeperatorCage ? baseDataInput?.cageId : undefined,
+      };
+      console.log(dataRequest);
+      createPrescription.mutate(dataRequest);
       return;
     }
 
@@ -266,7 +313,9 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
             <div className='flex gap-2 mt-2'>
               <div>
                 <div className=' text-default-400 mb-1'>Ngày khởi tạo</div>
-                <div className=' text-default-600  font-medium'>12/12/2025</div>
+                <div className=' text-default-600  font-medium'>
+                  {new Date(task.createAt).toLocaleDateString()}
+                </div>
               </div>
               <Separator
                 orientation='vertical'
@@ -732,10 +781,15 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
             <Button
               onClick={() => handleNext()}
               disabled={
-                (stepCurrent === 3 && !isSeperatorCage) || stepCurrent === 4
+                (stepCurrent === 3 && !isSeperatorCage) ||
+                createPrescription.isPending
               }
             >
-              Tiếp tục
+              {stepCurrent === 4
+                ? createPrescription.isPending
+                  ? 'Đang lưu đơn thuốc'
+                  : 'Lưu đơn thuốc'
+                : 'Tiếp tục'}
             </Button>
           </div>
         </DialogContent>

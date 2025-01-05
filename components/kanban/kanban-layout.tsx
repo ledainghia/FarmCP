@@ -15,12 +15,16 @@ import { useMedicalSymptomQuery } from '@/hooks/use-query';
 import { useQueryClient } from '@tanstack/react-query';
 import ColumnContainer from './column';
 import { Column } from './data';
+import { MedicalSymptomDTO } from '@/dtos/MedicalSymptomDTO';
 const KanBanLayout = ({ defaultCols }: { defaultCols: Column[] }) => {
   const queryClient = useQueryClient();
   const DEFAULT_PAGE_SIZE = 20;
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const { data: medicalsymptoms } = useMedicalSymptomQuery();
+  const [medicalSymptoms, setMedicalSymptoms] = useState<MedicalSymptomDTO[]>(
+    []
+  );
 
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: ['tasks'] });
@@ -35,6 +39,15 @@ const KanBanLayout = ({ defaultCols }: { defaultCols: Column[] }) => {
       },
     })
   );
+
+  useEffect(() => {
+    setMedicalSymptoms(
+      medicalsymptoms?.sort(
+        (a, b) =>
+          new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
+      ) ?? []
+    );
+  }, [medicalsymptoms]);
   function onDragStart(event: DragStartEvent) {}
   function onDragEnd(event: DragEndEvent) {
     // setActiveColumn(null);
@@ -56,13 +69,13 @@ const KanBanLayout = ({ defaultCols }: { defaultCols: Column[] }) => {
           onDragOver={onDragOver}
         >
           <div className='flex  gap-4 overflow-x-auto '>
-            <div className=' w-full  gap-4 grid md:grid-cols-1 lg:grid-cols-2'>
+            <div className=' w-full  gap-4 grid md:grid-cols-1 lg:grid-cols-4'>
               {defaultCols.map((col) => (
                 <ColumnContainer
                   key={col.id}
                   column={col}
                   tasks={
-                    medicalsymptoms?.filter((task) => task.status === col.id) ||
+                    medicalSymptoms?.filter((task) => task.status === col.id) ||
                     []
                   }
                   handleOpenTask={() => setOpen(true)}

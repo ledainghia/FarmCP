@@ -4,8 +4,16 @@ export const defaultCols = [
     title: 'Khởi tạo',
   },
   {
-    id: 'InProgress',
-    title: 'Đã xử lí',
+    id: 'Normal',
+    title: 'Vật nuôi bình thường',
+  },
+  {
+    id: 'Diagnosed',
+    title: 'Đã chuẩn đoán',
+  },
+  {
+    id: 'Prescribed',
+    title: 'Đã kê đơn',
   },
 ];
 

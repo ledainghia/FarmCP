@@ -136,4 +136,13 @@ export const docterApi = {
   getMedication: async () => {
     return await axiosInstance.get('/medication?page=1&pageSize=1000');
   },
+  changeDiagnosis: async (data: any, medicalSymptomId: string) => {
+    return await axiosInstance.put('/medicalsymptom/' + medicalSymptomId, data);
+  },
+  createPrescription: async (data: any, medicalSymptomId: string) => {
+    return await axiosInstance.post(
+      '/prescription/' + medicalSymptomId + '/prescription',
+      data
+    );
+  },
 };

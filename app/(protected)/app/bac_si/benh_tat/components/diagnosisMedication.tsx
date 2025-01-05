@@ -20,12 +20,16 @@ import {
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { docterApi, tasksApi } from '@/config/api';
 import { MedicalSymptomDTO } from '@/dtos/MedicalSymptomDTO';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { set } from 'lodash';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
+import toast from 'react-hot-toast';
+
 import * as z from 'zod';
 
 const formSchema = z.object({
@@ -33,8 +37,10 @@ const formSchema = z.object({
     .string({ message: 'Chuẩn đoán bệnh không được để trống' })
     .min(1, { message: 'Chuẩn đoán bệnh không được để trống' }),
   treatment: z.string().optional(),
-  notes: z.string().optional(),
-  addMedication: z.boolean(),
+  notes: z
+    .string({ message: 'Ghi chú không được để trống' })
+    .min(1, { message: 'Ghi chú không được để trống' }),
+  addMedication: z.boolean().optional(),
 });
 
 export default function DiagnosisMedication({
@@ -50,9 +56,33 @@ export default function DiagnosisMedication({
   hasAddMedication: boolean;
   setHasAddMedication: (value: boolean) => void;
 }) {
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+  });
+
+  const diagnosisMedical = useMutation({
+    mutationFn: async (data: any) => {
+      // return await docterApi.changeDiagnosis(data, medicalsymptoms.id);
+      return Promise.resolve(true);
+    },
+    onSuccess() {
+      toast.success('Đã thêm chuẩn đoán bệnh thành công');
+      queryClient.invalidateQueries({ queryKey: ['medicalSymptom'] });
+      form.reset();
+      if (form.watch('addMedication')) {
+        setHasAddMedication(true);
+      }
+      setOpen(false);
+    },
+    onError(erorr: any) {
+      console.error('Có lỗi khi chuẩn đoán ', erorr);
+      toast.error(
+        erorr.response?.data?.result?.message || 'Có lỗi khi chuẩn đoán'
+      );
+      setHasAddMedication(false);
+    },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -63,12 +93,18 @@ export default function DiagnosisMedication({
           <code className='text-white'>{JSON.stringify(values, null, 2)}</code>
         </pre>
       );
+      const requestData = {
+        ...values,
+        addMedication: undefined,
+        status: form.watch('addMedication') ? 'Diagnosed' : 'Normal',
+      };
+      console.log('requestData', requestData);
+      diagnosisMedical.mutate(requestData);
       if (form.watch('addMedication')) {
         setHasAddMedication(true);
       } else {
         setHasAddMedication(false);
       }
-      setOpen(false);
     } catch (error) {
       console.error('Form submission error', error);
       toast.error('Failed to submit the form. Please try again.');
@@ -80,7 +116,6 @@ export default function DiagnosisMedication({
       open={open}
       onOpenChange={(v) => {
         setOpen(v);
-        setHasAddMedication(false);
       }}
     >
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -119,10 +154,10 @@ export default function DiagnosisMedication({
               render={({ field }) => (
                 <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
                   <div className='space-y-0.5'>
-                    <FormLabel>Chữa bằng thuốc</FormLabel>
+                    <FormLabel>Vật nuôi cần điều trị bằng thuốc </FormLabel>
                     <FormDescription>
-                      Nếu bạn muốn kê đơn thuốc thì tích vào ô này. Không thì bỏ
-                      qua và bấm gửi khi hoàn tất quá trình
+                      Trạng thái mặc định thì vật nuôi không cần điều trị bằng
+                      thuốc. Nếu cần điều trị thì bật nút bên cạnh!
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -178,7 +213,7 @@ export default function DiagnosisMedication({
               <Button type='reset' variant={'outline'}>
                 Đặt lại
               </Button>
-              <Button type='submit'>Lưu</Button>
+              <Button type='submit'>Lưu chuẩn đoán</Button>
             </div>
           </form>
         </Form>

@@ -30,7 +30,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { toast } from '@/components/ui/use-toast';
+
 import { tasksApi } from '@/config/api';
 import useCageStore from '@/config/zustandStore/cagesStore';
 import { CageDTO } from '@/dtos/CageDTO';
@@ -46,6 +46,7 @@ import { jwtDecode } from 'jwt-decode';
 import { CalendarIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { z } from 'zod';
 
 const TaskType = [
@@ -67,7 +68,7 @@ const FormSchema = z.object({
   // tag: z.string().optional(),
   cageId: z.string(),
   dueDate: z.date().optional(),
-  description: z.string().optional(),
+  description: z.string({ message: 'Mô tả không được để trống' }),
   session: z.enum(['Morning', 'Afternoon', 'Evening'], {
     message: 'Buổi không hợp lệ',
   }),
@@ -95,9 +96,7 @@ const CreateTodo = () => {
       return tasksApi.createTasks(data);
     },
     onSuccess() {
-      toast({
-        title: 'Task created successfully.',
-      });
+      toast('Task created successfully.');
 
       form.reset();
       clientQuery.invalidateQueries({
@@ -105,11 +104,9 @@ const CreateTodo = () => {
       });
       setIsDialogOpen(false);
     },
-    onError() {
-      toast({
-        title: 'Lỗi khi tạo công việc.',
-        variant: 'destructive',
-      });
+    onError(error) {
+      console.error('Create task error:', error);
+      toast.error('Failed to create task. Please try again.');
     },
   });
   const setCages = useCageStore((state) => state.setCages); // Zustand action
@@ -124,10 +121,7 @@ const CreateTodo = () => {
   function onSubmit(data: z.infer<typeof FormSchema>) {
     const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) {
-      toast({
-        title: 'Access token not found.',
-        variant: 'destructive',
-      });
+      toast.error('Access token not found. Please login again.');
       return;
     }
     const decodedToken = jwtDecode(accessToken) as { nameid?: number };
@@ -136,8 +130,8 @@ const CreateTodo = () => {
       dueDate: data.dueDate ? data.dueDate : undefined,
       createdByUserId: decodedToken?.nameid?.toString(),
     };
-    createTaskMutation.mutate(payload);
-    // console.log('Form Data:', payload);
+    // createTaskMutation.mutate(payload);
+    console.log('Form Data:', payload);
   }
 
   const getStaffPendingMutation = useGetStaffPendingMutation(cageChoice);
@@ -146,15 +140,10 @@ const CreateTodo = () => {
     if (!value) return;
     getStaffPendingMutation.mutate();
     if (getStaffPendingMutation.isError) {
-      toast({
-        title: 'Failed to fetch staffs.',
-        variant: 'destructive',
-      });
+      toast.error('Failed to fetch staffs. Please try again.');
       setStaffPendingTask([]);
     } else {
-      toast({
-        title: 'Staffs fetched successfully.',
-      });
+      toast.success('Staffs fetched successfully.');
       setStaffPendingTask(getStaffPendingMutation.data?.data.result);
     }
   };
@@ -234,7 +223,7 @@ const CreateTodo = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='text-default-700'>
-                      Chọn chuồng
+                      Chọn chuồnga
                     </FormLabel>
                     <Select
                       onValueChange={(e) => {
@@ -245,24 +234,26 @@ const CreateTodo = () => {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder='Chọn...' />
+                          <SelectValue placeholder='Chọn chuoongf...' />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {cases &&
                           Array.isArray(cases.items) &&
-                          cases.items.map((item: CageDTO) => (
-                            <SelectItem
-                              key={`item_cages` + item.id}
-                              value={item.id}
-                            >
-                              <div className='flex items-center gap-2'>
-                                <span className='text-sm text-default-900'>
-                                  {item.name}
-                                </span>
-                              </div>
-                            </SelectItem>
-                          ))}
+                          cases.items
+                            .filter((item: CageDTO) => !!item.farmingBatch)
+                            .map((item: CageDTO) => (
+                              <SelectItem
+                                key={`item_cages` + item.id}
+                                value={item.id}
+                              >
+                                <div className='flex items-center gap-2'>
+                                  <span className='text-sm text-default-900'>
+                                    {item.name}
+                                  </span>
+                                </div>
+                              </SelectItem>
+                            ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -301,13 +292,6 @@ const CreateTodo = () => {
                                 value={user.staffId}
                               >
                                 <div className='flex items-center gap-2'>
-                                  {/* <Image
-                              src={user.image}
-                              alt={user.label}
-                              width={20}
-                              height={20}
-                              className='w-5 h-5 rounded-full'
-                            /> */}
                                   <span className='text-sm text-default-900'>
                                     {user.fullName} ( đang thực hiện{' '}
                                     {user.pendingTaskCount} công việc )
@@ -450,7 +434,7 @@ const CreateTodo = () => {
               name='description'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-default-700'>
+                  <FormLabel required className='text-default-700'>
                     Chi tiết công việc
                   </FormLabel>
                   <FormControl>

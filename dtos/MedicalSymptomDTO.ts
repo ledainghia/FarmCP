@@ -8,6 +8,7 @@ export type MedicalSymptomDTO = {
   affectedQuantity: number;
   quantity: number;
   nameAnimal: string;
+  createAt: Date;
   notes: string;
   pictures: string[];
 };

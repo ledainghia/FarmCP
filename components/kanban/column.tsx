@@ -88,12 +88,10 @@ function ColumnContainer({
             className={cn(
               'absolute -start-[1px] top-1/2 -translate-y-1/2 h-[60%] w-3 rounded-r-md',
               {
-                'bg-lime-900': column.title.toLocaleLowerCase() === 'khởi tạo',
-                'bg-lime-400':
-                  column.title.toLocaleLowerCase() === 'đang thực hiện',
-                'bg-destructive': column.title.toLocaleLowerCase() === 'đã hủy',
-                'bg-success':
-                  column.title.toLocaleLowerCase() === 'đã hoàn thành',
+                'bg-lime-900': column.id === 'Pending',
+                'bg-lime-400': column.id === 'Normal',
+                'bg-destructive': column.id === 'Diagnosed',
+                'bg-success': column.id === 'Prescribed',
               }
             )}
           ></div>

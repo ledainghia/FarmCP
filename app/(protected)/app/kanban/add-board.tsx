@@ -25,7 +25,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Icon } from '@/components/ui/icon';
 import { Input } from '@/components/ui/input';
 import {
   MultiSelector,
@@ -40,15 +39,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { toast } from '@/components/ui/use-toast';
 import { tasksApi } from '@/config/api';
 import useCageStore from '@/config/zustandStore/cagesStore';
 import { StaffWithCountTaskDTO } from '@/dtos/StaffWithCountTask';
@@ -65,8 +56,9 @@ import _ from 'lodash';
 import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import toast from 'react-hot-toast';
 
+import { z } from 'zod';
 const FormSchema = z
   .object({
     taskName: z.string({ message: 'Có lỗi khi xử lí tiêu đề tự động' }),
@@ -75,7 +67,7 @@ const FormSchema = z
     dueDate: z.date().optional(),
     startAt: z.date().optional(),
     endAt: z.date().optional(),
-    description: z.string().optional(),
+    description: z.string({ message: 'Vui lòng nhập mô tả công việc' }),
     taskTypeId: z.string({ message: 'Vui lòng chọn loại công việc' }),
     createdByUserId: z.string().optional(),
     sessions: z
@@ -132,9 +124,7 @@ const AddBoard = () => {
       return tasksApi.createTasks(data);
     },
     onSuccess() {
-      toast({
-        title: 'Công việc đã được phân công.',
-      });
+      toast.success('Công việc đã được phân công.');
 
       form.reset();
       clientQuery.invalidateQueries({
@@ -142,11 +132,12 @@ const AddBoard = () => {
       });
       setIsDialogOpen(false);
     },
-    onError() {
-      toast({
-        title: 'Lỗi khi tạo công việc.',
-        variant: 'destructive',
-      });
+    onError(erorr: any) {
+      console.error('Lỗi khi tạo công việc.', erorr);
+
+      toast.error(
+        erorr.response?.data?.result?.message || 'Lỗi khi tạo công việc.'
+      );
     },
   });
 
@@ -155,9 +146,7 @@ const AddBoard = () => {
       return tasksApi.createTaskRecurring(data);
     },
     onSuccess() {
-      toast({
-        title: 'Công việc đã được phân công.',
-      });
+      toast.success('Công việc đã được phân công.');
 
       form.reset();
       clientQuery.invalidateQueries({
@@ -165,11 +154,12 @@ const AddBoard = () => {
       });
       setIsDialogOpen(false);
     },
-    onError() {
-      toast({
-        title: 'Lỗi khi tạo công việc.',
-        variant: 'destructive',
-      });
+    onError(erorr: any) {
+      console.error('Lỗi khi tạo công việc.', erorr);
+
+      toast.error(
+        erorr.response?.data?.result?.message || 'Lỗi khi tạo công việc.'
+      );
     },
   });
 
@@ -186,18 +176,15 @@ const AddBoard = () => {
     console.log('Form Data:', cleanObject(data));
     const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) {
-      toast({
-        title: 'Access token not found.',
-        variant: 'destructive',
-      });
+      toast.error('Vui lòng đăng nhập để thực hiện thao tác.');
       return;
     }
     const decodedToken = jwtDecode(accessToken) as { nameid?: number };
     const sessionMapping: { [key: string]: number } = {
-      'Buổi sáng': 0,
-      'Buổi chiều': 1,
-      'Buổi tối': 2,
-      CN: 3,
+      'Buổi sáng': 1,
+      'Buổi trưa': 2,
+      'Buổi chiều': 3,
+      'Buổi tối': 4,
     };
     if (!data.isLoop) {
       const payload = {
@@ -413,27 +400,29 @@ const AddBoard = () => {
                           <CommandList>
                             <CommandEmpty>Không tìm thấy chuồng</CommandEmpty>
                             <CommandGroup>
-                              {cases?.items.map((cage) => (
-                                <CommandItem
-                                  value={cage.name}
-                                  key={cage.id}
-                                  onSelect={() => {
-                                    form.setValue('cageId', cage.id);
-                                    handleCageChange(cage.id);
-                                    setTitleValue('Cage', cage.id);
-                                  }}
-                                >
-                                  <Check
-                                    className={cn(
-                                      'mr-2 h-4 w-4',
-                                      cage.id === field.value
-                                        ? 'opacity-100'
-                                        : 'opacity-0'
-                                    )}
-                                  />
-                                  {cage.name}
-                                </CommandItem>
-                              ))}
+                              {cases?.items
+                                .filter((item) => !!item.farmingBatch)
+                                .map((cage) => (
+                                  <CommandItem
+                                    value={cage.name}
+                                    key={cage.id}
+                                    onSelect={() => {
+                                      form.setValue('cageId', cage.id);
+                                      handleCageChange(cage.id);
+                                      setTitleValue('Cage', cage.id);
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        'mr-2 h-4 w-4',
+                                        cage.id === field.value
+                                          ? 'opacity-100'
+                                          : 'opacity-0'
+                                      )}
+                                    />
+                                    {cage.name}
+                                  </CommandItem>
+                                ))}
                             </CommandGroup>
                           </CommandList>
                         </Command>
@@ -716,6 +705,9 @@ const AddBoard = () => {
                             <MultiSelectorItem value='Buổi sáng'>
                               Buổi sáng
                             </MultiSelectorItem>
+                            <MultiSelectorItem value='Buổi trưa'>
+                              Buổi trưa
+                            </MultiSelectorItem>
                             <MultiSelectorItem value='Buổi chiều'>
                               Buổi chiều
                             </MultiSelectorItem>
@@ -737,7 +729,7 @@ const AddBoard = () => {
               name='description'
               render={({ field }) => (
                 <FormItem className='flex flex-col w-full'>
-                  <FormLabel className='text-default-700'>
+                  <FormLabel required className='text-default-700'>
                     Chi tiết công việc
                   </FormLabel>
                   <FormControl>
