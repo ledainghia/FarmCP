@@ -1,29 +1,20 @@
 'use client';
-import React, { useState, useMemo, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   DndContext,
   DragEndEvent,
   DragOverEvent,
-  DragOverlay,
   DragStartEvent,
   PointerSensor,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { SortableContext, arrayMove } from '@dnd-kit/sortable';
 
-import { createPortal } from 'react-dom';
-
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { FilterDTO } from '@/dtos/FilterDTO';
-import { tasksApi } from '@/config/api';
-import { TaskDTO } from '@/dtos/AplicationDTO';
-import { Pagination } from '@/dtos/Pagination';
-import ColumnContainer from './column';
-import TaskCard from './task';
-import { Column } from './data';
 import { useMedicalSymptomQuery } from '@/hooks/use-query';
+import { useQueryClient } from '@tanstack/react-query';
+import ColumnContainer from './column';
+import { Column } from './data';
 const KanBanLayout = ({ defaultCols }: { defaultCols: Column[] }) => {
   const queryClient = useQueryClient();
   const DEFAULT_PAGE_SIZE = 20;
