@@ -1,3 +1,4 @@
+import LogoutButton from '@/components/logout-button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,10 +13,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Icon } from '@/components/ui/icon';
-import { signOut, auth } from '@/lib/auth';
+import { auth } from '@/lib/auth';
 import Image from 'next/image';
 
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 const ProfileInfo = async () => {
@@ -175,22 +175,8 @@ const ProfileInfo = async () => {
           </DropdownMenuGroup>
           <DropdownMenuSeparator className='mb-0 dark:bg-background' />
           <DropdownMenuItem className='flex items-center gap-2 text-sm font-medium text-default-600 capitalize my-1 px-3 cursor-pointer'>
-            <div>
-              <form
-                action={async () => {
-                  'use server';
-                  await signOut();
-                }}
-              >
-                <button
-                  type='submit'
-                  className=' w-full  flex  items-center gap-2'
-                >
-                  <Icon icon='heroicons:power' className='w-4 h-4' />
-                  Log out
-                </button>
-              </form>
-            </div>
+            <LogoutButton />
+
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -1,21 +1,19 @@
 'use client';
-import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import React from 'react';
 
-import { Icon } from '@/components/ui/icon';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { cn } from '@/lib/utils';
-import { Loader2 } from 'lucide-react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2, UserCircleIcon } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import { toast } from 'sonner';
 
-import { useMutation } from '@tanstack/react-query';
 import { authApi } from '@/config/api';
+import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
 const schema = z.object({
@@ -61,7 +59,7 @@ const LoginForm = () => {
       };
       return authApi.login(user);
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       toast.success('Đăng nhập thành công', { position: 'top-right' });
       localStorage.setItem('accessToken', data.data.result.accessToken);
       localStorage.setItem('refreshToken', data.data.result.refreshToken);
@@ -117,10 +115,12 @@ const LoginForm = () => {
           size='lg'
           disabled={auth.isPending}
           {...register('email')}
+          placeholder='Nhập username'
           id='email'
           className={cn('', {
             'border-destructive ': errors.email,
           })}
+          startIcon={UserCircleIcon}
         />
       </div>
       {errors.email && (
@@ -133,33 +133,18 @@ const LoginForm = () => {
         <Label htmlFor='password' className='mb-2 font-medium text-default-600'>
           Mật khẩu{' '}
         </Label>
-        <div className='relative'>
-          <Input
-            size='lg'
-            disabled={auth.isPending}
-            {...register('password')}
-            type={passwordType}
-            id='password'
-            className={cn('', {
-              'border-destructive ': errors.email,
-            })}
-            placeholder=' '
-          />
-
-          <div
-            className='absolute top-1/2 -translate-y-1/2 ltr:right-4 rtl:left-4 cursor-pointer'
-            onClick={togglePasswordType}
-          >
-            {passwordType === 'password' ? (
-              <Icon icon='heroicons:eye' className='w-5 h-5 text-default-400' />
-            ) : (
-              <Icon
-                icon='heroicons:eye-slash'
-                className='w-5 h-5 text-default-400'
-              />
-            )}
-          </div>
-        </div>
+        <Input
+          size='lg'
+          disabled={auth.isPending}
+          {...register('password')}
+          type='password'
+          id='password'
+          className={cn('', {
+            'border-destructive ': errors.email,
+            'pl-8': passwordType === 'password',
+          })}
+          placeholder='Nhập mật khẩu'
+        />
       </div>
       {errors.password && (
         <div className=' text-destructive mt-2 text-sm'>
