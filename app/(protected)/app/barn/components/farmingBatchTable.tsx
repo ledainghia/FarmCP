@@ -32,6 +32,7 @@ export default function FarmingBatchTable({
     {
       accessorKey: 'startDate',
       header: 'Ngày bắt đầu',
+      meta: 'end',
       cell: ({ row }) => (
         <span>
           {new Date(row.getValue('startDate') as string).toLocaleDateString(

@@ -41,7 +41,7 @@ export const inputVariants = cva(
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement>,
-  VariantProps<typeof inputVariants> {
+    VariantProps<typeof inputVariants> {
   startIcon?: LucideIcon;
   endIcon?: LucideIcon;
   iconProps?: LucideProps;
@@ -138,4 +138,3 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = 'Input';
 
 export { Input };
-

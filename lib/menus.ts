@@ -71,6 +71,14 @@ export function getMenuList(pathname: string): Group[] {
       id: 'management',
       menus: [
         {
+          id: 'todo',
+          href: '/app/todo',
+          label: 'Công việc nông trại',
+          active: pathname.includes('/app/todo'),
+          icon: 'heroicons-outline:clipboard-check',
+          submenus: [],
+        },
+        {
           id: 'changelog',
           href: '/quick-menu',
           label: 'Cấu hình và Thiết lập',
@@ -86,6 +94,7 @@ export function getMenuList(pathname: string): Group[] {
             },
           ],
         },
+
         {
           id: 'templates',
           href: '/app/templates',
@@ -94,31 +103,23 @@ export function getMenuList(pathname: string): Group[] {
           icon: 'heroicons:document',
           submenus: [],
         },
-        {
-          id: 'farmingBatch',
-          href: '/app/vu_nuoi',
-          label: 'Vụ nuôi',
-          active: pathname.includes('/app/vu_nuoi'),
-          icon: 'fluent:arrow-clockwise-dashes-settings-32-filled',
-          submenus: [],
-        },
+        // {
+        //   id: 'farmingBatch',
+        //   href: '/app/vu_nuoi',
+        //   label: 'Vụ nuôi',
+        //   active: pathname.includes('/app/vu_nuoi'),
+        //   icon: 'fluent:arrow-clockwise-dashes-settings-32-filled',
+        //   submenus: [],
+        // },
 
-        {
-          id: 'todo',
-          href: '/app/todo',
-          label: 'Công việc nông trại',
-          active: pathname.includes('/app/todo'),
-          icon: 'heroicons-outline:clipboard-check',
-          submenus: [],
-        },
-        {
-          id: 'todo',
-          href: '/app/todo',
-          label: 'Con vật',
-          active: pathname.includes('/app/1'),
-          icon: 'fluent:animal-paw-print-20-regular',
-          submenus: [],
-        },
+        // {
+        //   id: 'todo',
+        //   href: '/app/todo',
+        //   label: 'Con vật',
+        //   active: pathname.includes('/app/1'),
+        //   icon: 'fluent:animal-paw-print-20-regular',
+        //   submenus: [],
+        // },
         {
           id: 'todo',
           href: '/app/todo',
