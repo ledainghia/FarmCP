@@ -47,45 +47,12 @@ function ColumnContainer({
             <div className='flex-1 text-center text-lg capitalize text-default-900 font-medium'>
               {column.title}
             </div>
-            {/* <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size='icon'
-                    className='w-6 h-6 bg-transparent  hover:bg-transparent border border-default-200 text-default-600 hover:ring-0 hover:ring-transparent'
-                    onClick={() => setDeleteColumn(true)}
-                  >
-                    <Trash2 className='w-4 h-4' />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent className='bg-destructive'>
-                  <p>Delete</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider> */}
-            {/* <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size='icon'
-                    className='w-6 h-6 bg-transparent ring-offset-transparent hover:bg-transparent border border-default-200 text-default-600 hover:ring-0 hover:ring-transparent'
-                    onClick={handleOpenTask}
-                  >
-                    <Plus className='w-4 h-4' />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Add Project</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider> */}
           </div>
         </CardHeader>
         <CardContent className='flex-1 pt-6 px-3.5 h-full overflow-y-auto no-scrollbar'>
           {/* Column task container */}
           <div className=' space-y-6'>
             {tasks?.length === 0 && <EmptyTask />}
-
             {tasks.map((task) => (
               <TaskCard task={task} key={task.id} />
             ))}

@@ -10,7 +10,6 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 import { defaultCols } from '@/components/kanban/data';
 import KanBanLayout from '@/components/kanban/kanban-layout';
-import { StepsProvider } from 'react-step-builder';
 
 export default function Page() {
   return (
@@ -29,9 +28,7 @@ export default function Page() {
         </Breadcrumb>
       </CardHeader>
       <CardContent>
-        <StepsProvider>
-          <KanBanLayout defaultCols={defaultCols} />
-        </StepsProvider>
+        <KanBanLayout defaultCols={defaultCols} />
       </CardContent>
     </Card>
   );

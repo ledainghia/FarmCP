@@ -2,17 +2,29 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
+import AddMedication from '@/app/(protected)/app/bac_si/benh_tat/components/addMedication';
+import StepsProgress from '@/app/(protected)/app/bac_si/benh_tat/components/stepsProgress';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { docterApi } from '@/config/api';
 import { CageDTO } from '@/dtos/CageDTO';
 import { MedicalSymptomDTO } from '@/dtos/MedicalSymptomDTO';
 import { useCagesQuery, useMedicationQuery } from '@/hooks/use-query';
+import { swalMixin } from '@/utils/swalMixin';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import 'lightgallery/css/lg-thumbnail.css';
+import 'lightgallery/css/lg-zoom.css';
+import 'lightgallery/css/lightgallery.css';
+import lgThumbnail from 'lightgallery/plugins/thumbnail';
+import lgZoom from 'lightgallery/plugins/zoom';
+import LightGallery from 'lightgallery/react';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 import { z } from 'zod';
 import { Checkbox } from '../ui/checkbox';
 import {
@@ -44,18 +56,6 @@ import { Icon } from '../ui/icon';
 import { Input } from '../ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Textarea } from '../ui/textarea';
-import AddMedication from '@/app/(protected)/app/bac_si/benh_tat/components/addMedication';
-import DiagnosisMedication from '@/app/(protected)/app/bac_si/benh_tat/components/diagnosisMedication';
-import StepsProgress from '@/app/(protected)/app/bac_si/benh_tat/components/stepsProgress';
-import lgThumbnail from 'lightgallery/plugins/thumbnail';
-import lgZoom from 'lightgallery/plugins/zoom';
-import LightGallery from 'lightgallery/react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { docterApi } from '@/config/api';
-import Swal from 'sweetalert2';
-import 'lightgallery/css/lg-thumbnail.css';
-import 'lightgallery/css/lg-zoom.css';
-import 'lightgallery/css/lightgallery.css';
 
 const formSchema = z
   .object({
@@ -222,17 +222,19 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
   }
 
   const [steps, setSteps] = useState([
-    { label: 'Thông tin cơ bản', index: 1 },
-    { label: 'Chọn thuốc', index: 2 },
-    { label: 'Kiểm tra lại đơn thuốc', index: 3 },
+    { label: 'Chuẩn đoán bệnh', index: 1 },
+    { label: 'Thông tin cơ bản', index: 2 },
+    { label: 'Chọn thuốc', index: 3 },
+    { label: 'Kiểm tra lại đơn thuốc', index: 4 },
   ]);
 
   useEffect(() => {
     if (!!!isSeperatorCage) {
       setSteps([
-        { label: 'Thông tin cơ bản', index: 1 },
-        { label: 'Chọn thuốc', index: 2 },
-        { label: 'Kiểm tra lại đơn thuốc', index: 3 },
+        { label: 'Chuẩn đoán bệnh', index: 1 },
+        { label: 'Thông tin cơ bản', index: 2 },
+        { label: 'Chọn thuốc', index: 3 },
+        { label: 'Kiểm tra lại đơn thuốc', index: 4 },
       ]);
     } else {
       setSteps([
@@ -251,21 +253,8 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
     }
   }, [hasAddMedication, setHasAddMedication]);
 
-  const swalWithBootstrapButtons = Swal.mixin({
-    customClass: {
-      confirmButton:
-        'border-none bg-primary text-primary-foreground hover:bg-primary/90  hover:ring-primary  h-11 md:px-6  px-4  ',
-      cancelButton:
-        'border-none bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:ring-destructive h-11 md:px-6  px-4 ',
-      actions: 'flex justify-center gap-2',
-    },
-    confirmButtonText: 'Đồng ý',
-    denyButtonText: 'Từ chối',
-    buttonsStyling: false,
-  });
-
   const swal = () =>
-    swalWithBootstrapButtons
+    swalMixin
       .fire({
         title: 'Bạn có muốn khám cho trường hợp này không?',
         text: 'Hãy chắc chắn rằng bạn đã xem xét kỹ lưỡng trước khi tiếp tục',
@@ -279,7 +268,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
         if (result.isConfirmed) {
           setOpen(true);
         } else if (result.dismiss === Swal.DismissReason.cancel) {
-          swalWithBootstrapButtons.fire({
+          swalMixin.fire({
             title: 'Đã từ chối khám bệnh',
             text: 'Có vẻ đây là trường hợp vật nuôi bình thường',
             icon: 'error',
@@ -365,7 +354,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                 Hình ảnh thực tế
               </div>
               <div className=''>
-                <LightGallery
+                {/* <LightGallery
                   speed={500}
                   plugins={[lgThumbnail, lgZoom]}
                   addClass='w-full grid grid-cols-6 gap-3'
@@ -398,7 +387,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                       </div>
                     </div>
                   ))}
-                </LightGallery>
+                </LightGallery> */}
               </div>
             </div>
           </div>
