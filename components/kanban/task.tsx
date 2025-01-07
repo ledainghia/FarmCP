@@ -414,7 +414,9 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
         <DialogTrigger asChild></DialogTrigger>
         <DialogContent size='lg'>
           <DialogHeader>
-            <DialogTitle>Phương án chữa bệnh cho {task.nameAnimal}</DialogTitle>
+            <DialogTitle>
+              Chuẩn đoán và chữa bệnh cho {task.nameAnimal}
+            </DialogTitle>
             <DialogDescription>
               Hãy điền đầy đủ các ô nhập phía dưới rồi bấm nút lưu để lưu lại
               thông tin
