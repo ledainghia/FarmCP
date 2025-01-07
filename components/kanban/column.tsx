@@ -1,30 +1,13 @@
 'use client';
-import { SortableContext, useSortable } from '@dnd-kit/sortable';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from '@/components/ui/card';
-import { CSS } from '@dnd-kit/utilities';
 import { useMemo, useState } from 'react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-
-import { Plus, Trash2 } from 'lucide-react';
 
 import DeleteConfirmationDialog from '@/components/delete-confirmation-dialog';
-import { TaskDTO } from '@/dtos/AplicationDTO';
+import { MedicalSymptomDTO } from '@/dtos/MedicalSymptomDTO';
 import { Column } from './data';
 import EmptyTask from './empty';
 import TaskCard from './task';
-import { MedicalSymptomDTO } from '@/dtos/MedicalSymptomDTO';
 
 function ColumnContainer({
   column,
@@ -34,33 +17,7 @@ function ColumnContainer({
   tasks: MedicalSymptomDTO[];
   handleOpenTask: () => void;
 }) {
-  const [editMode, setEditMode] = useState<boolean>(true);
-
   const [deleteColumn, setDeleteColumn] = useState<boolean>(false);
-  const tasksIds = useMemo(() => {
-    return tasks.map((task) => task.id);
-  }, [tasks]);
-
-  const {
-    setNodeRef,
-    attributes,
-    listeners,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: column.id,
-    data: {
-      type: 'Column',
-      column,
-    },
-    disabled: editMode,
-  });
-
-  const style = {
-    transition,
-    transform: CSS.Transform.toString(transform),
-  };
 
   return (
     <>
@@ -70,20 +27,11 @@ function ColumnContainer({
       />
 
       <Card
-        ref={setNodeRef}
-        style={style}
         className={cn(
-          'flex-1  bg-default-200 shadow-none border app-height flex flex-col relative',
-          {
-            'opacity-20': isDragging,
-          }
+          'flex-1  bg-default-200 shadow-none border app-height flex flex-col relative'
         )}
       >
-        <CardHeader
-          className='flex-none bg-card relative rounded-t-md py-4'
-          {...attributes}
-          {...listeners}
-        >
+        <CardHeader className='flex-none bg-card relative rounded-t-md py-4'>
           <div
             className={cn(
               'absolute -start-[1px] top-1/2 -translate-y-1/2 h-[60%] w-3 rounded-r-md',
@@ -138,11 +86,9 @@ function ColumnContainer({
           <div className=' space-y-6'>
             {tasks?.length === 0 && <EmptyTask />}
 
-            <SortableContext items={tasksIds}>
-              {tasks.map((task) => (
-                <TaskCard task={task} key={task.id} />
-              ))}
-            </SortableContext>
+            {tasks.map((task) => (
+              <TaskCard task={task} key={task.id} />
+            ))}
           </div>
         </CardContent>
       </Card>

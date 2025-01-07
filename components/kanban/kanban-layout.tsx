@@ -1,21 +1,13 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-import {
-  DndContext,
-  DragEndEvent,
-  DragOverEvent,
-  DragStartEvent,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
+import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 
+import { MedicalSymptomDTO } from '@/dtos/MedicalSymptomDTO';
 import { useMedicalSymptomQuery } from '@/hooks/use-query';
 import { useQueryClient } from '@tanstack/react-query';
 import ColumnContainer from './column';
 import { Column } from './data';
-import { MedicalSymptomDTO } from '@/dtos/MedicalSymptomDTO';
 const KanBanLayout = ({ defaultCols }: { defaultCols: Column[] }) => {
   const queryClient = useQueryClient();
   const DEFAULT_PAGE_SIZE = 20;
@@ -48,11 +40,7 @@ const KanBanLayout = ({ defaultCols }: { defaultCols: Column[] }) => {
       ) ?? []
     );
   }, [medicalsymptoms]);
-  function onDragStart(event: DragStartEvent) {}
-  function onDragEnd(event: DragEndEvent) {
-    // setActiveColumn(null);
-  }
-  function onDragOver(event: DragOverEvent) {}
+
   return (
     <>
       <div className=''>
@@ -62,28 +50,22 @@ const KanBanLayout = ({ defaultCols }: { defaultCols: Column[] }) => {
           </div>
           <div className='flex-none'>{/* <AddBoard /> */}</div>
         </div>
-        <DndContext
-          sensors={sensors}
-          onDragStart={onDragStart}
-          onDragEnd={onDragEnd}
-          onDragOver={onDragOver}
-        >
-          <div className='flex  gap-4 overflow-x-auto '>
-            <div className=' w-full  gap-4 grid md:grid-cols-1 lg:grid-cols-4'>
-              {defaultCols.map((col) => (
-                <ColumnContainer
-                  key={col.id}
-                  column={col}
-                  tasks={
-                    medicalSymptoms?.filter((task) => task.status === col.id) ||
-                    []
-                  }
-                  handleOpenTask={() => setOpen(true)}
-                />
-              ))}
-            </div>
+
+        <div className='flex  gap-4 overflow-x-auto '>
+          <div className=' w-full  gap-4 grid md:grid-cols-1 lg:grid-cols-4'>
+            {defaultCols.map((col) => (
+              <ColumnContainer
+                key={col.id}
+                column={col}
+                tasks={
+                  medicalSymptoms?.filter((task) => task.status === col.id) ||
+                  []
+                }
+                handleOpenTask={() => setOpen(true)}
+              />
+            ))}
           </div>
-        </DndContext>
+        </div>
       </div>
       {/* <CreateTask open={open} setOpen={setOpen} /> */}
     </>
