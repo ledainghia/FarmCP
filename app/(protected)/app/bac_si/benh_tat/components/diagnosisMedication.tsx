@@ -1,14 +1,6 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
   Form,
   FormControl,
   FormDescription,
@@ -20,13 +12,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { docterApi, tasksApi } from '@/config/api';
-import { MedicalSymptomDTO } from '@/dtos/MedicalSymptomDTO';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { set } from 'lodash';
-import { useState } from 'react';
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
@@ -36,96 +25,86 @@ const formSchema = z.object({
   diagnosis: z
     .string({ message: 'Chuẩn đoán bệnh không được để trống' })
     .min(1, { message: 'Chuẩn đoán bệnh không được để trống' }),
-  treatment: z.string().optional(),
   notes: z
     .string({ message: 'Ghi chú không được để trống' })
     .min(1, { message: 'Ghi chú không được để trống' }),
-  addMedication: z.boolean().optional(),
 });
 
-export default function DiagnosisMedication({
-  className,
-  medicalsymptoms,
-  children,
-  hasAddMedication,
-  setHasAddMedication,
-}: {
-  className?: string;
-  medicalsymptoms: MedicalSymptomDTO;
-  children?: React.ReactNode;
-  hasAddMedication: boolean;
-  setHasAddMedication: (value: boolean) => void;
-}) {
-  const queryClient = useQueryClient();
-  const [open, setOpen] = useState(false);
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-  });
+export const DiagnosisMedication = forwardRef(
+  (props: { className?: string }, ref) => {
+    const { className } = props;
+    const queryClient = useQueryClient();
+    const [open, setOpen] = useState(false);
+    const form = useForm<z.infer<typeof formSchema>>({
+      resolver: zodResolver(formSchema),
+    });
+    const buttonRef = useRef<HTMLButtonElement | null>(null);
 
-  const diagnosisMedical = useMutation({
-    mutationFn: async (data: any) => {
-      // return await docterApi.changeDiagnosis(data, medicalsymptoms.id);
-      return Promise.resolve(true);
-    },
-    onSuccess() {
-      toast.success('Đã thêm chuẩn đoán bệnh thành công');
-      queryClient.invalidateQueries({ queryKey: ['medicalSymptom'] });
-      form.reset();
-      if (form.watch('addMedication')) {
-        setHasAddMedication(true);
-      }
-      setOpen(false);
-    },
-    onError(erorr: any) {
-      console.error('Có lỗi khi chuẩn đoán ', erorr);
-      toast.error(
-        erorr.response?.data?.result?.message || 'Có lỗi khi chuẩn đoán'
-      );
-      setHasAddMedication(false);
-    },
-  });
+    const diagnosisMedical = useMutation({
+      mutationFn: async (data: any) => {
+        // return await docterApi.changeDiagnosis(data, medicalsymptoms.id);
+        return Promise.resolve(true);
+      },
+      onSuccess() {
+        toast.success('Đã thêm chuẩn đoán bệnh thành công');
+        queryClient.invalidateQueries({ queryKey: ['medicalSymptom'] });
+        form.reset();
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      console.log(values);
-      toast(
-        <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-          <code className='text-white'>{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
-      const requestData = {
-        ...values,
-        addMedication: undefined,
-        status: form.watch('addMedication') ? 'Diagnosed' : 'Normal',
-      };
-      console.log('requestData', requestData);
-      diagnosisMedical.mutate(requestData);
-      if (form.watch('addMedication')) {
-        setHasAddMedication(true);
-      } else {
-        setHasAddMedication(false);
+        setOpen(false);
+      },
+      onError(erorr: any) {
+        console.error('Có lỗi khi chuẩn đoán ', erorr);
+        toast.error(
+          erorr.response?.data?.result?.message || 'Có lỗi khi chuẩn đoán'
+        );
+      },
+    });
+
+    function onSubmit(values: z.infer<typeof formSchema>) {
+      try {
+        console.log(values);
+        toast(
+          <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
+            <code className='text-white'>
+              {JSON.stringify(values, null, 2)}
+            </code>
+          </pre>
+        );
+        const requestData = {
+          ...values,
+          addMedication: undefined,
+          status: 'Diagnosed',
+        };
+        console.log('requestData', requestData);
+        diagnosisMedical.mutate(requestData);
+      } catch (error) {
+        console.error('Form submission error', error);
+        toast.error('Failed to submit the form. Please try again.');
       }
-    } catch (error) {
-      console.error('Form submission error', error);
-      toast.error('Failed to submit the form. Please try again.');
     }
-  }
 
-  return (
-    <Dialog
-      open={open}
-      onOpenChange={(v) => {
-        setOpen(v);
-      }}
-    >
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className={cn(className)} size='md'>
-        <DialogHeader>
-          <DialogTitle>Chuẩn đoán bệnh </DialogTitle>
-          <DialogDescription>
-            {medicalsymptoms?.nameAnimal} - {medicalsymptoms?.symptoms}
-          </DialogDescription>
-        </DialogHeader>
+    const handleSubmit = () => {
+      buttonRef.current?.click();
+      console.log('submit');
+    };
+
+    const getValidValue = () => {
+      console.log('getValidValues');
+      try {
+        formSchema.parse(form.getValues());
+        return form.getValues();
+      } catch (error) {
+        return null;
+      }
+    };
+
+    useImperativeHandle(ref, () => ({
+      submitForm: handleSubmit,
+      getValidValue: getValidValue,
+    }));
+
+    return (
+      <div className={cn('w-full', className)}>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -150,48 +129,6 @@ export default function DiagnosisMedication({
 
             <FormField
               control={form.control}
-              name='addMedication'
-              render={({ field }) => (
-                <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
-                  <div className='space-y-0.5'>
-                    <FormLabel>Vật nuôi cần điều trị bằng thuốc </FormLabel>
-                    <FormDescription>
-                      Trạng thái mặc định thì vật nuôi không cần điều trị bằng
-                      thuốc. Nếu cần điều trị thì bật nút bên cạnh!
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={(e) => {
-                        field.onChange(e);
-                      }}
-                      aria-readonly
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            {form.watch('addMedication') && (
-              <FormField
-                control={form.control}
-                name='treatment'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phương pháp điều trị</FormLabel>
-                    <FormControl>
-                      <Input placeholder='' type='text' {...field} />
-                    </FormControl>
-                    <FormDescription>Nhập phương pháp điều trị</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
-            <FormField
-              control={form.control}
               name='notes'
               render={({ field }) => (
                 <FormItem>
@@ -210,14 +147,15 @@ export default function DiagnosisMedication({
             />
 
             <div className='w-full flex justify-end gap-2'>
-              <Button type='reset' variant={'outline'}>
-                Đặt lại
+              <Button type='submit' className='hidden' ref={buttonRef}>
+                Lưu chuẩn đoán
               </Button>
-              <Button type='submit'>Lưu chuẩn đoán</Button>
             </div>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
-  );
-}
+      </div>
+    );
+  }
+);
+DiagnosisMedication.displayName = 'DiagnosisMedication';
+export default DiagnosisMedication;

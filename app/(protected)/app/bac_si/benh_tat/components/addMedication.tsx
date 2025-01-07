@@ -26,8 +26,6 @@ interface Props {
   numberOfMedication: number;
 }
 
-// Các import khác giữ nguyên
-
 const AddMedication = forwardRef(
   (
     { setValues, className, setNumberOfMedication, numberOfMedication }: Props,
@@ -94,6 +92,7 @@ const AddMedication = forwardRef(
         return updatedForms;
       });
       refs.current[newId] = createRef();
+      setNumberOfMedication(numberOfMedication + 1);
     };
 
     const handleRemoveForm = (id: number) => {
@@ -157,7 +156,6 @@ const AddMedication = forwardRef(
           variant={'outline'}
           className='w-full mt-3'
           onClick={() => {
-            setNumberOfMedication(numberOfMedication + 1);
             handleAddForm();
           }}
         >

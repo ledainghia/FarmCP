@@ -56,6 +56,7 @@ import { Icon } from '../ui/icon';
 import { Input } from '../ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Textarea } from '../ui/textarea';
+import DiagnosisMedication from '@/app/(protected)/app/bac_si/benh_tat/components/diagnosisMedication';
 
 const formSchema = z
   .object({
@@ -102,9 +103,13 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
     getValidValues: () => [];
   }>(null);
 
+  const diagnosisFormRef = useRef<{
+    submitForm: () => void;
+    getValidValue: () => {};
+  }>(null);
+
   const [numberOfMedication, setNumberOfMedication] = useState<number>(0);
   const [numberOfMedicationSC, setNumberOfMedicationSC] = useState<number>(0);
-  const [hasAddMedication, setHasAddMedication] = useState<boolean>(false);
 
   const { data: cases } = useCagesQuery();
   const { data: medications } = useMedicationQuery();
@@ -148,9 +153,17 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
 
   const handleNext = () => {
     if (stepCurrent === 1) {
-      submitButtonRef.current?.click();
+      diagnosisFormRef.current?.submitForm();
+      const isValid = diagnosisFormRef.current?.getValidValue();
+      if (isValid) {
+        console.log('isValid', isValid);
+        setStepCurrent(stepCurrent + 1);
+      }
       return;
     } else if (stepCurrent === 2) {
+      submitButtonRef.current?.click();
+      return;
+    } else if (stepCurrent === 3) {
       addMedicationRef.current?.submitAll();
       const numberOfValidMedication =
         addMedicationRef.current?.getValidValues().length;
@@ -159,7 +172,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
         setStepCurrent(stepCurrent + 1);
       }
       return;
-    } else if (stepCurrent === 3 && isSeperatorCage) {
+    } else if (stepCurrent === 4 && isSeperatorCage) {
       addMedicationSCRef.current?.submitAll();
       const numberOfValidMedication =
         addMedicationSCRef.current?.getValidValues().length;
@@ -168,7 +181,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
         setStepCurrent(stepCurrent + 1);
       }
       return;
-    } else if ((stepCurrent === 3 && !isSeperatorCage) || stepCurrent === 4) {
+    } else if ((stepCurrent === 4 && !isSeperatorCage) || stepCurrent === 5) {
       const medications = medicationDataOfSeperatorCage.map((medication) => {
         return {
           medicationId: medication.medicationId,
@@ -246,13 +259,6 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
     }
   }, [isSeperatorCage]);
 
-  useEffect(() => {
-    if (hasAddMedication) {
-      setOpen(true);
-      console.log('hasAddMedication change ', hasAddMedication);
-    }
-  }, [hasAddMedication, setHasAddMedication]);
-
   const swal = () =>
     swalMixin
       .fire({
@@ -280,24 +286,13 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
     <>
       {/* <DeleteConfirmationDialog open={open} onClose={() => setOpen(false)} /> */}
       {/* <EditTask open={editTaskOpen} setOpen={setEditTaskOpen} /> */}
-      {/* <DiagnosisMedication
-        medicalsymptoms={task}
-        hasAddMedication={hasAddMedication}
-        setHasAddMedication={setHasAddMedication}
-      >
-        
-      </DiagnosisMedication> */}
 
       <Card
         onClick={() => {
           swal();
         }}
       >
-        <CardHeader className='flex-row gap-1 p-2.5 items-center space-y-0'>
-          {/* <Avatar className="flex-none h-8 w-8 rounded bg-default-200 text-default hover:bg-default-200">
-                        <AvatarImage src={projectLogo} />
-                        <AvatarFallback className="uppercase">  {title.charAt(0) + title.charAt(1)}</AvatarFallback>
-                    </Avatar> */}
+        <CardHeader className='flex-row gap-1 p-2.5 items-center space-y-0 border-b'>
           <h3 className='flex-1 text-default-800 text-lg font-medium truncate text-center  '>
             Bệnh ở {task.nameAnimal}
           </h3>
@@ -305,7 +300,9 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
         <CardContent className='p-2.5 pt-1'>
           <div className='flex-col gap-2 '>
             <div className=' text-default-400 mb-1'>Triệu chứng</div>
-            <div className='text-default-600 '>{task.symptoms}</div>
+            <div className='h-40'>
+              <div className='text-default-600 '>{task.symptoms}</div>
+            </div>
           </div>
 
           <div className='flex gap-2 mt-2'>
@@ -401,7 +398,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
         }}
       >
         <DialogTrigger asChild></DialogTrigger>
-        <DialogContent size='lg'>
+        <DialogContent size='lg' className='max-h-[96vh] overflow-y-auto'>
           <DialogHeader>
             <DialogTitle>
               Chuẩn đoán và chữa bệnh cho {task.nameAnimal}
@@ -413,7 +410,12 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
           </DialogHeader>
 
           <StepsProgress steps={steps} currentStep={stepCurrent} />
-          <div className={stepCurrent === 1 ? '' : 'hidden'}>
+
+          <DiagnosisMedication
+            ref={diagnosisFormRef}
+            className={stepCurrent === 1 ? '' : 'hidden'}
+          />
+          <div className={stepCurrent === 2 ? '' : 'hidden'}>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -598,7 +600,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
             setNumberOfMedication={setNumberOfMedication}
             numberOfMedication={numberOfMedication}
             setValues={setMedicationDataOfCage}
-            className={stepCurrent === 2 ? '' : 'hidden'}
+            className={stepCurrent === 3 ? '' : 'hidden'}
           />
           {isSeperatorCage ? (
             <AddMedication
@@ -607,9 +609,9 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
               ref={addMedicationSCRef}
               setValues={setMedicationDataOfSeperatorCage}
               className={
-                stepCurrent === 2 && !isSeperatorCage
+                stepCurrent === 4 && !isSeperatorCage
                   ? ''
-                  : stepCurrent === 3 && isSeperatorCage
+                  : stepCurrent === 5 && isSeperatorCage
                   ? ''
                   : 'hidden'
               }
@@ -618,9 +620,9 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
 
           <div
             className={
-              stepCurrent === 3 && !isSeperatorCage
+              stepCurrent === 4 && !isSeperatorCage
                 ? ''
-                : stepCurrent === 4 && isSeperatorCage
+                : stepCurrent === 5 && isSeperatorCage
                 ? ''
                 : 'hidden'
             }
@@ -780,11 +782,11 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
             <Button
               onClick={() => handleNext()}
               disabled={
-                (stepCurrent === 3 && !isSeperatorCage) ||
+                (stepCurrent === 4 && !isSeperatorCage) ||
                 createPrescription.isPending
               }
             >
-              {stepCurrent === 4
+              {stepCurrent === 5
                 ? createPrescription.isPending
                   ? 'Đang lưu đơn thuốc'
                   : 'Lưu đơn thuốc'
