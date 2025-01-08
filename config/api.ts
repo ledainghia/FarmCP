@@ -3,7 +3,8 @@ import axios from 'axios';
 import { FilterDTO } from '@/dtos/FilterDTO';
 import { buildQueryString } from '@/utils/buildQuerrySearch';
 import { jwtDecode } from 'jwt-decode';
-import { get } from 'lodash';
+import { redirect } from 'next/navigation';
+
 const baseURL = process.env.NEXT_PUBLIC_SITE_URL + '/api';
 
 const axiosInstance = axios.create({
@@ -15,6 +16,8 @@ axiosInstance.interceptors.request.use(
     const token = localStorage.getItem('accessToken');
     const refreshToken = localStorage.getItem('refreshToken');
     if (!token || !refreshToken) {
+      // localStorage.clear();
+      // redirect('/');
       return Promise.reject('Token not found');
     }
     try {
@@ -22,7 +25,7 @@ axiosInstance.interceptors.request.use(
       const decodedRefreshToken = jwtDecode(refreshToken) as { exp?: number };
       const currentTime = Math.floor(Date.now() / 1000);
       if (decodedRefreshToken.exp && decodedRefreshToken.exp < currentTime) {
-        localStorage.clear();
+        // localStorage.clear();
         return Promise.reject('Token is expired');
       }
       if (decodedToken.exp && decodedToken.exp < currentTime) {
@@ -34,9 +37,13 @@ axiosInstance.interceptors.request.use(
           })
           .catch((error) => {
             console.log('Error refresh token', error);
+            // localStorage.clear();
+            // redirect('/');
           });
       }
     } catch (error) {
+      // localStorage.clear();
+      // redirect('/');
       Promise.reject(error);
     }
     if (token && refreshToken) {
