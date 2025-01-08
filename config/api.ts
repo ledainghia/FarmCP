@@ -3,7 +3,6 @@ import axios from 'axios';
 import { FilterDTO } from '@/dtos/FilterDTO';
 import { buildQueryString } from '@/utils/buildQuerrySearch';
 import { jwtDecode } from 'jwt-decode';
-import { redirect } from 'next/navigation';
 
 const baseURL = process.env.NEXT_PUBLIC_SITE_URL + '/api';
 

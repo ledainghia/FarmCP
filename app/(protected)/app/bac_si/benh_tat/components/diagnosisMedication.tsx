@@ -9,7 +9,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import {
   SingleSelector,
   SingleSelectorContent,
@@ -18,7 +17,6 @@ import {
   SingleSelectorList,
   SingleSelectorTrigger,
 } from '@/components/ui/single-select';
-import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { useDiseaseQuery } from '@/hooks/use-query';
 import { cn } from '@/lib/utils';
