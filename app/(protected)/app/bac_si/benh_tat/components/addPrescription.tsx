@@ -266,7 +266,7 @@ export default function AddPrescription({
               name='sessions'
               render={({ field }) => (
                 <FormItem className='flex flex-col'>
-                  <FormLabel required={true}>Chọn buổi</FormLabel>
+                  <FormLabel required>Chọn buổi</FormLabel>
                   <FormControl>
                     <MultiSelector
                       values={field.value}
@@ -274,7 +274,6 @@ export default function AddPrescription({
                         field.onChange(e);
                         console.log(e);
                       }}
-                      loop
                       className='mt-0'
                     >
                       <MultiSelectorTrigger className='!mt-0 !rounded-sm'>

@@ -10,8 +10,17 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import {
+  SingleSelector,
+  SingleSelectorContent,
+  SingleSelectorInput,
+  SingleSelectorItem,
+  SingleSelectorList,
+  SingleSelectorTrigger,
+} from '@/components/ui/single-select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { useDiseaseQuery } from '@/hooks/use-query';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -39,6 +48,8 @@ export const DiagnosisMedication = forwardRef(
       resolver: zodResolver(formSchema),
     });
     const buttonRef = useRef<HTMLButtonElement | null>(null);
+
+    const { data: diseases } = useDiseaseQuery();
 
     const diagnosisMedical = useMutation({
       mutationFn: async (data: any) => {
@@ -117,7 +128,32 @@ export const DiagnosisMedication = forwardRef(
                 <FormItem>
                   <FormLabel>Chuẩn đoán bệnh</FormLabel>
                   <FormControl>
-                    <Input placeholder='' type='text' {...field} />
+                    <SingleSelector
+                      value={field.value}
+                      onValueChange={(e) => {
+                        field.onChange(e);
+                        console.log(e);
+                      }}
+                      className='mt-0'
+                    >
+                      <SingleSelectorTrigger className='!mt-0 !rounded-sm'>
+                        <SingleSelectorInput
+                          placeholder={
+                            field.value ? '' : 'Chọn chuẩn đoán bệnh '
+                          }
+                          className='text-sm'
+                        />
+                      </SingleSelectorTrigger>
+                      <SingleSelectorContent>
+                        <SingleSelectorList>
+                          {diseases?.items?.map((item) => (
+                            <SingleSelectorItem key={item.id} value={item.name}>
+                              {item.name}
+                            </SingleSelectorItem>
+                          ))}
+                        </SingleSelectorList>
+                      </SingleSelectorContent>
+                    </SingleSelector>
                   </FormControl>
                   <FormDescription>
                     Dựa vào hình ảnh và triệu chứng để chuẩn đoán bệnh

@@ -398,7 +398,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
         }}
       >
         <DialogTrigger asChild></DialogTrigger>
-        <DialogContent size='lg' className='max-h-[96vh] overflow-y-auto'>
+        <DialogContent size='lg' className=''>
           <DialogHeader>
             <DialogTitle>
               Chuẩn đoán và chữa bệnh cho {task.nameAnimal}
@@ -421,100 +421,6 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className='space-y-3  py-5'
               >
-                <FormField
-                  control={form.control}
-                  name='isSeperatorCage'
-                  render={({ field }) => (
-                    <FormItem className='flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4'>
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={(e) => {
-                            field.onChange(e);
-                            setIsSeperatorCage(e ? true : false);
-                          }}
-                        />
-                      </FormControl>
-                      <div className='space-y-1 leading-none'>
-                        <FormLabel>
-                          Tách động vật bị bệnh ra chuồng khác
-                        </FormLabel>
-
-                        <FormMessage />
-                      </div>
-                    </FormItem>
-                  )}
-                />
-
-                {isSeperatorCage ? (
-                  <FormField
-                    control={form.control}
-                    name='cageId'
-                    render={({ field }) => (
-                      <FormItem className='flex flex-col w-full'>
-                        <FormLabel required={true}>Chọn chuồng</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant='outline'
-                                role='checkbox'
-                                size='md'
-                                className={cn(
-                                  '!px-3 ',
-                                  !field.value && 'text-muted-foreground'
-                                )}
-                              >
-                                <span className='flex flex-1'>
-                                  {cases
-                                    ? cases.items.find(
-                                        (language) =>
-                                          language.id === field.value
-                                      )?.name || 'Chọn chuồng'
-                                    : 'Chọn chuồng'}
-                                </span>
-                                <ChevronsUpDown className='h-4 w-4 shrink-0 opacity-50' />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className={cn(`w-[43vw] p-0`)}>
-                            <Command>
-                              <CommandInput placeholder='Tìm kiếm chuồng...' />
-                              <CommandList>
-                                <CommandEmpty>
-                                  Không tìm thấy chuồng
-                                </CommandEmpty>
-                                <CommandGroup>
-                                  {cases?.items.map((cage) => (
-                                    <CommandItem
-                                      value={cage.name}
-                                      key={cage.id}
-                                      onSelect={() => {
-                                        form.setValue('cageId', cage.id);
-                                      }}
-                                    >
-                                      <Check
-                                        className={cn(
-                                          'mr-2 h-4 w-4',
-                                          cage.id === field.value
-                                            ? 'opacity-100'
-                                            : 'opacity-0'
-                                        )}
-                                      />
-                                      {cage.name}
-                                    </CommandItem>
-                                  ))}
-                                </CommandGroup>
-                              </CommandList>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ) : null}
-
                 <FormField
                   control={form.control}
                   name='notes'

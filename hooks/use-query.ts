@@ -6,6 +6,7 @@ import {
   tasksApi,
 } from '@/config/api';
 import { CageDTO } from '@/dtos/CageDTO';
+import { DiseaseDTO } from '@/dtos/DiseaseDTO';
 import { FarmDTO } from '@/dtos/FarmDTO';
 import { FarmingBatchDTO } from '@/dtos/FarmingBatchDTO';
 import { MedicalSymptomDTO } from '@/dtos/MedicalSymptomDTO';
@@ -114,6 +115,16 @@ export const useMedicationQuery = () => {
     queryKey: ['medications'],
     queryFn: async (): Promise<Pagination<MedicationDTO>> => {
       const response = await docterApi.getMedication(); // API call
+      return response.data.result; // Assuming `result` contains the pagination data
+    },
+  });
+};
+
+export const useDiseaseQuery = () => {
+  return useQuery({
+    queryKey: ['diseases'],
+    queryFn: async (): Promise<Pagination<DiseaseDTO>> => {
+      const response = await docterApi.getDisease(); // API call
       return response.data.result; // Assuming `result` contains the pagination data
     },
   });

@@ -145,4 +145,7 @@ export const docterApi = {
       data
     );
   },
+  getDisease: async () => {
+    return await axiosInstance.get('/disease');
+  },
 };
