@@ -18,6 +18,8 @@ import {
   SingleSelectorTrigger,
 } from '@/components/ui/single-select';
 import { Textarea } from '@/components/ui/textarea';
+import { docterApi } from '@/config/api';
+import { StandardprescriptionDTO } from '@/dtos/MedicationDTO';
 import { useDiseaseQuery } from '@/hooks/use-query';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,7 +27,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-
 import * as z from 'zod';
 
 const formSchema = z.object({
@@ -38,8 +39,17 @@ const formSchema = z.object({
 });
 
 export const DiagnosisMedication = forwardRef(
-  (props: { className?: string }, ref) => {
-    const { className } = props;
+  (
+    props: {
+      className?: string;
+      standardPrescription: StandardprescriptionDTO | null;
+      setStandardPrescription: (
+        standardPrescription: StandardprescriptionDTO
+      ) => void;
+    },
+    ref
+  ) => {
+    const { className, standardPrescription, setStandardPrescription } = props;
     const queryClient = useQueryClient();
     const [open, setOpen] = useState(false);
     const form = useForm<z.infer<typeof formSchema>>({
@@ -48,26 +58,6 @@ export const DiagnosisMedication = forwardRef(
     const buttonRef = useRef<HTMLButtonElement | null>(null);
 
     const { data: diseases } = useDiseaseQuery();
-
-    const diagnosisMedical = useMutation({
-      mutationFn: async (data: any) => {
-        // return await docterApi.changeDiagnosis(data, medicalsymptoms.id);
-        return Promise.resolve(true);
-      },
-      onSuccess() {
-        toast.success('Đã thêm chuẩn đoán bệnh thành công');
-        queryClient.invalidateQueries({ queryKey: ['medicalSymptom'] });
-        form.reset();
-
-        setOpen(false);
-      },
-      onError(erorr: any) {
-        console.error('Có lỗi khi chuẩn đoán ', erorr);
-        toast.error(
-          erorr.response?.data?.result?.message || 'Có lỗi khi chuẩn đoán'
-        );
-      },
-    });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
       try {
@@ -85,7 +75,7 @@ export const DiagnosisMedication = forwardRef(
           status: 'Diagnosed',
         };
         console.log('requestData', requestData);
-        diagnosisMedical.mutate(requestData);
+        // diagnosisMedical.mutate(requestData);
       } catch (error) {
         console.error('Form submission error', error);
         toast.error('Failed to submit the form. Please try again.');
@@ -112,6 +102,33 @@ export const DiagnosisMedication = forwardRef(
       getValidValue: getValidValue,
     }));
 
+    const getMedicationByDiagnosisMutation = useMutation({
+      mutationFn: async (data: string) => {
+        return await docterApi.getMedicationByDisease(data);
+        // return Promise.resolve(true);
+      },
+      onSuccess(data) {
+        toast.success('Đã thêm đơn thuốc mẫu thành công');
+        console.log('data', data.data.result);
+        if (data.data.result) {
+          setStandardPrescription(data.data.result);
+        }
+        // setStandardPrescription(data);
+      },
+      onError(erorr: any) {
+        console.error('Có lỗi lấy đơn thuốc mẫu ', erorr);
+        toast.error(
+          erorr.response?.data?.result?.message || 'Có lỗi lấy đơn thuốc mẫu'
+        );
+      },
+    });
+
+    const handleGetMedicationByDiagnosis = (value: string) => {
+      const medication = diseases?.items?.find((item) => item.name === value);
+      if (!medication) return;
+      getMedicationByDiagnosisMutation.mutate(medication.id);
+    };
+
     return (
       <div className={cn('w-full', className)}>
         <Form {...form}>
@@ -130,6 +147,7 @@ export const DiagnosisMedication = forwardRef(
                       value={field.value}
                       onValueChange={(e) => {
                         field.onChange(e);
+                        if (e) handleGetMedicationByDiagnosis(e);
                         console.log(e);
                       }}
                       className='mt-0'

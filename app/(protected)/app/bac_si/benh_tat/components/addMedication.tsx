@@ -7,10 +7,14 @@ import React, {
   useState,
   forwardRef,
   useImperativeHandle,
+  use,
+  useEffect,
 } from 'react';
 
 import { z } from 'zod';
 import AddPrescription from './addPrescription';
+import { MedicationFormDTO } from '@/dtos/MedicationDTO';
+import { mapSessions } from '@/utils/mappingSession';
 
 const formSchema2 = z.object({
   id: z.number(),
@@ -31,7 +35,6 @@ const AddMedication = forwardRef(
     { setValues, className, setNumberOfMedication, numberOfMedication }: Props,
     parentRef
   ) => {
-    const [forms, setForms] = useState<number[]>([]); // Quản lý các form
     const refs = useRef<{
       [key: number]: React.RefObject<{ submit: () => void }>;
     }>({});
@@ -39,6 +42,11 @@ const AddMedication = forwardRef(
     const [formValues, setFormValues] = useState<
       { id: number; values: z.infer<typeof formSchema2> }[]
     >([]);
+    const [forms, setForms] = useState<number[]>([]);
+
+    useEffect(() => {
+      console.log('formValues', forms);
+    }, [forms]);
 
     const [submit, setSubmit] = useState<boolean>(false);
 
@@ -78,29 +86,31 @@ const AddMedication = forwardRef(
       return validValuesRef.current;
     };
 
-    // Expose handleSubmitAll to parent via ref
-    useImperativeHandle(parentRef, () => ({
-      submitAll: handleSubmitAll,
-      getValidValues: getValidValues,
-    }));
+    const getNumberOfForms = () => {
+      return forms;
+    };
 
     const handleAddForm = () => {
       const newId = forms.length > 0 ? forms[forms.length - 1] + 1 : 0;
-      setForms((prevForms) => {
-        const updatedForms = [...prevForms, newId];
-        setNumberOfMedication(updatedForms.length); // Cập nhật số lượng
-        return updatedForms;
-      });
+      if (setForms) {
+        setForms((prevForms: number[]) => {
+          const updatedForms: number[] = [...prevForms, newId];
+          setNumberOfMedication(updatedForms.length); // Update the count
+          return updatedForms;
+        });
+      }
       refs.current[newId] = createRef();
       setNumberOfMedication(numberOfMedication + 1);
     };
 
     const handleRemoveForm = (id: number) => {
-      setForms((prevForms) => {
-        const updatedForms = prevForms.filter((formId) => formId !== id);
-        setNumberOfMedication(updatedForms.length); // Cập nhật số lượng
-        return updatedForms;
-      });
+      if (setForms) {
+        setForms((prevForms) => {
+          const updatedForms = prevForms.filter((formId) => formId !== id);
+          setNumberOfMedication(updatedForms.length); // Update the count
+          return updatedForms;
+        });
+      }
       setFormValues((prevValues) =>
         prevValues.filter((form) => form.id !== id)
       );
@@ -124,6 +134,38 @@ const AddMedication = forwardRef(
         }
       });
     };
+
+    const handleSetDefaultValues = (values: MedicationFormDTO[]) => {
+      console.log('values handleSetDefaultValues', values);
+      const newForms = values.map((value, index) => {
+        const id = index;
+        refs.current[id] = createRef();
+        const sessions = {
+          morning: value.morning,
+          afternoon: value.afternoon,
+          evening: value.evening,
+          noon: value.noon,
+        };
+        const vl = {
+          id,
+          medicationId: value.medicationId,
+          dosage: value.dosage,
+          sessions: mapSessions(sessions),
+        };
+        return { id, values: vl };
+      });
+      console.log('newForms', newForms);
+      setForms(newForms.map((form) => form.id));
+      setFormValues(newForms);
+    };
+
+    // Expose handleSubmitAll to parent via ref
+    useImperativeHandle(parentRef, () => ({
+      submitAll: handleSubmitAll,
+      getValidValues: getValidValues,
+      getNumberOfForms: getNumberOfForms,
+      handleSetDefaultValues: handleSetDefaultValues,
+    }));
 
     return (
       <div className={cn('flex flex-col gap-2', className)}>

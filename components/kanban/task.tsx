@@ -57,6 +57,10 @@ import { Input } from '../ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Textarea } from '../ui/textarea';
 import DiagnosisMedication from '@/app/(protected)/app/bac_si/benh_tat/components/diagnosisMedication';
+import {
+  MedicationFormDTO,
+  StandardprescriptionDTO,
+} from '@/dtos/MedicationDTO';
 
 const formSchema = z
   .object({
@@ -64,7 +68,7 @@ const formSchema = z
     cageId: z.string().optional(),
     notes: z.string().optional(),
     daysToTake: z.number().min(1),
-    quantityAnimal: z.number().min(1),
+    quantityAnimal: z.number().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.isSeperatorCage) {
@@ -97,6 +101,8 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
   const addMedicationRef = useRef<{
     submitAll: () => void;
     getValidValues: () => [];
+    getNumberOfForms: () => number[];
+    handleSetDefaultValues: (values: MedicationFormDTO[]) => void;
   }>(null);
   const addMedicationSCRef = useRef<{
     submitAll: () => void;
@@ -110,6 +116,8 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
 
   const [numberOfMedication, setNumberOfMedication] = useState<number>(0);
   const [numberOfMedicationSC, setNumberOfMedicationSC] = useState<number>(0);
+  const [standardPrescription, setStandardPrescription] =
+    useState<StandardprescriptionDTO | null>(null);
 
   const { data: cases } = useCagesQuery();
   const { data: medications } = useMedicationQuery();
@@ -121,8 +129,23 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       isSeperatorCage: false,
+      notes: standardPrescription?.notes || '',
     },
   });
+
+  useEffect(() => {
+    console.log('standardPrescription', standardPrescription);
+    if (standardPrescription?.notes) {
+      console.log('set notes', standardPrescription?.notes);
+      form.setValue('notes', standardPrescription?.notes);
+      toast.success('Đã tải thông tin đơn thuốc cũ');
+    }
+    if (standardPrescription?.medications) {
+      addMedicationRef.current?.handleSetDefaultValues(
+        standardPrescription?.medications
+      );
+    }
+  }, [standardPrescription]);
 
   const [medicationDataOfCage, setMedicationDataOfCage] = useState<
     z.infer<typeof formSchema2>[]
@@ -167,8 +190,10 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
       addMedicationRef.current?.submitAll();
       const numberOfValidMedication =
         addMedicationRef.current?.getValidValues().length;
+      const getNumberOfForms =
+        addMedicationRef.current?.getNumberOfForms().length;
 
-      if (numberOfValidMedication === numberOfMedication) {
+      if (numberOfValidMedication === getNumberOfForms) {
         setStepCurrent(stepCurrent + 1);
       }
       return;
@@ -336,7 +361,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
             </div>
             {/* <Progress value={progress} color='primary' size='sm' /> */}
           </div>
-          {task.pictures && task.pictures.length > 0 ? (
+          {/* {task.pictures && task.pictures.length > 0 ? (
             <div className='flex mt-5'>
               <div className='flex-1'>
                 <div className='text-default-400   font-normal mb-3'>
@@ -344,7 +369,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                 </div>
               </div>
             </div>
-          ) : null}
+          ) : null} */}
           <div className='flex mt-5'>
             <div className='flex-1'>
               <div className='text-default-400   font-normal mb-3'>
@@ -413,6 +438,8 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
 
           <DiagnosisMedication
             ref={diagnosisFormRef}
+            setStandardPrescription={setStandardPrescription}
+            standardPrescription={standardPrescription}
             className={stepCurrent === 1 ? '' : 'hidden'}
           />
           <div className={stepCurrent === 2 ? '' : 'hidden'}>
@@ -428,7 +455,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                     <FormItem>
                       <FormLabel>Ghi chú</FormLabel>
                       <FormControl>
-                        <Textarea placeholder='' {...field} />
+                        <Input placeholder='' {...field} />
                       </FormControl>
                       <FormDescription>Nhập ghi chú nếu có</FormDescription>
                       <FormMessage />
@@ -437,7 +464,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                 />
 
                 <div className='grid grid-cols-12 gap-4'>
-                  <div className='col-span-6'>
+                  <div className='col-span-12'>
                     <FormField
                       control={form.control}
                       name='daysToTake'
@@ -456,32 +483,6 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                           </FormControl>
                           <FormDescription>
                             Nhập số ngày thuốc cho vật nuôi
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className='col-span-6'>
-                    <FormField
-                      control={form.control}
-                      name='quantityAnimal'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Số lượng vật nuôi dùng thuốc</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder='1'
-                              type='number'
-                              {...field}
-                              onChange={(e) => {
-                                field.onChange(Number(e.target.value));
-                              }}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Nhập số lượng vật nuôi dùng thuốc
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -508,21 +509,6 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
             setValues={setMedicationDataOfCage}
             className={stepCurrent === 3 ? '' : 'hidden'}
           />
-          {isSeperatorCage ? (
-            <AddMedication
-              setNumberOfMedication={setNumberOfMedicationSC}
-              numberOfMedication={numberOfMedicationSC}
-              ref={addMedicationSCRef}
-              setValues={setMedicationDataOfSeperatorCage}
-              className={
-                stepCurrent === 4 && !isSeperatorCage
-                  ? ''
-                  : stepCurrent === 5 && isSeperatorCage
-                  ? ''
-                  : 'hidden'
-              }
-            />
-          ) : null}
 
           <div
             className={
@@ -540,13 +526,13 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
 
             <div className='flow-root rounded-lg border border-gray-100 py-3 shadow-sm mt-3'>
               <dl className='-my-3 divide-y divide-gray-100 text-sm'>
-                <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
+                {/* <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
                   <dt className='font-medium text-gray-900'>Tách chuồng</dt>
                   <dd className='text-gray-700 sm:col-span-2'>
                     {baseDataInput?.isSeperatorCage === true ? 'Có' : 'Không'}
                   </dd>
-                </div>
-                <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
+                </div> */}
+                {/* <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
                   <dt className='font-medium text-gray-900'>Chuồng tách</dt>
                   <dd className='text-gray-700 sm:col-span-2'>
                     {
@@ -555,7 +541,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                       )[0]?.name
                     }
                   </dd>
-                </div>
+                </div> */}
 
                 <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
                   <dt className='font-medium text-gray-900'>
@@ -566,14 +552,14 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                   </dd>
                 </div>
 
-                <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
+                {/* <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
                   <dt className='font-medium text-gray-900'>
                     Số lượng vật nuôi dùng thuốc{' '}
                   </dt>
                   <dd className='text-gray-700 sm:col-span-2'>
                     {baseDataInput?.quantityAnimal} con
                   </dd>
-                </div>
+                </div> */}
                 <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
                   <dt className='font-medium text-gray-900'>Ghi chú </dt>
                   <dd className='text-gray-700 sm:col-span-2'>
@@ -585,9 +571,15 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
 
             <span className='flex items-center mt-3'>
               <span className='pr-3 font-bold'>
-                Đơn thuốc ({medicationDataOfCage.length} loại cho chuồng bị bệnh
-                và {medicationDataOfSeperatorCage.length} loại cho chuồng cách
-                ly ){' '}
+                Đơn thuốc ({medicationDataOfCage.length} loại bao gồm{' '}
+                {medicationDataOfCage
+                  .map((item) => {
+                    return medications?.items.find(
+                      (medication) => medication.id === item.medicationId
+                    )?.name;
+                  })
+                  .join(', ')}{' '}
+                )
               </span>
               <span className='h-px flex-1 bg-black'></span>
             </span>

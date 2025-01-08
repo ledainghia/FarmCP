@@ -52,7 +52,7 @@ const KanBanLayout = ({ defaultCols }: { defaultCols: Column[] }) => {
         </div>
 
         <div className='flex  gap-4 overflow-x-auto '>
-          <div className=' w-full  gap-4 grid md:grid-cols-1 lg:grid-cols-4'>
+          <div className=' w-full  gap-2 grid md:grid-cols-1 lg:grid-cols-3'>
             {defaultCols.map((col) => (
               <ColumnContainer
                 key={col.id}

@@ -9,11 +9,7 @@ export const defaultCols = [
   },
   {
     id: 'Diagnosed',
-    title: 'Đã chuẩn đoán',
-  },
-  {
-    id: 'Prescribed',
-    title: 'Đã kê đơn',
+    title: 'Đã chuẩn đoán và kê đơn',
   },
 ];
 

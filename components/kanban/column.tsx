@@ -45,7 +45,7 @@ function ColumnContainer({
           ></div>
           <div className='flex items-center gap-2'>
             <div className='flex-1 text-center text-lg capitalize text-default-900 font-medium'>
-              {column.title}
+              {column.title} ({tasks.length})
             </div>
           </div>
         </CardHeader>
