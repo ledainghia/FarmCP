@@ -147,15 +147,15 @@ export const docterApi = {
     return await axiosInstance.put('/medicalsymptom/' + medicalSymptomId, data);
   },
   createPrescription: async (data: any, medicalSymptomId: string) => {
-    return await axiosInstance.post(
-      '/prescription/' + medicalSymptomId + '/prescription',
-      data
-    );
+    return await axiosInstance.put('/medicalsymptom/' + medicalSymptomId, data);
   },
   getDisease: async () => {
     return await axiosInstance.get('/disease');
   },
   getMedicationByDisease: async (diseaseId: string) => {
     return await axiosInstance.get('/standardprescription/' + diseaseId);
+  },
+  cancelMedicalSymptom: async (data: any, medicalSymptomId: string) => {
+    return await axiosInstance.put('/medicalsymptom/' + medicalSymptomId, data);
   },
 };

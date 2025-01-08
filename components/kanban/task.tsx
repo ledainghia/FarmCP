@@ -3,12 +3,16 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 import AddMedication from '@/app/(protected)/app/bac_si/benh_tat/components/addMedication';
+import DiagnosisMedication from '@/app/(protected)/app/bac_si/benh_tat/components/diagnosisMedication';
 import StepsProgress from '@/app/(protected)/app/bac_si/benh_tat/components/stepsProgress';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { docterApi } from '@/config/api';
-import { CageDTO } from '@/dtos/CageDTO';
 import { MedicalSymptomDTO } from '@/dtos/MedicalSymptomDTO';
+import {
+  MedicationFormDTO,
+  StandardprescriptionDTO,
+} from '@/dtos/MedicationDTO';
 import { useCagesQuery, useMedicationQuery } from '@/hooks/use-query';
 import { swalMixin } from '@/utils/swalMixin';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,22 +23,12 @@ import 'lightgallery/css/lightgallery.css';
 import lgThumbnail from 'lightgallery/plugins/thumbnail';
 import lgZoom from 'lightgallery/plugins/zoom';
 import LightGallery from 'lightgallery/react';
-import { Check, ChevronsUpDown } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 import { z } from 'zod';
-import { Checkbox } from '../ui/checkbox';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '../ui/command';
 import {
   Dialog,
   DialogContent,
@@ -54,13 +48,6 @@ import {
 } from '../ui/form';
 import { Icon } from '../ui/icon';
 import { Input } from '../ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { Textarea } from '../ui/textarea';
-import DiagnosisMedication from '@/app/(protected)/app/bac_si/benh_tat/components/diagnosisMedication';
-import {
-  MedicationFormDTO,
-  StandardprescriptionDTO,
-} from '@/dtos/MedicationDTO';
 
 const formSchema = z
   .object({
@@ -111,7 +98,10 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
 
   const diagnosisFormRef = useRef<{
     submitForm: () => void;
-    getValidValue: () => {};
+    getValidValue: () => {
+      diagnosis: string;
+      notes: string;
+    };
   }>(null);
 
   const [numberOfMedication, setNumberOfMedication] = useState<number>(0);
@@ -134,9 +124,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
   });
 
   useEffect(() => {
-    console.log('standardPrescription', standardPrescription);
     if (standardPrescription?.notes) {
-      console.log('set notes', standardPrescription?.notes);
       form.setValue('notes', standardPrescription?.notes);
       toast.success('Đã tải thông tin đơn thuốc cũ');
     }
@@ -158,7 +146,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
       return docterApi.createPrescription(data, task.id);
     },
     onSuccess() {
-      toast.success('Đơn thuốc đã được tạo thành công');
+      toast.success('Đơn thuốc và chuẩn đoán đã được tạo thành công');
 
       form.reset();
       clientQuery.invalidateQueries({ queryKey: ['medicalSymptom'] });
@@ -174,12 +162,31 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
     },
   });
 
+  const cancelMedicalSymptom = useMutation({
+    mutationFn: (data: any) => {
+      return docterApi.cancelMedicalSymptom(data, task.id);
+    },
+    onSuccess() {
+      clientQuery.invalidateQueries({ queryKey: ['medicalSymptom'] });
+      swalMixin.fire({
+        title: 'Đã từ chối khám bệnh',
+        text: 'Có vẻ đây là trường hợp vật nuôi bình thường',
+        icon: 'success',
+      });
+    },
+    onError(erorr: any) {
+      toast.error(
+        erorr.response?.data?.result?.message ||
+          'Lỗi khi chuẩn đoán! Vui lòng kiểm tra lại'
+      );
+    },
+  });
+
   const handleNext = () => {
     if (stepCurrent === 1) {
       diagnosisFormRef.current?.submitForm();
       const isValid = diagnosisFormRef.current?.getValidValue();
       if (isValid) {
-        console.log('isValid', isValid);
         setStepCurrent(stepCurrent + 1);
       }
       return;
@@ -207,7 +214,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
       }
       return;
     } else if ((stepCurrent === 4 && !isSeperatorCage) || stepCurrent === 5) {
-      const medications = medicationDataOfSeperatorCage.map((medication) => {
+      const medications = medicationDataOfCage.map((medication) => {
         return {
           medicationId: medication.medicationId,
           dosage: medication.dosage,
@@ -218,26 +225,30 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
         };
       });
 
+      const validValue = diagnosisFormRef.current?.getValidValue();
+      const { diagnosis, notes } = validValue || {};
+
       const dataRequest = {
-        ...baseDataInput,
-        medications: medications,
-        recordId: task.id,
-        prescribedDate: new Date().toISOString(),
-        status: 'Active',
-        caseType: isSeperatorCage ? 'SeperatorCage' : 'Normal',
-        cageId: isSeperatorCage ? baseDataInput?.cageId : undefined,
+        diagnosis: diagnosis,
+        notes: notes,
+        status: 'Prescribed',
+        createPrescriptionRequest: {
+          medicalSymptomId: task.id,
+          prescribedDate: new Date().toISOString(),
+          notes: baseDataInput?.notes,
+          daysToTake: baseDataInput?.daysToTake,
+          quantityAnimal: task.affectedQuantity,
+          cageId: isSeperatorCage ? baseDataInput?.cageId : undefined,
+          medications: medications,
+        },
       };
-      console.log(dataRequest);
-      createPrescription.mutate(dataRequest);
+      console.table(dataRequest);
+      // createPrescription.mutate(dataRequest);
       return;
     }
 
     setStepCurrent(stepCurrent + 1);
   };
-
-  useEffect(() => {
-    console.log('numberOfMedication change ', numberOfMedication);
-  }, [numberOfMedication]);
 
   const handlePrev = () => {
     setStepCurrent(stepCurrent - 1);
@@ -245,7 +256,6 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      console.log(values);
       setBaseDataInput(values);
       toast(
         <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
@@ -284,7 +294,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
     }
   }, [isSeperatorCage]);
 
-  const swal = () =>
+  const swal = (medicalSymptom: MedicalSymptomDTO) =>
     swalMixin
       .fire({
         title: 'Bạn có muốn khám cho trường hợp này không?',
@@ -299,11 +309,13 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
         if (result.isConfirmed) {
           setOpen(true);
         } else if (result.dismiss === Swal.DismissReason.cancel) {
-          swalMixin.fire({
-            title: 'Đã từ chối khám bệnh',
-            text: 'Có vẻ đây là trường hợp vật nuôi bình thường',
-            icon: 'error',
-          });
+          const dataRequest = {
+            diagnosis: 'Vật nuôi bình thường',
+            status: 'Rejected',
+            notes: 'Có vẻ đây là trường hợp vật nuôi bình thường',
+            createPrescriptionRequest: null,
+          };
+          cancelMedicalSymptom.mutate(dataRequest);
         }
       });
 
@@ -314,7 +326,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
 
       <Card
         onClick={() => {
-          swal();
+          if (task.status === 'Pending') swal(task);
         }}
       >
         <CardHeader className='flex-row gap-1 p-2.5 items-center space-y-0 border-b'>
@@ -375,7 +387,12 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
               <div className='text-default-400   font-normal mb-3'>
                 Hình ảnh thực tế
               </div>
-              <div className=''>
+              <div
+                className=''
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
                 {/* <LightGallery
                   speed={500}
                   plugins={[lgThumbnail, lgZoom]}
@@ -490,7 +507,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                     />
                   </div>
                 </div>
-                <div className='flex justify-end gap-2 navigation'>
+                <div className='flex justify-end gap-2'>
                   <Button
                     ref={submitButtonRef}
                     className='hidden'
@@ -552,14 +569,6 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                   </dd>
                 </div>
 
-                {/* <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
-                  <dt className='font-medium text-gray-900'>
-                    Số lượng vật nuôi dùng thuốc{' '}
-                  </dt>
-                  <dd className='text-gray-700 sm:col-span-2'>
-                    {baseDataInput?.quantityAnimal} con
-                  </dd>
-                </div> */}
                 <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
                   <dt className='font-medium text-gray-900'>Ghi chú </dt>
                   <dd className='text-gray-700 sm:col-span-2'>
@@ -679,12 +688,9 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
             </Button>
             <Button
               onClick={() => handleNext()}
-              disabled={
-                (stepCurrent === 4 && !isSeperatorCage) ||
-                createPrescription.isPending
-              }
+              disabled={createPrescription.isPending}
             >
-              {stepCurrent === 5
+              {stepCurrent === 4
                 ? createPrescription.isPending
                   ? 'Đang lưu đơn thuốc'
                   : 'Lưu đơn thuốc'

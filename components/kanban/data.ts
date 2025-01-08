@@ -4,7 +4,7 @@ export const defaultCols = [
     title: 'Khởi tạo',
   },
   {
-    id: 'Normal',
+    id: 'Rejected',
     title: 'Vật nuôi bình thường',
   },
   {

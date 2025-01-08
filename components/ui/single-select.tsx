@@ -82,7 +82,7 @@ const SingleSelector = ({
     >
       <Command
         className={cn(
-          'overflow-visible z-[9999999999999999] bg-transparent flex flex-col space-y-2',
+          'overflow-visible  bg-transparent flex flex-col space-y-2',
           className
         )}
         dir={dir}
@@ -186,7 +186,7 @@ const SingleSelectorList = forwardRef<
     <CommandList
       ref={ref}
       className={cn(
-        'p-2 flex flex-col gap-2 rounded-md scrollbar-thin z-[9999999999999999] scrollbar-track-transparent transition-colors scrollbar-thumb-muted-foreground dark:scrollbar-thumb-muted scrollbar-thumb-rounded-lg w-full absolute bg-background shadow-md  border border-muted top-0',
+        'p-2 flex flex-col gap-2 rounded-md scrollbar-thin z-10 scrollbar-track-transparent transition-colors scrollbar-thumb-muted-foreground dark:scrollbar-thumb-muted scrollbar-thumb-rounded-lg w-full absolute bg-background shadow-md  border border-muted top-0',
         className
       )}
     >

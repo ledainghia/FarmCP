@@ -70,7 +70,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     if (type === 'password') {
       return (
-        <div className='w-full relative'>
+        <div className='w-full h-full relative'>
           <div className='absolute left-1.5 top-1/2 transform -translate-y-1/2'>
             <Lock
               size={18}
@@ -101,7 +101,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     }
 
     return (
-      <div className='w-full relative'>
+      <div className='w-full h-full relative'>
         {StartIcon && (
           <div className='absolute left-1.5 top-1/2 transform -translate-y-1/2'>
             <StartIcon
