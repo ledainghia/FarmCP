@@ -294,7 +294,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
     }
   }, [isSeperatorCage]);
 
-  const swal = (medicalSymptom: MedicalSymptomDTO) =>
+  const swal = () =>
     swalMixin
       .fire({
         title: 'Bạn có muốn khám cho trường hợp này không?',
@@ -326,7 +326,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
 
       <Card
         onClick={() => {
-          if (task.status === 'Pending') swal(task);
+          if (task.status === 'Pending') swal();
         }}
       >
         <CardHeader className='flex-row gap-1 p-2.5 items-center space-y-0 border-b'>
@@ -446,6 +446,37 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
               Chuẩn đoán và chữa bệnh cho {task.nameAnimal}
             </DialogTitle>
             <DialogDescription>
+              <span className='font-medium text-primary-600'>
+                Loài: <span className='font-bold'>{task.nameAnimal}</span> |
+                Triệu chứng: <span className='font-bold'>{task.symptoms}</span>{' '}
+                {stepCurrent >= 2 && stepCurrent <= 3 ? (
+                  <span>
+                    <br /> Chuẩn đoán:{' '}
+                    <span className='font-bold'>
+                      {diagnosisFormRef.current?.getValidValue()?.diagnosis ||
+                        'Chưa chuẩn đoán'}
+                    </span>
+                  </span>
+                ) : (
+                  ''
+                )}
+                {stepCurrent === 3 ? (
+                  <span>
+                    {' '}
+                    | Ghi chú:{' '}
+                    <span className='font-bold'>
+                      {baseDataInput?.notes || 'Chưa chuẩn đoán'}
+                    </span>{' '}
+                    | Số ngày sử dụng thuốc:{' '}
+                    <span className='font-bold'>
+                      {baseDataInput?.daysToTake + ' ngày' || 'Chưa chuẩn đoán'}
+                    </span>
+                  </span>
+                ) : (
+                  ''
+                )}
+              </span>
+              <br />
               Hãy điền đầy đủ các ô nhập phía dưới rồi bấm nút lưu để lưu lại
               thông tin
             </DialogDescription>
@@ -559,6 +590,12 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                     }
                   </dd>
                 </div> */}
+                <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
+                  <dt className='font-medium text-gray-900'>Chuẩn đoán </dt>
+                  <dd className='text-gray-700 sm:col-span-2'>
+                    {diagnosisFormRef.current?.getValidValue()?.diagnosis}
+                  </dd>
+                </div>
 
                 <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
                   <dt className='font-medium text-gray-900'>

@@ -9,6 +9,6 @@ export const mapSessions = (sessionData: {
   };
 
   return Object.keys(sessionData)
-    .filter((key) => sessionData[key]) // Chỉ giữ lại các buổi có giá trị `true`
-    .map((key) => sessionMapping[key]); // Ánh xạ từ khóa sang nhãn
+    .filter((key) => sessionData[key])
+    .map((key) => sessionMapping[key]);
 };
