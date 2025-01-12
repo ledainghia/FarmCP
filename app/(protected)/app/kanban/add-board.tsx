@@ -254,9 +254,7 @@ const AddBoard = () => {
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        <Button fullWidth size='lg'>
-          Phân công công việc
-        </Button>
+        <Button size='lg'>Phân công công việc</Button>
       </DialogTrigger>
       <DialogContent size='lg'>
         <DialogHeader className='mb-4'>

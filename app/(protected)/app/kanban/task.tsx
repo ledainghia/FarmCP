@@ -106,7 +106,7 @@ function TaskCard({ task }: { task: TaskDTO }) {
           </DropdownMenu>
         </CardHeader>
         <CardContent className='p-2.5 pt-1'>
-          <div className='text-default-600 '>{task.description}</div>
+          <div className='text-default-600 h-16'>{task.description}</div>
           <div className='flex gap-4 mt-6'>
             <div>
               <div className=' text-default-400 mb-1'>Chuồng</div>
@@ -154,6 +154,8 @@ function TaskCard({ task }: { task: TaskDTO }) {
                 {task.session === 1
                   ? 'Sáng'
                   : task.session === 2
+                  ? 'Trưa'
+                  : task.session === 3
                   ? 'Chiều'
                   : 'Tối'}
               </div>

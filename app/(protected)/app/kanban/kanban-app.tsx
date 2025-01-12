@@ -22,17 +22,38 @@ import { FilterDTO } from '@/dtos/FilterDTO';
 import { tasksApi } from '@/config/api';
 import { TaskDTO } from '@/dtos/AplicationDTO';
 import { Pagination } from '@/dtos/Pagination';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { CalendarIcon, Search } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { vi } from 'date-fns/locale';
+import { DateRange } from 'react-day-picker';
+import { addMonths } from 'date-fns';
+import { Input } from '@/components/ui/input';
+
 const KanBanApp = ({ defaultCols }: { defaultCols: Column[] }) => {
   const queryClient = useQueryClient();
   const DEFAULT_PAGE_SIZE = 10000;
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: addMonths(new Date(), -1), // Lấy thời điểm hiện tại trừ đi 1 tháng
+    to: new Date(), // Lấy thời điểm hiện tại
+  });
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const { data: todos } = useQuery({
     queryKey: ['tasks'],
     queryFn: async () => {
-      const filter: FilterDTO = {
+      const filter: any = {
         PageSize: pageSize,
         PageNumber: pageIndex,
+        TaskName: searchQuery,
+        DueDateFrom: date?.from ? new Date(date.from).toISOString() : undefined,
+        DueDateTo: date?.to ? new Date(date.to).toISOString() : undefined,
       };
       const response = await tasksApi.getTasks(filter); // API call
       const tasks: Pagination<TaskDTO> = response.data.result;
@@ -42,7 +63,7 @@ const KanBanApp = ({ defaultCols }: { defaultCols: Column[] }) => {
 
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: ['tasks'] });
-  }, [pageIndex, pageSize]);
+  }, [pageIndex, pageSize, searchQuery, date]);
 
   const [tasks, setTasks] = useState<TaskDTO[]>([]);
   useEffect(() => {
@@ -149,6 +170,7 @@ const KanBanApp = ({ defaultCols }: { defaultCols: Column[] }) => {
       });
     }
   }
+
   return (
     <>
       <div className=''>
@@ -156,7 +178,40 @@ const KanBanApp = ({ defaultCols }: { defaultCols: Column[] }) => {
           <div className='flex-1 font-medium lg:text-2xl text-xl capitalize text-default-900'>
             Danh sách công việc
           </div>
-          <div className='flex-none'>
+          <div className='flex gap-2'>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button id='date' variant={'outline'} className='h-full'>
+                  {date
+                    ? `${date.from?.toLocaleDateString()} - ${date.to?.toLocaleDateString()}`
+                    : 'Chọn ngày'}
+                  <CalendarIcon className='ml-3 w-4 h-4' />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className='w-auto p-0' align='end'>
+                <Calendar
+                  initialFocus
+                  mode='range'
+                  locale={vi}
+                  classNames={{
+                    months: 'w-full  space-y-4 sm:gap-x-4 sm:space-y-0 flex',
+                  }}
+                  className='flex flex-row'
+                  defaultMonth={date?.from}
+                  selected={date}
+                  onSelect={setDate}
+                  numberOfMonths={2}
+                />
+              </PopoverContent>
+            </Popover>
+            <div className='h-12 w-[200px]'>
+              <Input
+                endIcon={Search}
+                className='h-12'
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder='Tìm kiếm công việc'
+              ></Input>
+            </div>
             <AddBoard />
           </div>
         </div>
