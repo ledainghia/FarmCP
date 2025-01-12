@@ -33,22 +33,30 @@ export default function FarmingBatchTable({
       accessorKey: 'startDate',
       header: 'Ngày bắt đầu',
       meta: 'end',
+
       cell: ({ row }) => (
-        <span>
-          {new Date(row.getValue('startDate') as string).toLocaleDateString(
-            'vi-VN',
-            {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-            }
-          )}
-        </span>
+        <div className=''>
+          <span>
+            {row.getValue('startDate')
+              ? new Date(
+                  row.getValue('startDate') as string
+                ).toLocaleDateString('vi-VN', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                })
+              : 'Chưa bắt đầu'}
+          </span>
+        </div>
       ),
     },
     {
       accessorKey: 'status',
       header: 'Trạng thái',
+      meta: 'center',
+      cell: ({ row }) => (
+        <Switch checked={row.original.status === 'Active' ? true : false} />
+      ),
     },
     {
       accessorKey: 'cleaningFrequency',

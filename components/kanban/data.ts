@@ -8,7 +8,7 @@ export const defaultCols = [
     title: 'Vật nuôi bình thường',
   },
   {
-    id: 'Diagnosed',
+    id: 'Prescribed',
     title: 'Đã chuẩn đoán và kê đơn',
   },
 ];

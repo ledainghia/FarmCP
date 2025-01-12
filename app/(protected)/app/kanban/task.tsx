@@ -73,6 +73,7 @@ function TaskCard({ task }: { task: TaskDTO }) {
                     </Avatar> */}
           <h3 className='flex-1 text-default-800 text-lg font-medium truncate text-center capitalize '>
             {task.taskName}
+            <br />
             <span className=' bg-destructive/10 text-destructive rounded-full px-2 py-0.5 ml-2 text-sm '>
               Mức độ ưu tiên {task.priorityNum}
             </span>

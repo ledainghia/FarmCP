@@ -29,11 +29,17 @@ import toast from 'react-hot-toast';
 import farmStore from '@/config/zustandStore/farmStore';
 
 const formSchema = z.object({
-  name: z.string(),
+  name: z
+    .string({ message: 'Tên chuồng không được để trống' })
+    .min(1, { message: 'Tên chuồng không được để trống' }),
   area: z.number().min(0, { message: 'Diện tích phải lớn hơn 0' }),
   capacity: z.number().min(0, { message: 'Sức chứa phải lớn hơn 0' }),
-  location: z.string(),
-  animalType: z.string(),
+  location: z
+    .string({ message: 'Vị trí không được để trống' })
+    .min(1, { message: 'Vị trí không được để trống' }),
+  animalType: z
+    .string({ message: 'Loại vật nuôi không được để trống' })
+    .min(1, { message: 'Loại vật nuôi không được để trống' }),
 });
 
 export default function AddCageDialog() {

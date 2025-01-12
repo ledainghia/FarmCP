@@ -24,7 +24,7 @@ import { TaskDTO } from '@/dtos/AplicationDTO';
 import { Pagination } from '@/dtos/Pagination';
 const KanBanApp = ({ defaultCols }: { defaultCols: Column[] }) => {
   const queryClient = useQueryClient();
-  const DEFAULT_PAGE_SIZE = 20;
+  const DEFAULT_PAGE_SIZE = 10000;
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const { data: todos } = useQuery({

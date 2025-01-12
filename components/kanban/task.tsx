@@ -218,10 +218,10 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
         return {
           medicationId: medication.medicationId,
           dosage: medication.dosage,
-          morning: medication.sessions.includes('Buổi sáng'),
-          noon: medication.sessions.includes('Buổi trưa'),
-          afternoon: medication.sessions.includes('Buổi chiều'),
-          evening: medication.sessions.includes('Buổi tối'),
+          morning: medication.sessions.includes('Buổi sáng') ? 1 : 0,
+          noon: medication.sessions.includes('Buổi trưa') ? 1 : 0,
+          afternoon: medication.sessions.includes('Buổi chiều') ? 1 : 0,
+          evening: medication.sessions.includes('Buổi tối') ? 1 : 0,
         };
       });
 
@@ -238,12 +238,13 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
           notes: baseDataInput?.notes,
           daysToTake: baseDataInput?.daysToTake,
           quantityAnimal: task.affectedQuantity,
-          cageId: isSeperatorCage ? baseDataInput?.cageId : undefined,
+          status: 'Active',
+          cageId: 'd9c0aec4-40aa-40cb-8e1d-bdf1b342f1f6',
           medications: medications,
         },
       };
       console.table(dataRequest);
-      // createPrescription.mutate(dataRequest);
+      createPrescription.mutate(dataRequest);
       return;
     }
 
@@ -337,7 +338,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
         <CardContent className='p-2.5 pt-1'>
           <div className='flex-col gap-2 '>
             <div className=' text-default-400 mb-1'>Triệu chứng</div>
-            <div className='h-40'>
+            <div className='h-20'>
               <div className='text-default-600 '>{task.symptoms}</div>
             </div>
           </div>
@@ -365,14 +366,12 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
 
           <div className='flex-col gap-2 mt-2'>
             <div className=' text-default-400 mb-1'>Ghi chú</div>
-            <div className='text-default-600 '>{task.notes}</div>
-          </div>
-          <div className='mt-1'>
-            <div className='text-end text-xs text-default-600 mb-1.5 font-medium'>
-              {/* {progress}% */}
+            <div className='h-20'>
+              {' '}
+              <div className='text-default-600 '>{task.notes}</div>
             </div>
-            {/* <Progress value={progress} color='primary' size='sm' /> */}
           </div>
+          <div className='mt-1'></div>
           {/* {task.pictures && task.pictures.length > 0 ? (
             <div className='flex mt-5'>
               <div className='flex-1'>
@@ -501,7 +500,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                   name='notes'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Ghi chú</FormLabel>
+                      <FormLabel required>Ghi chú</FormLabel>
                       <FormControl>
                         <Input placeholder='' {...field} />
                       </FormControl>
@@ -518,7 +517,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                       name='daysToTake'
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Số ngày thuốc</FormLabel>
+                          <FormLabel required>Số ngày thuốc</FormLabel>
                           <FormControl>
                             <Input
                               placeholder='1'
@@ -574,22 +573,6 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
 
             <div className='flow-root rounded-lg border border-gray-100 py-3 shadow-sm mt-3'>
               <dl className='-my-3 divide-y divide-gray-100 text-sm'>
-                {/* <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
-                  <dt className='font-medium text-gray-900'>Tách chuồng</dt>
-                  <dd className='text-gray-700 sm:col-span-2'>
-                    {baseDataInput?.isSeperatorCage === true ? 'Có' : 'Không'}
-                  </dd>
-                </div> */}
-                {/* <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
-                  <dt className='font-medium text-gray-900'>Chuồng tách</dt>
-                  <dd className='text-gray-700 sm:col-span-2'>
-                    {
-                      cases?.items.filter(
-                        (item: CageDTO) => item.id === baseDataInput?.cageId
-                      )[0]?.name
-                    }
-                  </dd>
-                </div> */}
                 <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
                   <dt className='font-medium text-gray-900'>Chuẩn đoán </dt>
                   <dd className='text-gray-700 sm:col-span-2'>
@@ -636,7 +619,11 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
               )}
             >
               <div>
-                <div>Đơn thuốc cho chuồng bị bệnh </div>
+                {/* <div>Đơn thuốc cho chuồng bị bệnh </div> */}
+                {/* <div className='grid grid-cols-12'>
+                  <div className='col-span-9'>Tên thuốc</div>
+                  <div className='col-span-3'>Liều lượng</div>
+                </div>
                 {medicationDataOfCage.map((item, index) => (
                   <div
                     key={index}
@@ -672,51 +659,57 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                       </div>
                     </dl>
                   </div>
-                ))}
+                ))} */}
+
+                <table className='table-auto border-collapse w-full text-sm'>
+                  <thead>
+                    <tr>
+                      <th className='border px-4 py-2 text-center  w-16 '>
+                        STT
+                      </th>
+                      <th className='border px-4 py-2 text-left'>
+                        Tên thuốc - Hoạt chất
+                      </th>
+                      <th className='border px-4 py-2 text-left w-96'>
+                        Cách dùng
+                      </th>
+                      <th className='border px-4 py-2 text-right w-32'>
+                        Liều lượng
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {medicationDataOfCage.map((item, index) => (
+                      <tr
+                        key={index}
+                        className={cn(
+                          'hover:bg-gray-100',
+                          (index + 1) % 2 === 0 ? 'bg-primary-200' : ''
+                        )}
+                      >
+                        <td className='border px-4 py-2 text-center '>
+                          {index + 1}
+                        </td>
+                        <td className='border px-4 py-2'>
+                          {medications
+                            ? medications.items.find(
+                                (medication) =>
+                                  medication.id === item.medicationId
+                              )?.name
+                            : 'Chưa chọn thuốc'}
+                        </td>
+                        <td className='border px-4 py-2 '>
+                          Sử dụng {item.sessions.length} lần mỗi ngày (
+                          {item.sessions.join(', ')})
+                        </td>
+                        <td className='border px-4 py-2 text-right'>
+                          {item.dosage}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-              {isSeperatorCage ? (
-                <div className=''>
-                  <div>Đơn thuốc cho chuồng cách ly </div>
-                  {medicationDataOfSeperatorCage.map((item, index) => (
-                    <div
-                      key={index}
-                      className=' rounded-lg border border-gray-100 py-3 shadow-sm mt-3'
-                    >
-                      <dl className='-my-3 divide-y divide-gray-100 text-sm'>
-                        <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
-                          <dt className='font-medium text-gray-900'>
-                            Tên thuốc
-                          </dt>
-                          <dd className='text-gray-700 sm:col-span-2'>
-                            {medications
-                              ? medications.items.find(
-                                  (medication) =>
-                                    medication.id === item.medicationId
-                                )?.name
-                              : 'Chưa chọn thuốc'}
-                          </dd>
-                        </div>
-
-                        <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
-                          <dt className='font-medium text-gray-900'>
-                            Liều lượng
-                          </dt>
-                          <dd className='text-gray-700 sm:col-span-2'>
-                            {item.dosage}
-                          </dd>
-                        </div>
-
-                        <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
-                          <dt className='font-medium text-gray-900'>Buổi </dt>
-                          <dd className='text-gray-700 sm:col-span-2'>
-                            {item.sessions.join(', ')}
-                          </dd>
-                        </div>
-                      </dl>
-                    </div>
-                  ))}
-                </div>
-              ) : null}
             </div>
           </div>
           <div className='flex justify-end gap-2 mt-3'>

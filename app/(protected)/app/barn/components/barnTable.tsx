@@ -56,18 +56,29 @@ export default function BarnTable({ addNew = true }: { addNew?: boolean }) {
       meta: 'select',
       cell: ({ row }) => (
         <div className=''>
-          <Button
-            variant={'ghost'}
-            size='icon'
-            onClick={() => row.toggleExpanded()}
-            className='hover:bg-white hover:text-primary'
-          >
-            <Icon
-              icon={
-                row.getIsExpanded() ? 'ic:outline-remove' : 'ic:outline-add'
-              }
-            />
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={'ghost'}
+                  size='icon'
+                  onClick={() => row.toggleExpanded()}
+                  className='hover:bg-white hover:text-primary'
+                >
+                  <Icon
+                    icon={
+                      row.getIsExpanded()
+                        ? 'ic:outline-remove'
+                        : 'ic:outline-add'
+                    }
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Xem thông tin vụ nuôi ở chuồng {row.original.name}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       ),
     },

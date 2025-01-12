@@ -35,7 +35,7 @@ const TasksPage = () => {
   const [status, setStatus] = useState<string>('');
 
   const data = generateTaskData();
-  const DEFAULT_PAGE_SIZE = 20;
+  const DEFAULT_PAGE_SIZE = 10000;
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
@@ -43,8 +43,7 @@ const TasksPage = () => {
     queryKey: ['tasks'],
     queryFn: async () => {
       const filter: FilterDTO = {
-        PageSize: pageSize,
-        PageNumber: pageIndex,
+        PageSize: 10000,
       };
       const response = await tasksApi.getTasks(filter); // API call
       const tasks: PaginationType<TaskDTO> = response.data.result;

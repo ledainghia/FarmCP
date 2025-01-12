@@ -5,6 +5,7 @@ import {
   staffApi,
   tasksApi,
 } from '@/config/api';
+import { AnimalsTemplateDTO } from '@/dtos/AnimalsTemplateDTO';
 import { CageDTO } from '@/dtos/CageDTO';
 import { DiseaseDTO } from '@/dtos/DiseaseDTO';
 import { FarmDTO } from '@/dtos/FarmDTO';
@@ -73,7 +74,7 @@ export const useTaskTypesQuery = () => {
 export const useAnimalsTemplatesQuery = () => {
   return useQuery({
     queryKey: ['animalsTemplates'],
-    queryFn: async () => {
+    queryFn: async (): Promise<Pagination<AnimalsTemplateDTO>> => {
       const response = await farmsApi.getAnimalsTemplates(); // API call
       return response.data.result; // Assuming `result` contains the pagination data
     },

@@ -141,7 +141,7 @@ export const DiagnosisMedication = forwardRef(
               name='diagnosis'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Chuẩn đoán bệnh</FormLabel>
+                  <FormLabel required>Chuẩn đoán bệnh</FormLabel>
                   <FormControl>
                     <SingleSelector
                       value={field.value}

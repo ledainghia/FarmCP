@@ -74,14 +74,20 @@ export default function AddFarmingBatchDialog({ cageID, cageName }: Props) {
     mutationFn: (data: any) => farmsApi.createFarmingBatch(data),
     onSuccess: () => {
       clientQuery.invalidateQueries({
-        queryKey: ['farmingBatches', cageID],
+        queryKey: ['farmingBatch', cageID],
+      });
+      clientQuery.invalidateQueries({
+        queryKey: ['cages'],
       });
       setIsDialogOpen(false);
       form.reset();
       toast.success(`Thêm vụ nuôi mới cho chuồng ${cageName} thành công`);
     },
-    onError: (error) => {
-      toast.error(error.message);
+    onError(erorr: any) {
+      toast.error(
+        erorr.response?.data?.result?.message ||
+          'Đã xảy ra lỗi! Vui lòng kiểm tra lại'
+      );
     },
   });
 
@@ -153,12 +159,12 @@ export default function AddFarmingBatchDialog({ cageID, cageName }: Props) {
                           )}
                         >
                           <span className='flex flex-1'>
-                            {animalsTemplates
-                              ? animalsTemplates.items.find(
-                                  (template: AnimalsTemplateDTO) =>
-                                    template.id === field.value
-                                )?.name
-                              : 'Chọn mẫu vật nuôi'}
+                            {(animalsTemplates &&
+                              animalsTemplates.items.find(
+                                (template: AnimalsTemplateDTO) =>
+                                  template.id === field.value
+                              )?.name) ??
+                              'Chọn mẫu vật nuôi'}
                           </span>
                           <ChevronsUpDown className='h-4 w-4 shrink-0 opacity-50' />
                         </Button>
@@ -172,8 +178,11 @@ export default function AddFarmingBatchDialog({ cageID, cageName }: Props) {
                             Không tìm thấy mẫu nào phù hợp!
                           </CommandEmpty>
                           <CommandGroup>
-                            {animalsTemplates?.items.map(
-                              (template: AnimalsTemplateDTO) => (
+                            {animalsTemplates?.items
+                              .filter((item) => {
+                                return item.status === 'Active';
+                              })
+                              .map((template: AnimalsTemplateDTO) => (
                                 <CommandItem
                                   value={template.name}
                                   key={template.id}
@@ -191,8 +200,7 @@ export default function AddFarmingBatchDialog({ cageID, cageName }: Props) {
                                   />
                                   {template.name}
                                 </CommandItem>
-                              )
-                            )}
+                              ))}
                           </CommandGroup>
                         </CommandList>
                       </Command>
