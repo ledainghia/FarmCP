@@ -134,6 +134,11 @@ export const farmsApi = {
   getFarmingBatch: async ({ cageID }: { cageID: string }) => {
     return await axiosInstance.get(`/farmingbatchs?CageId=${cageID}`);
   },
+  changeStatusFarmingBatch: async (farmingBatchId: string, status: string) => {
+    return await axiosInstance.put(`/farmingbatchs/${farmingBatchId}/status`, {
+      newStatus: status,
+    });
+  },
 };
 
 export const docterApi = {
