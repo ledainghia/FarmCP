@@ -392,7 +392,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                   e.stopPropagation();
                 }}
               >
-                {/* <LightGallery
+                <LightGallery
                   speed={500}
                   plugins={[lgThumbnail, lgZoom]}
                   addClass='w-full grid grid-cols-6 gap-3'
@@ -425,7 +425,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                       </div>
                     </div>
                   ))}
-                </LightGallery> */}
+                </LightGallery>
               </div>
             </div>
           </div>

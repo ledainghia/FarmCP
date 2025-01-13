@@ -32,7 +32,7 @@ import { CalendarIcon, Search } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { vi } from 'date-fns/locale';
 import { DateRange } from 'react-day-picker';
-import { addMonths } from 'date-fns';
+import { addDays, addMonths, subDays } from 'date-fns';
 import { Input } from '@/components/ui/input';
 
 const KanBanApp = ({ defaultCols }: { defaultCols: Column[] }) => {
@@ -41,8 +41,8 @@ const KanBanApp = ({ defaultCols }: { defaultCols: Column[] }) => {
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [date, setDate] = useState<DateRange | undefined>({
-    from: addMonths(new Date(), -1), // Lấy thời điểm hiện tại trừ đi 1 tháng
-    to: new Date(), // Lấy thời điểm hiện tại
+    from: subDays(new Date(), 2), // Lấy thời điểm hiện tại trừ đi 2 ngày
+    to: addDays(new Date(), 1), // Lấy thời điểm của ngày mai (ngày mốt)
   });
   const [searchQuery, setSearchQuery] = useState<string>('');
   const { data: todos } = useQuery({
@@ -69,14 +69,14 @@ const KanBanApp = ({ defaultCols }: { defaultCols: Column[] }) => {
   useEffect(() => {
     if (todos) {
       const sortedTasks = todos.items.sort((a, b) => {
-        if (a.createdAt !== b.createdAt) {
-          return (
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          );
-        }
-        if (a.dueDate !== b.dueDate) {
-          return new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
-        }
+        // if (a.createdAt !== b.createdAt) {
+        //   return (
+        //     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        //   );
+        // }
+        // if (a.dueDate !== b.dueDate) {
+        //   return new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
+        // }
         return a.priorityNum - b.priorityNum;
       });
       setTasks(sortedTasks);
@@ -222,7 +222,7 @@ const KanBanApp = ({ defaultCols }: { defaultCols: Column[] }) => {
           onDragOver={onDragOver}
         >
           <div className='flex  gap-4 overflow-x-auto '>
-            <div className=' gap-4 grid md:grid-cols-1 lg:grid-cols-4'>
+            <div className=' w-full gap-4 grid md:grid-cols-1 lg:grid-cols-4'>
               {defaultCols.map((col) => (
                 <ColumnContainer
                   key={col.id}
