@@ -91,7 +91,7 @@ export const useGrowStageTemplatesQuery = (animalID?: string) => {
   });
 };
 
-export const useFarmingBatchQuery = (cageID: { cageID: string }) => {
+export const useFarmingBatchQuery = (cageID: string) => {
   return useQuery({
     queryKey: ['farmingBatch', cageID],
     queryFn: async (): Promise<Pagination<FarmingBatchDTO>> => {

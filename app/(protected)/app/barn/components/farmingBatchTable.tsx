@@ -101,7 +101,7 @@ export default function FarmingBatchTable({
     },
   ];
 
-  const { data } = useFarmingBatchQuery({ cageID });
+  const { data } = useFarmingBatchQuery(cageID);
 
   const handleChangeStatus = useMutation({
     mutationFn: ({
