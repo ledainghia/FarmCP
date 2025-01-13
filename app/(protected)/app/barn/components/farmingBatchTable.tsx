@@ -9,6 +9,9 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Search } from 'lucide-react';
 import React, { useState } from 'react';
 import AddFarmingBatchDialog from './addFarmingBatchDialog';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { farmsApi } from '@/config/api';
+import toast from 'react-hot-toast';
 
 export default function FarmingBatchTable({
   cageID,
@@ -17,6 +20,7 @@ export default function FarmingBatchTable({
   cageID: string;
   cageName: string;
 }) {
+  const clientQuery = useQueryClient();
   const [search, setSearch] = useState('');
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
@@ -55,7 +59,15 @@ export default function FarmingBatchTable({
       header: 'Trạng thái',
       meta: 'center',
       cell: ({ row }) => (
-        <Switch checked={row.original.status === 'Active' ? true : false} />
+        <Switch
+          checked={row.original.status === 'Active' ? true : false}
+          onClick={() => {
+            handleChangeStatus.mutate({
+              farmingBatchId: row.original.id,
+              status: row.original.status === 'Active' ? 'Planning' : 'Active',
+            });
+          }}
+        />
       ),
     },
     {
@@ -89,7 +101,30 @@ export default function FarmingBatchTable({
     },
   ];
 
-  const { data } = useFarmingBatchQuery({ cageID });
+  const { data } = useFarmingBatchQuery(cageID);
+
+  const handleChangeStatus = useMutation({
+    mutationFn: ({
+      farmingBatchId,
+      status,
+    }: {
+      farmingBatchId: string;
+      status: string;
+    }) => {
+      return farmsApi.changeStatusFarmingBatch(farmingBatchId, status);
+    },
+    onSuccess() {
+      toast.success('Chuyển đổi trạng thái vụ nuôi thành công');
+
+      clientQuery.invalidateQueries({ queryKey: ['farmingBatch', cageID] });
+    },
+    onError(erorr: any) {
+      toast.error(
+        erorr.response?.data?.result?.message ||
+          'Lỗi khi đổi trạng thái của vụ nuôi! Vui lòng kiểm tra lại'
+      );
+    },
+  });
 
   return (
     <TableCustom
