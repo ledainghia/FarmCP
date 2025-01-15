@@ -25,6 +25,7 @@ import {
 import { CageDTO } from '@/dtos/CageDTO';
 import FarmingBatchTable from './farmingBatchTable';
 import AddCageDialog from './addCageDialog';
+import { InputIcon } from '@/components/input-icon';
 
 export default function BarnTable({ addNew = true }: { addNew?: boolean }) {
   const DEFAULT_PAGE_SIZE = 20;
@@ -179,7 +180,7 @@ export default function BarnTable({ addNew = true }: { addNew?: boolean }) {
       setPageIndex={setPageIndex}
       header={
         <div className='flex gap-2 w-full'>
-          <Input
+          <InputIcon
             className='w-[400px] h-full '
             endIcon={Search}
             placeholder='Tìm kiếm chuồng trại'
