@@ -8,7 +8,7 @@ import StepsProgress from '@/app/(protected)/app/bac_si/benh_tat/components/step
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { docterApi } from '@/config/api';
-import { MedicalSymptomDTO } from '@/dtos/MedicalSymptomDTO';
+import { MedicalSymptomDTO, PrescriptionsDTO } from '@/dtos/MedicalSymptomDTO';
 import {
   MedicationFormDTO,
   StandardprescriptionDTO,
@@ -108,8 +108,13 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
   const [numberOfMedicationSC, setNumberOfMedicationSC] = useState<number>(0);
   const [standardPrescription, setStandardPrescription] =
     useState<StandardprescriptionDTO | null>(null);
+  const [openDialogPrescription, setOpenDialogPrescription] =
+    useState<boolean>(false);
 
-  const { data: cases } = useCagesQuery();
+  const [prescriptions, setPrescriptions] = useState<PrescriptionsDTO | null>(
+    null
+  );
+
   const { data: medications } = useMedicationQuery();
 
   const [baseDataInput, setBaseDataInput] =
@@ -258,11 +263,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
   function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       setBaseDataInput(values);
-      toast(
-        <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-          <code className='text-white'>{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
+
       setStepCurrent(stepCurrent + 1);
     } catch (error) {
       console.error('Form submission error', error);
@@ -328,6 +329,10 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
       <Card
         onClick={() => {
           if (task.status === 'Pending') swal();
+          else if (task.status === 'Prescribed') {
+            setOpenDialogPrescription(true);
+            setPrescriptions(task.prescriptions);
+          }
         }}
       >
         <CardHeader className='flex-row gap-1 p-2.5 items-center space-y-0 border-b'>
@@ -372,16 +377,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
             </div>
           </div>
           <div className='mt-1'></div>
-          {/* {task.pictures && task.pictures.length > 0 ? (
-            <div className='flex mt-5'>
-              <div className='flex-1'>
-                <div className='text-default-400   font-normal mb-3'>
-                  Hình ảnh bệnh
-                </div>
-              </div>
-            </div>
-          ) : null} */}
-          <div className='flex mt-5'>
+          {/* <div className='flex mt-5'>
             <div className='flex-1'>
               <div className='text-default-400   font-normal mb-3'>
                 Hình ảnh thực tế
@@ -428,7 +424,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                 </LightGallery>
               </div>
             </div>
-          </div>
+          </div> */}
         </CardContent>
       </Card>
       <Dialog
@@ -619,48 +615,6 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
               )}
             >
               <div>
-                {/* <div>Đơn thuốc cho chuồng bị bệnh </div> */}
-                {/* <div className='grid grid-cols-12'>
-                  <div className='col-span-9'>Tên thuốc</div>
-                  <div className='col-span-3'>Liều lượng</div>
-                </div>
-                {medicationDataOfCage.map((item, index) => (
-                  <div
-                    key={index}
-                    className=' rounded-lg border border-gray-100 py-3 shadow-sm mt-3'
-                  >
-                    <dl className='-my-3 divide-y divide-gray-100 text-sm'>
-                      <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
-                        <dt className='font-medium text-gray-900'>Tên thuốc</dt>
-                        <dd className='text-gray-700 sm:col-span-2'>
-                          {medications
-                            ? medications.items.find(
-                                (medication) =>
-                                  medication.id === item.medicationId
-                              )?.name
-                            : 'Chưa chọn thuốc'}
-                        </dd>
-                      </div>
-
-                      <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
-                        <dt className='font-medium text-gray-900'>
-                          Liều lượng
-                        </dt>
-                        <dd className='text-gray-700 sm:col-span-2'>
-                          {item.dosage}
-                        </dd>
-                      </div>
-
-                      <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
-                        <dt className='font-medium text-gray-900'>Buổi </dt>
-                        <dd className='text-gray-700 sm:col-span-2'>
-                          {item.sessions.join(', ')}
-                        </dd>
-                      </div>
-                    </dl>
-                  </div>
-                ))} */}
-
                 <table className='table-auto border-collapse w-full text-sm'>
                   <thead>
                     <tr>
@@ -726,6 +680,148 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                   : 'Lưu đơn thuốc'
                 : 'Tiếp tục'}
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={openDialogPrescription}
+        onOpenChange={setOpenDialogPrescription}
+      >
+        {/* <DialogTrigger asChild>
+          <Button variant='outline'>Edit Profile</Button>
+        </DialogTrigger> */}
+        <DialogContent size='md'>
+          <DialogHeader>
+            <DialogTitle></DialogTitle>
+            <DialogDescription></DialogDescription>
+          </DialogHeader>
+          <div className='grid gap-4 py-4'>
+            <span className='flex items-center'>
+              <span className='pr-3 font-bold'>Thông tin cơ bản</span>
+              <span className='h-px flex-1 bg-black'></span>
+            </span>
+
+            <div className='flow-root rounded-lg border border-gray-100 py-3 shadow-sm mt-3'>
+              <dl className='-my-3 divide-y divide-gray-100 text-sm'>
+                <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
+                  <dt className='font-medium text-gray-900'>Chuẩn đoán </dt>
+                  <dd className='text-gray-700 sm:col-span-2'>
+                    {prescriptions?.notes}
+                  </dd>
+                </div>
+
+                <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
+                  <dt className='font-medium text-gray-900'>
+                    Số ngày dùng thuốc{' '}
+                  </dt>
+                  <dd className='text-gray-700 sm:col-span-2'>
+                    {prescriptions?.daysToTake} ngày
+                  </dd>
+                </div>
+
+                <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
+                  <dt className='font-medium text-gray-900'>Ghi chú </dt>
+                  <dd className='text-gray-700 sm:col-span-2'>
+                    {prescriptions?.notes}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+
+            <span className='flex items-center mt-3'>
+              <span className='pr-3 font-bold'>
+                Đơn thuốc ({prescriptions?.medications.length} loại bao gồm{' '}
+                {prescriptions?.medications
+                  .map((item) => {
+                    return medications?.items.find(
+                      (medication) => medication.id === item.medicationId
+                    )?.name;
+                  })
+                  .join(', ')}{' '}
+                )
+              </span>
+              <span className='h-px flex-1 bg-black'></span>
+            </span>
+            <div className={cn('w-full grid  gap-2 mt-2', 'grid-cols-1')}>
+              <div>
+                <table className='table-auto border-collapse w-full text-sm'>
+                  <thead>
+                    <tr>
+                      <th className='border px-4 py-2 text-center  w-16 '>
+                        STT
+                      </th>
+                      <th className='border px-4 py-2 text-left'>
+                        Tên thuốc - Hoạt chất
+                      </th>
+                      <th className='border px-4 py-2 text-left w-96'>
+                        Cách dùng
+                      </th>
+                      <th className='border px-4 py-2 text-right w-32'>
+                        Liều lượng
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {prescriptions?.medications.map((item, index) => (
+                      <tr
+                        key={index}
+                        className={cn(
+                          'hover:bg-gray-100',
+                          (index + 1) % 2 === 0 ? 'bg-primary-200' : ''
+                        )}
+                      >
+                        <td className='border px-4 py-2 text-center '>
+                          {index + 1}
+                        </td>
+                        <td className='border px-4 py-2'>
+                          {medications
+                            ? medications.items.find(
+                                (medication) =>
+                                  medication.id === item.medicationId
+                              )?.name
+                            : 'Chưa chọn thuốc'}
+                        </td>
+                        <td className='border px-4 py-2 '>
+                          Sử dụng{' '}
+                          {
+                            Object.values(item).filter(
+                              (value, key) =>
+                                [
+                                  'morning',
+                                  'afternoon',
+                                  'evening',
+                                  'noon',
+                                ].includes(Object.keys(item)[key]) &&
+                                Number(value) > 0
+                            ).length
+                          }{' '}
+                          lần mỗi ngày (
+                          {['Sáng', 'Trưa', 'Chiều', 'Tối']
+                            .filter(
+                              (_, index) =>
+                                item[
+                                  ['morning', 'afternoon', 'evening', 'noon'][
+                                    index
+                                  ] as
+                                    | 'morning'
+                                    | 'afternoon'
+                                    | 'evening'
+                                    | 'noon'
+                                ]
+                            )
+                            .join(', ')}
+                          )
+                        </td>
+                        {/* <td className='border px-4 py-2 text-right'>
+                          {item.dosage}
+                        </td> */}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

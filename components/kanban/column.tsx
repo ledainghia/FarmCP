@@ -8,6 +8,13 @@ import { MedicalSymptomDTO } from '@/dtos/MedicalSymptomDTO';
 import { Column } from './data';
 import EmptyTask from './empty';
 import TaskCard from './task';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip';
+import { Button } from '../ui/button';
 
 function ColumnContainer({
   column,

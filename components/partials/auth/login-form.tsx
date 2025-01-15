@@ -6,7 +6,7 @@ import React from 'react';
 
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, UserCircleIcon } from 'lucide-react';
+import { KeyRound, Loader2, User2, UserCircleIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { authApi } from '@/config/api';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { InputIcon } from '@/components/input-icon';
 
 const schema = z.object({
   email: z.string().min(4, { message: 'Username phải có ít nhất 6 ký tự' }),
@@ -111,8 +112,7 @@ const LoginForm = () => {
         <Label htmlFor='email' className=' font-medium text-default-600'>
           Username{' '}
         </Label>
-        <Input
-          size='lg'
+        <InputIcon
           disabled={auth.isPending}
           {...register('email')}
           placeholder='Nhập username'
@@ -133,8 +133,8 @@ const LoginForm = () => {
         <Label htmlFor='password' className='mb-2 font-medium text-default-600'>
           Mật khẩu{' '}
         </Label>
-        <Input
-          size='lg'
+        <InputIcon
+          startIcon={KeyRound}
           disabled={auth.isPending}
           {...register('password')}
           type='password'

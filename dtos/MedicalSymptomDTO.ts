@@ -11,4 +11,24 @@ export type MedicalSymptomDTO = {
   createAt: Date;
   notes: string;
   pictures: string[];
+  prescriptions: PrescriptionsDTO;
+};
+
+export type PrescriptionsDTO = {
+  id: string;
+  prescribedDate: Date;
+  notes: string;
+  status: string;
+  daysToTake: number;
+  quantityAnimal: number;
+  medications: MedicationDTO[];
+};
+
+export type MedicationDTO = {
+  medicationId: string;
+  medicationName: string;
+  morning: boolean;
+  afternoon: boolean;
+  evening: boolean;
+  noon: boolean;
 };

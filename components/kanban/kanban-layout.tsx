@@ -16,6 +16,7 @@ import { Calendar } from '../ui/calendar';
 import { DateRange } from 'react-day-picker';
 import { addMonths } from 'date-fns';
 import { Input } from '../ui/input';
+import { InputIcon } from '../input-icon';
 const KanBanLayout = ({ defaultCols }: { defaultCols: Column[] }) => {
   const queryClient = useQueryClient();
   const DEFAULT_PAGE_SIZE = 20;
@@ -33,7 +34,7 @@ const KanBanLayout = ({ defaultCols }: { defaultCols: Column[] }) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    queryClient.invalidateQueries({ queryKey: ['medicalSymptom'] });
   }, [pageIndex, pageSize]);
 
   // create task state
@@ -104,12 +105,12 @@ const KanBanLayout = ({ defaultCols }: { defaultCols: Column[] }) => {
               </PopoverContent>
             </Popover>
             <div className='h-full w-[400px]'>
-              <Input
+              <InputIcon
                 endIcon={Search}
                 className='h-full'
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder='Tìm kiếm báo cáo bệnh theo tên hoặc theo triệu chứng '
-              ></Input>
+              />
             </div>
           </div>
         </div>
