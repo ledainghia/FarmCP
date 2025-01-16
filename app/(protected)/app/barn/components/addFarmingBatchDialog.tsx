@@ -47,7 +47,6 @@ const formSchema = z.object({
   name: z.string().min(1, { message: 'Tên là mục bắt buộc' }),
   cageId: z.string().optional(),
   templateId: z.string().min(1, { message: 'Mẫu vật nuôi là mục bắt buộc' }),
-  species: z.string().min(1, { message: 'Loài là mục bắt buộc' }),
   cleaningFrequency: z
     .number()
     .min(1, { message: 'Tần suất vệ sinh phải lớn hơn 0' }),
@@ -120,21 +119,6 @@ export default function AddFarmingBatchDialog({ cageID, cageName }: Props) {
                     <Input placeholder='' {...field} />
                   </FormControl>
                   <FormDescription>Nhập tên của vụ nuôi</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='species'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Loài vật nuôi </FormLabel>
-                  <FormControl>
-                    <Input placeholder='' {...field} />
-                  </FormControl>
-                  <FormDescription>Nhập tên của loài vật nuôi</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -276,7 +260,7 @@ export default function AddFarmingBatchDialog({ cageID, cageName }: Props) {
                   form.setValue('templateId', '');
                   form.setValue('cleaningFrequency', 1);
                   form.setValue('quantity', 1);
-                  form.setValue('species', '');
+
                   form.setValue('name', '');
                 }}
                 className='font-bold'

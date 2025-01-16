@@ -757,9 +757,6 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                       <th className='border px-4 py-2 text-left w-96'>
                         Cách dùng
                       </th>
-                      <th className='border px-4 py-2 text-right w-32'>
-                        Liều lượng
-                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -782,34 +779,38 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                               )?.name
                             : 'Chưa chọn thuốc'}
                         </td>
-                        <td className='border px-4 py-2 '>
+                        <td className='border px-4 py-2'>
                           Sử dụng{' '}
-                          {
-                            Object.values(item).filter(
-                              (value, key) =>
-                                [
-                                  'morning',
-                                  'afternoon',
-                                  'evening',
-                                  'noon',
-                                ].includes(Object.keys(item)[key]) &&
-                                Number(value) > 0
-                            ).length
-                          }{' '}
+                          {Object.values(item)
+                            .filter((_, key) =>
+                              [
+                                'morning',
+                                'afternoon',
+                                'evening',
+                                'noon',
+                              ].includes(Object.keys(item)[key])
+                            )
+                            .reduce(
+                              (total, value) => Number(total) + Number(value),
+                              0
+                            )}{' '}
                           lần mỗi ngày (
                           {['Sáng', 'Trưa', 'Chiều', 'Tối']
-                            .filter(
-                              (_, index) =>
-                                item[
-                                  ['morning', 'afternoon', 'evening', 'noon'][
-                                    index
-                                  ] as
-                                    | 'morning'
-                                    | 'afternoon'
-                                    | 'evening'
-                                    | 'noon'
-                                ]
-                            )
+                            .map((session, index) => {
+                              const sessionKey = [
+                                'morning',
+                                'afternoon',
+                                'evening',
+                                'noon',
+                              ][index] as
+                                | 'morning'
+                                | 'afternoon'
+                                | 'evening'
+                                | 'noon';
+                              const dose = item[sessionKey];
+                              return dose > 0 ? `${session} x${dose}` : null;
+                            })
+                            .filter(Boolean)
                             .join(', ')}
                           )
                         </td>

@@ -27,8 +27,8 @@ export type PrescriptionsDTO = {
 export type MedicationDTO = {
   medicationId: string;
   medicationName: string;
-  morning: boolean;
-  afternoon: boolean;
-  evening: boolean;
-  noon: boolean;
+  morning: number;
+  afternoon: number;
+  evening: number;
+  noon: number;
 };

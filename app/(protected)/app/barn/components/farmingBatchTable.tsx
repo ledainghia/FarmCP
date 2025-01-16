@@ -13,6 +13,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { farmsApi } from '@/config/api';
 import toast from 'react-hot-toast';
 import { InputIcon } from '@/components/ui/input-icon';
+import { swalMixin } from '@/utils/swalMixin';
+import Swal from 'sweetalert2';
 
 export default function FarmingBatchTable({
   cageID,
@@ -25,6 +27,32 @@ export default function FarmingBatchTable({
   const [search, setSearch] = useState('');
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+
+  const swal = ({
+    farmingBatchId,
+    status,
+  }: {
+    farmingBatchId: string;
+    status: string;
+  }) =>
+    swalMixin
+      .fire({
+        title: 'Bạn có chắc chắn hủy vụ nuôi này không?',
+        text: 'Hãy chắc chắn rằng bạn đã xem xét kỹ lưỡng trước khi tiếp tục',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Hủy vụ nuôi',
+        cancelButtonText: 'Không ',
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          handleChangeStatus.mutate({
+            farmingBatchId,
+            status,
+          });
+        }
+      });
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
@@ -69,11 +97,18 @@ export default function FarmingBatchTable({
             <Switch
               checked={row.original.status === 'Active' ? true : false}
               onClick={() => {
-                handleChangeStatus.mutate({
-                  farmingBatchId: row.original.id,
-                  status:
-                    row.original.status === 'Active' ? 'Cancelled' : 'Active',
-                });
+                if (row.original.status !== 'Active')
+                  handleChangeStatus.mutate({
+                    farmingBatchId: row.original.id,
+                    status:
+                      row.original.status === 'Active' ? 'Cancelled' : 'Active',
+                  });
+                if (row.original.status === 'Active') {
+                  swal({
+                    farmingBatchId: row.original.id,
+                    status: 'Cancelled',
+                  });
+                }
               }}
             />
           )}
