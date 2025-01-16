@@ -16,7 +16,8 @@ import { Calendar } from '../ui/calendar';
 import { DateRange } from 'react-day-picker';
 import { addMonths } from 'date-fns';
 import { Input } from '../ui/input';
-import { InputIcon } from '../input-icon';
+import { InputIcon } from '../ui/input-icon';
+
 const KanBanLayout = ({ defaultCols }: { defaultCols: Column[] }) => {
   const queryClient = useQueryClient();
   const DEFAULT_PAGE_SIZE = 20;

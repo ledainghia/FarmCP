@@ -25,7 +25,7 @@ import {
 import { CageDTO } from '@/dtos/CageDTO';
 import FarmingBatchTable from './farmingBatchTable';
 import AddCageDialog from './addCageDialog';
-import { InputIcon } from '@/components/input-icon';
+import { InputIcon } from '@/components/ui/input-icon';
 
 export default function BarnTable({ addNew = true }: { addNew?: boolean }) {
   const DEFAULT_PAGE_SIZE = 20;

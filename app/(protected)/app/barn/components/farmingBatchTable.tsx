@@ -12,6 +12,7 @@ import AddFarmingBatchDialog from './addFarmingBatchDialog';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { farmsApi } from '@/config/api';
 import toast from 'react-hot-toast';
+import { InputIcon } from '@/components/ui/input-icon';
 
 export default function FarmingBatchTable({
   cageID,
@@ -59,15 +60,24 @@ export default function FarmingBatchTable({
       header: 'Trạng thái',
       meta: 'center',
       cell: ({ row }) => (
-        <Switch
-          checked={row.original.status === 'Active' ? true : false}
-          onClick={() => {
-            handleChangeStatus.mutate({
-              farmingBatchId: row.original.id,
-              status: row.original.status === 'Active' ? 'Planning' : 'Active',
-            });
-          }}
-        />
+        <>
+          {row.original.status === 'Cancelled' ? (
+            <Badge variant={'destructive'} className='rounded-sm'>
+              Đã hủy
+            </Badge>
+          ) : (
+            <Switch
+              checked={row.original.status === 'Active' ? true : false}
+              onClick={() => {
+                handleChangeStatus.mutate({
+                  farmingBatchId: row.original.id,
+                  status:
+                    row.original.status === 'Active' ? 'Cancelled' : 'Active',
+                });
+              }}
+            />
+          )}
+        </>
       ),
     },
     {
@@ -141,8 +151,8 @@ export default function FarmingBatchTable({
       setPageIndex={setPageIndex}
       header={
         <div className='flex gap-2 w-full'>
-          <Input
-            className='w-[400px] h-full '
+          <InputIcon
+            className=' h-full '
             endIcon={Search}
             placeholder='Tìm kiếm vụ nuôi'
             onChange={(e) => setSearch(e.target.value)}

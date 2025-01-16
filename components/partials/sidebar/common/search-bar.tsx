@@ -16,6 +16,8 @@ import {
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
 import { useMenuHoverConfig } from '@/hooks/use-menu-hover';
+import { InputIcon } from '@/components/ui/input-icon';
+
 const SearchBar = () => {
   const [config] = useConfig();
   const [hoverConfig] = useMenuHoverConfig();
@@ -35,7 +37,7 @@ const SearchBar = () => {
         {config.collapsed && !hovered ? (
           <CollapsedSearchBar />
         ) : (
-          <Input
+          <InputIcon
             startIcon={Search}
             type='text'
             placeholder='Search Menu...'

@@ -71,7 +71,7 @@ function TaskCard({ task }: { task: TaskDTO }) {
                         <AvatarImage src={projectLogo} />
                         <AvatarFallback className="uppercase">  {title.charAt(0) + title.charAt(1)}</AvatarFallback>
                     </Avatar> */}
-          <h3 className='flex-1 text-default-800 text-lg font-medium truncate text-center capitalize '>
+          <h3 className='flex-1 text-default-800 text-lg font-medium  text-center capitalize '>
             {task.taskName}
             <br />
             <span className=' bg-destructive/10 text-destructive rounded-full px-2 py-0.5 ml-2 text-sm '>

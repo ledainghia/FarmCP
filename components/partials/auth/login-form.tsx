@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 import { authApi } from '@/config/api';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { InputIcon } from '@/components/input-icon';
+import { InputIcon } from '@/components/ui/input-icon';
 
 const schema = z.object({
   email: z.string().min(4, { message: 'Username phải có ít nhất 6 ký tự' }),

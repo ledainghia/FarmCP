@@ -34,6 +34,7 @@ import { vi } from 'date-fns/locale';
 import { DateRange } from 'react-day-picker';
 import { addDays, addMonths, subDays } from 'date-fns';
 import { Input } from '@/components/ui/input';
+import { InputIcon } from '@/components/ui/input-icon';
 
 const KanBanApp = ({ defaultCols }: { defaultCols: Column[] }) => {
   const queryClient = useQueryClient();
@@ -205,12 +206,12 @@ const KanBanApp = ({ defaultCols }: { defaultCols: Column[] }) => {
               </PopoverContent>
             </Popover>
             <div className='h-12 w-[200px]'>
-              <Input
+              <InputIcon
                 endIcon={Search}
                 className='h-12'
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder='Tìm kiếm công việc'
-              ></Input>
+              ></InputIcon>
             </div>
             <AddBoard />
           </div>
@@ -222,7 +223,7 @@ const KanBanApp = ({ defaultCols }: { defaultCols: Column[] }) => {
           onDragOver={onDragOver}
         >
           <div className='flex  gap-4 overflow-x-auto '>
-            <div className=' w-full gap-4 grid md:grid-cols-1 lg:grid-cols-4'>
+            <div className=' w-full gap-4 grid md:grid-cols-1  lg:grid-cols-2 2xl:grid-cols-4'>
               {defaultCols.map((col) => (
                 <ColumnContainer
                   key={col.id}
