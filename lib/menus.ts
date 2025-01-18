@@ -78,22 +78,6 @@ export function getMenuList(pathname: string): Group[] {
           icon: 'heroicons-outline:clipboard-check',
           submenus: [],
         },
-        {
-          id: 'changelog',
-          href: '/quick-menu',
-          label: 'Cấu hình và Thiết lập',
-          active: pathname.includes('/changelog'),
-          icon: 'qlementine-icons:page-setup-16',
-          submenus: [
-            {
-              active: pathname.includes('/account_and_barn'),
-              href: '/app/quick-menu/account_and_barn',
-              label: 'Tài khoản và chuồng trại',
-              icon: 'heroicons:arrow-trending-up',
-              children: [],
-            },
-          ],
-        },
 
         {
           id: 'templates',

@@ -7,7 +7,7 @@ import DeleteConfirmationDialog from '@/components/delete-confirmation-dialog';
 import { MedicalSymptomDTO } from '@/dtos/MedicalSymptomDTO';
 import { Column } from './data';
 import EmptyTask from './empty';
-import TaskCard from './task';
+
 import {
   Tooltip,
   TooltipContent,
@@ -15,13 +15,14 @@ import {
   TooltipTrigger,
 } from '../ui/tooltip';
 import { Button } from '../ui/button';
+import MedicalSymptomCard from './medicalSymptomCard';
 
 function ColumnContainer({
   column,
-  tasks,
+  medicalSymptomsData,
 }: {
   column: Column;
-  tasks: MedicalSymptomDTO[];
+  medicalSymptomsData: MedicalSymptomDTO[];
   handleOpenTask: () => void;
 }) {
   const [deleteColumn, setDeleteColumn] = useState<boolean>(false);
@@ -52,16 +53,19 @@ function ColumnContainer({
           ></div>
           <div className='flex items-center gap-2'>
             <div className='flex-1 text-center text-lg capitalize text-default-900 font-medium'>
-              {column.title} ({tasks.length})
+              {column.title} ({medicalSymptomsData.length})
             </div>
           </div>
         </CardHeader>
         <CardContent className='flex-1 pt-6 px-3.5 h-full overflow-y-auto no-scrollbar'>
           {/* Column task container */}
           <div className=' space-y-6'>
-            {tasks?.length === 0 && <EmptyTask />}
-            {tasks.map((task) => (
-              <TaskCard task={task} key={task.id} />
+            {medicalSymptomsData?.length === 0 && <EmptyTask />}
+            {medicalSymptomsData.map((medicalSymptom) => (
+              <MedicalSymptomCard
+                medicalSymptomsData={medicalSymptom}
+                key={medicalSymptom.id}
+              />
             ))}
           </div>
         </CardContent>

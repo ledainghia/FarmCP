@@ -35,6 +35,7 @@ import { DateRange } from 'react-day-picker';
 import { addDays, addMonths, subDays } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { InputIcon } from '@/components/ui/input-icon';
+import { debounce } from 'lodash';
 
 const KanBanApp = ({ defaultCols }: { defaultCols: Column[] }) => {
   const queryClient = useQueryClient();
@@ -46,13 +47,23 @@ const KanBanApp = ({ defaultCols }: { defaultCols: Column[] }) => {
     to: addDays(new Date(), 1), // Lấy thời điểm của ngày mai (ngày mốt)
   });
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const debouncedInvalidateQueries = useMemo(
+    () =>
+      debounce(
+        () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
+        600
+      ),
+    [queryClient]
+  );
+
   const { data: todos } = useQuery({
     queryKey: ['tasks'],
     queryFn: async () => {
       const filter: any = {
         PageSize: pageSize,
         PageNumber: pageIndex,
-        TaskName: searchQuery,
+        KeySearch: searchQuery,
         DueDateFrom: date?.from ? new Date(date.from).toISOString() : undefined,
         DueDateTo: date?.to ? new Date(date.to).toISOString() : undefined,
       };
@@ -63,8 +74,8 @@ const KanBanApp = ({ defaultCols }: { defaultCols: Column[] }) => {
   });
 
   useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ['tasks'] });
-  }, [pageIndex, pageSize, searchQuery, date]);
+    debouncedInvalidateQueries();
+  }, [pageIndex, pageSize, searchQuery, date, debouncedInvalidateQueries]);
 
   const [tasks, setTasks] = useState<TaskDTO[]>([]);
   useEffect(() => {

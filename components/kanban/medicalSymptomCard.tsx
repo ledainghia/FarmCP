@@ -76,7 +76,11 @@ const formSchema2 = z.object({
   sessions: z.array(z.string()).min(1, { message: 'Hãy chọn ít nhất 1 buổi' }),
 });
 
-function TaskCard({ task }: { task: MedicalSymptomDTO }) {
+function MedicalSymptomCard({
+  medicalSymptomsData,
+}: {
+  medicalSymptomsData: MedicalSymptomDTO;
+}) {
   const clientQuery = useQueryClient();
 
   const [open, setOpen] = useState<boolean>(false);
@@ -148,7 +152,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
 
   const createPrescription = useMutation({
     mutationFn: (data: any) => {
-      return docterApi.createPrescription(data, task.id);
+      return docterApi.createPrescription(data, medicalSymptomsData.id);
     },
     onSuccess() {
       toast.success('Đơn thuốc và chuẩn đoán đã được tạo thành công');
@@ -169,7 +173,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
 
   const cancelMedicalSymptom = useMutation({
     mutationFn: (data: any) => {
-      return docterApi.cancelMedicalSymptom(data, task.id);
+      return docterApi.cancelMedicalSymptom(data, medicalSymptomsData.id);
     },
     onSuccess() {
       clientQuery.invalidateQueries({ queryKey: ['medicalSymptom'] });
@@ -238,11 +242,11 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
         notes: notes,
         status: 'Prescribed',
         createPrescriptionRequest: {
-          medicalSymptomId: task.id,
+          medicalSymptomId: medicalSymptomsData.id,
           prescribedDate: new Date().toISOString(),
           notes: baseDataInput?.notes,
           daysToTake: baseDataInput?.daysToTake,
-          quantityAnimal: task.affectedQuantity,
+          quantityAnimal: medicalSymptomsData.affectedQuantity,
           status: 'Active',
           cageId: 'd9c0aec4-40aa-40cb-8e1d-bdf1b342f1f6',
           medications: medications,
@@ -328,23 +332,25 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
 
       <Card
         onClick={() => {
-          if (task.status === 'Pending') swal();
-          else if (task.status === 'Prescribed') {
+          if (medicalSymptomsData.status === 'Pending') swal();
+          else if (medicalSymptomsData.status === 'Prescribed') {
             setOpenDialogPrescription(true);
-            setPrescriptions(task.prescriptions);
+            setPrescriptions(medicalSymptomsData.prescriptions);
           }
         }}
       >
         <CardHeader className='flex-row gap-1 p-2.5 items-center space-y-0 border-b'>
           <h3 className='flex-1 text-default-800 text-lg font-medium truncate text-center  '>
-            Bệnh ở {task.nameAnimal}
+            Bệnh ở {medicalSymptomsData.nameAnimal}
           </h3>
         </CardHeader>
         <CardContent className='p-2.5 pt-1'>
           <div className='flex-col gap-2 '>
             <div className=' text-default-400 mb-1'>Triệu chứng</div>
             <div className='h-20'>
-              <div className='text-default-600 '>{task.symptoms}</div>
+              <div className='text-default-600 '>
+                {medicalSymptomsData.symptoms}
+              </div>
             </div>
           </div>
 
@@ -352,7 +358,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
             <div>
               <div className=' text-default-400 mb-1'>Ngày khởi tạo</div>
               <div className=' text-default-600  font-medium'>
-                {new Date(task.createAt).toLocaleDateString()}
+                {new Date(medicalSymptomsData.createAt).toLocaleDateString()}
               </div>
             </div>
             <Separator
@@ -364,7 +370,8 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                 Số lượng vật nuôi ảnh hưởng
               </div>
               <div className=' text-default-600  font-medium'>
-                {task.affectedQuantity} / {task.quantity}
+                {medicalSymptomsData.affectedQuantity} /{' '}
+                {medicalSymptomsData.quantity}
               </div>
             </div>
           </div>
@@ -373,7 +380,9 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
             <div className=' text-default-400 mb-1'>Ghi chú</div>
             <div className='h-20'>
               {' '}
-              <div className='text-default-600 '>{task.notes}</div>
+              <div className='text-default-600 '>
+                {medicalSymptomsData.notes}
+              </div>
             </div>
           </div>
           <div className='mt-1'></div>
@@ -429,7 +438,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
       </Card>
       <Dialog
         open={open}
-        key={task.id + '-dialogTask'}
+        key={medicalSymptomsData.id + '-dialogTask'}
         onOpenChange={(e) => {
           setOpen(e);
         }}
@@ -438,12 +447,18 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
         <DialogContent size='lg' className=''>
           <DialogHeader>
             <DialogTitle>
-              Chuẩn đoán và chữa bệnh cho {task.nameAnimal}
+              Chuẩn đoán và chữa bệnh cho {medicalSymptomsData.nameAnimal}
             </DialogTitle>
             <DialogDescription>
               <span className='font-medium text-primary-600'>
-                Loài: <span className='font-bold'>{task.nameAnimal}</span> |
-                Triệu chứng: <span className='font-bold'>{task.symptoms}</span>{' '}
+                Loài:{' '}
+                <span className='font-bold'>
+                  {medicalSymptomsData.nameAnimal}
+                </span>{' '}
+                | Triệu chứng:{' '}
+                <span className='font-bold'>
+                  {medicalSymptomsData.symptoms}
+                </span>{' '}
                 {stepCurrent >= 2 && stepCurrent <= 3 ? (
                   <span>
                     <br /> Chuẩn đoán:{' '}
@@ -707,7 +722,7 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
                 <div className='grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4'>
                   <dt className='font-medium text-gray-900'>Chuẩn đoán </dt>
                   <dd className='text-gray-700 sm:col-span-2'>
-                    {task.diagnosis}
+                    {medicalSymptomsData.diagnosis}
                   </dd>
                 </div>
 
@@ -830,4 +845,4 @@ function TaskCard({ task }: { task: MedicalSymptomDTO }) {
   );
 }
 
-export default TaskCard;
+export default MedicalSymptomCard;

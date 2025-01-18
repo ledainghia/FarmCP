@@ -67,7 +67,7 @@ const TasksPage = () => {
 
   return (
     <div className='flex flex-col '>
-      <div className='col-span-12 lg:col-span-7 space-y-5 mb-5'>
+      {/* <div className='col-span-12 lg:col-span-7 space-y-5 mb-5'>
         <Card>
           <CardContent className='p-5'>
             <div className='flex justify-center items-center mb-3'>
@@ -224,7 +224,7 @@ const TasksPage = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
       <div className='flex col-span-12 gap-5  '></div>
       <KanBanApp defaultCols={defaultCols} />
     </div>

@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 import { CalendarIcon, Search } from 'lucide-react';
 import { Calendar } from '../ui/calendar';
 import { DateRange } from 'react-day-picker';
-import { addMonths } from 'date-fns';
+import { addMonths, addWeeks } from 'date-fns';
 import { Input } from '../ui/input';
 import { InputIcon } from '../ui/input-icon';
 
@@ -28,7 +28,7 @@ const KanBanLayout = ({ defaultCols }: { defaultCols: Column[] }) => {
     []
   );
   const [date, setDate] = useState<DateRange | undefined>({
-    from: addMonths(new Date(), -1), // Lấy thời điểm hiện tại trừ đi 1 tháng
+    from: addWeeks(new Date(), -1), // Lấy thời điểm hiện tại trừ đi 1 tháng
     to: new Date(), // Lấy thời điểm hiện tại
   });
 
@@ -122,9 +122,10 @@ const KanBanLayout = ({ defaultCols }: { defaultCols: Column[] }) => {
               <ColumnContainer
                 key={col.id}
                 column={col}
-                tasks={
-                  medicalSymptoms?.filter((task) => task.status === col.id) ||
-                  []
+                medicalSymptomsData={
+                  medicalSymptoms?.filter(
+                    (medicalSymptom) => medicalSymptom.status === col.id
+                  ) || []
                 }
                 handleOpenTask={() => setOpen(true)}
               />

@@ -130,7 +130,7 @@ function TaskCard({ task }: { task: TaskDTO }) {
             <div>
               <div className=' text-default-400 mb-1'>Bắt đầu</div>
               <div className=' text-default-600  font-medium'>
-                {format(new Date(task.createdAt), 'dd/MM/yyyy')}
+                {format(new Date(task.dueDate), 'dd/MM/yyyy')}
               </div>
             </div>
             <Separator
