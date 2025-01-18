@@ -12,10 +12,10 @@ export type MedicationFormDTO = {
   medicationId: string;
   medicationName: string;
   dosage: number;
-  morning: boolean;
-  afternoon: boolean;
-  evening: boolean;
-  noon: boolean;
+  morning: number;
+  afternoon: number;
+  evening: number;
+  noon: number;
 };
 
 export type StandardprescriptionDTO = {

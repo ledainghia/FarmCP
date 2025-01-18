@@ -48,6 +48,9 @@ import {
 } from '../ui/form';
 import { Icon } from '../ui/icon';
 import { Input } from '../ui/input';
+import { InputNumber } from '../ui/input-number';
+import { Textarea } from '../ui/textarea';
+import { formSchema as formSchema2 } from '@/app/(protected)/app/bac_si/benh_tat/components/addPrescription';
 
 const formSchema = z
   .object({
@@ -68,13 +71,6 @@ const formSchema = z
       }
     }
   });
-
-const formSchema2 = z.object({
-  id: z.number(),
-  medicationId: z.string(),
-  dosage: z.number().min(0),
-  sessions: z.array(z.string()).min(1, { message: 'Hãy chọn ít nhất 1 buổi' }),
-});
 
 function MedicalSymptomCard({
   medicalSymptomsData,
@@ -147,8 +143,6 @@ function MedicalSymptomCard({
   const [medicationDataOfCage, setMedicationDataOfCage] = useState<
     z.infer<typeof formSchema2>[]
   >([]);
-  const [medicationDataOfSeperatorCage, setMedicationDataOfSeperatorCage] =
-    useState<z.infer<typeof formSchema2>[]>([]);
 
   const createPrescription = useMutation({
     mutationFn: (data: any) => {
@@ -226,11 +220,11 @@ function MedicalSymptomCard({
       const medications = medicationDataOfCage.map((medication) => {
         return {
           medicationId: medication.medicationId,
-          dosage: medication.dosage,
-          morning: medication.sessions.includes('Buổi sáng') ? 1 : 0,
-          noon: medication.sessions.includes('Buổi trưa') ? 1 : 0,
-          afternoon: medication.sessions.includes('Buổi chiều') ? 1 : 0,
-          evening: medication.sessions.includes('Buổi tối') ? 1 : 0,
+          morning: medication.check?.morning?.dosage || 0,
+          noon: medication.check?.noon?.dosage || 0,
+          afternoon: medication.check?.afternoon?.dosage || 0,
+          evening: medication.check?.evening?.dosage || 0,
+          notes: medication.note,
         };
       });
 
@@ -444,7 +438,13 @@ function MedicalSymptomCard({
         }}
       >
         <DialogTrigger asChild></DialogTrigger>
-        <DialogContent size='lg' className=''>
+        <DialogContent
+          size='lg'
+          className={cn(
+            stepCurrent === 2 || stepCurrent === 1 ? '!max-w-3xl' : '',
+            stepCurrent === 4 ? '!max-w-4xl' : ''
+          )}
+        >
           <DialogHeader>
             <DialogTitle>
               Chuẩn đoán và chữa bệnh cho {medicalSymptomsData.nameAnimal}
@@ -513,7 +513,7 @@ function MedicalSymptomCard({
                     <FormItem>
                       <FormLabel required>Ghi chú</FormLabel>
                       <FormControl>
-                        <Input placeholder='' {...field} />
+                        <Textarea placeholder='' {...field} />
                       </FormControl>
                       <FormDescription>Nhập ghi chú nếu có</FormDescription>
                       <FormMessage />
@@ -530,14 +530,7 @@ function MedicalSymptomCard({
                         <FormItem>
                           <FormLabel required>Số ngày thuốc</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder='1'
-                              type='number'
-                              {...field}
-                              onChange={(e) => {
-                                field.onChange(Number(e.target.value));
-                              }}
-                            />
+                            <InputNumber {...field} />
                           </FormControl>
                           <FormDescription>
                             Nhập số ngày thuốc cho vật nuôi
@@ -636,15 +629,15 @@ function MedicalSymptomCard({
                       <th className='border px-4 py-2 text-center  w-16 '>
                         STT
                       </th>
-                      <th className='border px-4 py-2 text-left'>
+                      <th className='border px-4 py-2 text-left w-96'>
                         Tên thuốc - Hoạt chất
                       </th>
-                      <th className='border px-4 py-2 text-left w-96'>
-                        Cách dùng
+                      <th className='border px-4 py-2 text-left'>
+                        Cách dùng - Liều lượng
                       </th>
-                      <th className='border px-4 py-2 text-right w-32'>
+                      {/* <th className='border px-4 py-2 text-right w-32'>
                         Liều lượng
-                      </th>
+                      </th> */}
                     </tr>
                   </thead>
                   <tbody>
@@ -667,13 +660,51 @@ function MedicalSymptomCard({
                               )?.name
                             : 'Chưa chọn thuốc'}
                         </td>
+
                         <td className='border px-4 py-2 '>
-                          Sử dụng {item.sessions.length} lần mỗi ngày (
-                          {item.sessions.join(', ')})
+                          {item.check?.morning?.checked &&
+                            (item.check?.morning?.dosage ?? 0) > 0 && (
+                              <span>
+                                <span className='font-bold'>Buổi sáng:</span>{' '}
+                                {item.check.morning.dosage} liều -{' '}
+                              </span>
+                            )}
+                          {item.check?.noon?.checked &&
+                            (item.check?.noon?.dosage ?? 0) > 0 && (
+                              <span>
+                                <span className='font-bold'>Buổi trưa:</span>{' '}
+                                {item.check.noon.dosage} liều -{' '}
+                              </span>
+                            )}
+                          {item.check?.afternoon?.checked &&
+                            (item.check?.afternoon?.dosage ?? 0) > 0 && (
+                              <span>
+                                <span className='font-bold'>Buổi chiều:</span>{' '}
+                                {item.check.afternoon.dosage} liều -{' '}
+                              </span>
+                            )}
+                          {item.check?.evening?.checked &&
+                            (item.check?.evening?.dosage ?? 0) > 0 && (
+                              <span>
+                                <span className='font-bold'>Buổi tối:</span>{' '}
+                                {item.check.evening.dosage} liều -{' '}
+                              </span>
+                            )}
+                          {item.note ? (
+                            <span>
+                              {' '}
+                              <span className='font-bold'>
+                                Ghi chú cho loại thuốc này:{' '}
+                              </span>
+                              {item.note}
+                            </span>
+                          ) : (
+                            ''
+                          )}
                         </td>
-                        <td className='border px-4 py-2 text-right'>
+                        {/* <td className='border px-4 py-2 text-right'>
                           {item.dosage}
-                        </td>
+                        </td> */}
                       </tr>
                     ))}
                   </tbody>

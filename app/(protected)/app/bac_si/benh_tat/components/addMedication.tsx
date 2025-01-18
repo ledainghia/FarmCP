@@ -12,16 +12,9 @@ import React, {
 } from 'react';
 
 import { z } from 'zod';
-import AddPrescription from './addPrescription';
+import AddPrescription, { formSchema as formSchema2 } from './addPrescription';
 import { MedicationFormDTO } from '@/dtos/MedicationDTO';
 import { mapSessions } from '@/utils/mappingSession';
-
-const formSchema2 = z.object({
-  id: z.number(),
-  medicationId: z.string(),
-  dosage: z.number().min(0),
-  sessions: z.array(z.string()).min(1, { message: 'Hãy chọn ít nhất 1 buổi' }),
-});
 
 interface Props {
   setValues: (values: z.infer<typeof formSchema2>[]) => void;
@@ -78,6 +71,7 @@ const AddMedication = forwardRef(
             formSchema2.parse(item.values);
             return true;
           } catch (error) {
+            console.error('error', error);
             return false;
           }
         })
@@ -140,17 +134,25 @@ const AddMedication = forwardRef(
       const newForms = values.map((value, index) => {
         const id = index;
         refs.current[id] = createRef();
-        const sessions = {
-          morning: value.morning,
-          afternoon: value.afternoon,
-          evening: value.evening,
-          noon: value.noon,
-        };
+
         const vl = {
           id,
           medicationId: value.medicationId,
-          dosage: value.dosage,
-          sessions: mapSessions(sessions),
+          check: {
+            morning: {
+              dosage: value.morning,
+              checked: value.morning > 0,
+            },
+            afternoon: {
+              dosage: value.afternoon,
+              checked: value.afternoon > 0,
+            },
+            evening: {
+              dosage: value.evening,
+              checked: value.evening > 0,
+            },
+            noon: { dosage: value.noon, checked: value.noon > 0 },
+          },
         };
         return { id, values: vl };
       });
@@ -183,8 +185,13 @@ const AddMedication = forwardRef(
                 formValues.find((form) => form.id === id)?.values || {
                   id,
                   medicationId: '',
-                  dosage: 0,
-                  sessions: [],
+
+                  check: {
+                    morning: { dosage: 0, checked: false },
+                    afternoon: { dosage: 0, checked: false },
+                    evening: { dosage: 0, checked: false },
+                    noon: { dosage: 0, checked: false },
+                  },
                 }
               }
               onChange={(value) => handleValuesChange(value, id)}

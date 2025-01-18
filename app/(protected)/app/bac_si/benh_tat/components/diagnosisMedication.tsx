@@ -88,7 +88,6 @@ export const DiagnosisMedication = forwardRef(
     };
 
     const getValidValue = () => {
-      console.log('getValidValues');
       try {
         formSchema.parse(form.getValues());
         return form.getValues();

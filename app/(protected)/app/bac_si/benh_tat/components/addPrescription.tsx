@@ -1,5 +1,6 @@
 'use client';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Command,
   CommandEmpty,
@@ -11,12 +12,14 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { InputNumber } from '@/components/ui/input-number';
 import {
   MultiSelector,
   MultiSelectorContent,
@@ -30,6 +33,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Tooltip,
   TooltipContent,
@@ -39,17 +43,61 @@ import {
 import { useMedicationQuery } from '@/hooks/use-query';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { CheckedState } from '@radix-ui/react-checkbox';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import * as z from 'zod';
 
-const formSchema = z.object({
-  id: z.number(),
-  medicationId: z.string().min(1, { message: 'Hãy chọn thuốc' }),
-  dosage: z.number(),
-  sessions: z.array(z.string()).min(1, { message: 'Hãy chọn ít nhất 1 buổi' }),
-});
+export const formSchema = z
+  .object({
+    id: z.number(),
+    medicationId: z.string().min(1, { message: 'Hãy chọn thuốc' }),
+
+    note: z.string().optional(),
+    check: z
+      .object({
+        morning: z
+          .object({
+            checked: z.boolean().optional(),
+            dosage: z.number().optional(),
+          })
+          .optional(),
+        noon: z
+          .object({
+            checked: z.boolean().optional(),
+            dosage: z.number().optional(),
+          })
+          .optional(),
+        afternoon: z
+          .object({
+            checked: z.boolean().optional(),
+            dosage: z.number().optional(),
+          })
+          .optional(),
+        evening: z
+          .object({
+            checked: z.boolean().optional(),
+            dosage: z.number().optional(),
+          })
+          .optional(),
+      })
+      .optional(),
+  })
+  .superRefine((data, ctx) => {
+    const timesOfDay = ['morning', 'noon', 'afternoon', 'evening'];
+
+    timesOfDay.forEach((time) => {
+      const timeData = data.check?.[time as keyof typeof data.check];
+      if (timeData?.checked && (!timeData.dosage || timeData.dosage <= 0)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['check', time, 'checked'],
+          message: 'Nếu đã chọn chọn buổi này thì liều lượng phải lớn hơn 0',
+        });
+      }
+    });
+  });
 
 export default function AddPrescription({
   id,
@@ -112,7 +160,7 @@ export default function AddPrescription({
               name='medicationId'
               render={({ field }) => (
                 <FormItem className='flex flex-col'>
-                  <FormLabel>Chọn thuốc </FormLabel>
+                  <FormLabel required>Chọn thuốc </FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -121,7 +169,7 @@ export default function AddPrescription({
                           role='checkbox'
                           size='md'
                           className={cn(
-                            '!px-3 ',
+                            '!px-3 !py-4',
                             !field.value && 'text-muted-foreground'
                           )}
                         >
@@ -236,39 +284,78 @@ export default function AddPrescription({
             />
           </div>
 
-          <div className='col-span-4'>
-            <FormField
-              control={form.control}
-              name='dosage'
-              render={({ field }) => (
-                <FormItem className='flex flex-col'>
-                  <FormLabel>Liều lượng</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder='1'
-                      type='number'
-                      {...field}
-                      onChange={(e) => {
-                        field.onChange(Number(e.target.value));
-                      }}
-                    />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
+          <div className='col-span-8 flex flex-col space-y-2 '>
+            <FormLabel required>Chọn buổi và liều lượng sử dụng </FormLabel>
+            <div className='grid grid-cols-4 gap-4'>
+              {(['morning', 'noon', 'afternoon', 'evening'] as const).map(
+                (time) => (
+                  <FormField
+                    key={time}
+                    control={form.control}
+                    name={
+                      `check.${time}.checked` as
+                        | 'check.morning.checked'
+                        | 'check.noon.checked'
+                        | 'check.afternoon.checked'
+                        | 'check.evening.checked'
+                    }
+                    render={({ field }) => (
+                      <FormItem className='flex flex-col'>
+                        <div className='flex flex-row items-center justify-start h-full space-x-3 rounded-md'>
+                          <FormControl>
+                            <Checkbox
+                              onCheckedChange={(checked) => {
+                                field.onChange(checked); // Cập nhật trạng thái checkbox
+                              }}
+                              checked={field.value || false} // Kiểm tra trạng thái checkbox
+                            />
+                          </FormControl>
+                          <div className='space-y-1 leading-none'>
+                            <FormLabel>
+                              {time === 'morning'
+                                ? 'Buổi sáng'
+                                : time === 'noon'
+                                ? 'Buổi trưa'
+                                : time === 'afternoon'
+                                ? 'Buổi chiều'
+                                : 'Buổi tối'}
+                            </FormLabel>
+                          </div>
+                          {field.value === true ? ( // Chỉ hiển thị InputNumber nếu checkbox được chọn
+                            <InputNumber
+                              defaultValue={form.getValues(
+                                `check.${time}.dosage` as const
+                              )} // Lấy giá trị liều lượng từ form
+                              min={1}
+                              max={10}
+                              onChange={
+                                (value) =>
+                                  form.setValue(`check.${time}.dosage`, value) // Cập nhật giá trị liều lượng
+                              }
+                            />
+                          ) : (
+                            ''
+                          )}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )
               )}
-            />
+            </div>
           </div>
 
-          <div className='col-span-4'>
+          <div className='col-span-12'>
             <FormField
               control={form.control}
-              name='sessions'
+              name='note'
               render={({ field }) => (
                 <FormItem className='flex flex-col'>
-                  <FormLabel required>Chọn buổi</FormLabel>
+                  <FormLabel>Ghi chú </FormLabel>
                   <FormControl>
-                    <MultiSelector
+                    <Textarea {...field}></Textarea>
+                    {/* <MultiSelector
                       values={field.value}
                       onValuesChange={(e) => {
                         field.onChange(e);
@@ -299,7 +386,7 @@ export default function AddPrescription({
                           </MultiSelectorItem>
                         </MultiSelectorList>
                       </MultiSelectorContent>
-                    </MultiSelector>
+                    </MultiSelector> */}
                   </FormControl>
                   <FormMessage />
                 </FormItem>
