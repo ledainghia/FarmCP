@@ -90,8 +90,13 @@ export default function BarnTable({ addNew = true }: { addNew?: boolean }) {
       cell: ({ row }) => <span>{row.getValue('name')}</span>,
     },
     {
-      accessorKey: 'animalType',
-      header: 'Loại động vật',
+      accessorKey: 'farmingBatch.growthStageDetails.name',
+      header: 'Vụ nuôi hiện tại',
+    },
+    {
+      accessorKey: 'farmingBatch.quantity',
+      header: 'Số lượng vật nuôi trong vụ nuôi hiện tại ',
+      meta: 'end',
     },
     {
       accessorKey: 'area',

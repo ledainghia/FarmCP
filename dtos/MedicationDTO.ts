@@ -16,6 +16,7 @@ export type MedicationFormDTO = {
   afternoon: number;
   evening: number;
   noon: number;
+  usageInstructions: string;
 };
 
 export type StandardprescriptionDTO = {

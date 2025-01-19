@@ -354,7 +354,10 @@ export default function AddPrescription({
                 <FormItem className='flex flex-col'>
                   <FormLabel>Ghi chú </FormLabel>
                   <FormControl>
-                    <Textarea {...field}></Textarea>
+                    <Textarea
+                      defaultValue={form.getValues('note')}
+                      {...field}
+                    ></Textarea>
                     {/* <MultiSelector
                       values={field.value}
                       onValuesChange={(e) => {

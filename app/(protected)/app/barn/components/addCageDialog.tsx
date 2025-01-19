@@ -27,6 +27,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { farmsApi } from '@/config/api';
 import toast from 'react-hot-toast';
 import farmStore from '@/config/zustandStore/farmStore';
+import { InputNumber } from '@/components/ui/input-number';
 
 const formSchema = z.object({
   name: z
@@ -37,9 +38,6 @@ const formSchema = z.object({
   location: z
     .string({ message: 'Vị trí không được để trống' })
     .min(1, { message: 'Vị trí không được để trống' }),
-  animalType: z
-    .string({ message: 'Loại vật nuôi không được để trống' })
-    .min(1, { message: 'Loại vật nuôi không được để trống' }),
 });
 
 export default function AddCageDialog() {
@@ -109,7 +107,8 @@ export default function AddCageDialog() {
                     <FormItem>
                       <FormLabel required>Diện tích</FormLabel>
                       <FormControl>
-                        <Input
+                        <InputNumber {...field}></InputNumber>
+                        {/* <Input
                           placeholder=''
                           type='number'
                           {...field}
@@ -117,7 +116,7 @@ export default function AddCageDialog() {
                             field.onChange(Number(event.target.value));
                             console.log(typeof +event.target.value);
                           }}
-                        />
+                        /> */}
                       </FormControl>
                       <FormDescription>Nhập diện tích </FormDescription>
                       <FormMessage />
@@ -134,15 +133,7 @@ export default function AddCageDialog() {
                     <FormItem>
                       <FormLabel required>Sức chứa</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder=''
-                          type='number'
-                          {...field}
-                          onChange={(event) => {
-                            field.onChange(Number(event.target.value));
-                            console.log(typeof +event.target.value);
-                          }}
-                        />
+                        <InputNumber {...field}></InputNumber>
                       </FormControl>
                       <FormDescription>Nhập sức chứa</FormDescription>
                       <FormMessage />
@@ -151,21 +142,6 @@ export default function AddCageDialog() {
                 />
               </div>
             </div>
-
-            <FormField
-              control={form.control}
-              name='animalType'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Loại vật nuôi</FormLabel>
-                  <FormControl>
-                    <Input placeholder='' type='text' {...field} />
-                  </FormControl>
-                  <FormDescription>Nhập loại vật nuôi</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <FormField
               control={form.control}

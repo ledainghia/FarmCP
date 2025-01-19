@@ -31,4 +31,5 @@ export type MedicationDTO = {
   afternoon: number;
   evening: number;
   noon: number;
+  notes: string;
 };

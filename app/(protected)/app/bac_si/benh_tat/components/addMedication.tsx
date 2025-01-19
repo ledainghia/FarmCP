@@ -137,6 +137,7 @@ const AddMedication = forwardRef(
 
         const vl = {
           id,
+          note: value.usageInstructions,
           medicationId: value.medicationId,
           check: {
             morning: {

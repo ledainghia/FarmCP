@@ -59,10 +59,6 @@ export default function FarmingBatchTable({
       header: 'Tên vụ nuôi',
     },
     {
-      accessorKey: 'species',
-      header: 'Giống loài',
-    },
-    {
       accessorKey: 'startDate',
       header: 'Ngày bắt đầu',
       meta: 'end',

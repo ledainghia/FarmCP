@@ -137,6 +137,7 @@ function MedicalSymptomCard({
       addMedicationRef.current?.handleSetDefaultValues(
         standardPrescription?.medications
       );
+      console.log('standardPrescription', standardPrescription?.medications);
     }
   }, [standardPrescription]);
 
@@ -797,12 +798,13 @@ function MedicalSymptomCard({
                       <th className='border px-4 py-2 text-center  w-16 '>
                         STT
                       </th>
-                      <th className='border px-4 py-2 text-left'>
+                      <th className='border px-4 py-2 text-center'>
                         Tên thuốc - Hoạt chất
                       </th>
-                      <th className='border px-4 py-2 text-left w-96'>
+                      <th className='border px-4 py-2 text-center w-96'>
                         Cách dùng
                       </th>
+                      <th className='border px-4 py-2 text-center '>Ghi chú</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -860,9 +862,7 @@ function MedicalSymptomCard({
                             .join(', ')}
                           )
                         </td>
-                        {/* <td className='border px-4 py-2 text-right'>
-                          {item.dosage}
-                        </td> */}
+                        <td className='border px-4 py-2 '>{item.notes}</td>
                       </tr>
                     ))}
                   </tbody>
